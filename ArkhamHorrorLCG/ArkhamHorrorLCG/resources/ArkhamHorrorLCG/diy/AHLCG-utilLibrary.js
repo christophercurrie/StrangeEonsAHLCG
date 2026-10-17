@@ -470,13 +470,46 @@ function getBleedPixels( sheet ) {
 	return Math.round( sheet.getBleedMargin() / 72 * sheet.getTemplateResolution() );
 }
 
-// paints an image that covers the whole sheet, including any bleed margin
-function paintFullBleed( g, sheet, image ) {
+// high resolution counterparts of plug-in images are provided, at the same
+// relative path, by a separate plug-in
+const HIRES_ROOT = 'ArkhamHorrorLCG/hd/';
+const HiResExists = {};
+
+function getHiResPath( path ) {
+	path = String( path ).replace( /^res:\/\//, '' ).replace( /^\//, '' );
+
+	if ( path.indexOf( 'ArkhamHorrorLCG/' ) != 0 ) return null;
+
+	return HIRES_ROOT + path.substring( 'ArkhamHorrorLCG/'.length );
+}
+
+// returns the high resolution version of an image resource when the sheet is
+// being rendered for export or printing and one is available, otherwise null
+function getHiResImage( sheet, path ) {
+	if ( !sheet.isHighResolutionRendering() ) return null;
+
+	var hiResPath = getHiResPath( path );
+	if ( hiResPath == null ) return null;
+
+	if ( HiResExists[hiResPath] === undefined ) {
+		HiResExists[hiResPath] = ResourceKit.composeResourceURL( hiResPath ) != null;
+	}
+
+	return HiResExists[hiResPath] ? ImageUtils.get( hiResPath ) : null;
+}
+
+// paints an image resource that covers the whole sheet, including any bleed margin
+function paintFullBleed( g, sheet, path, mirror ) {
 	var bleed = getBleedPixels( sheet );
+	var image = ImageUtils.get( path );
+
+	// a high resolution image is drawn into the same area as the standard one
+	var source = getHiResImage( sheet, path ) || image;
+	if ( mirror ) source = ImageUtils.mirror( source, true, false );
 
 	// The negative offsets are because clearImage has translated the origin of the graphics
 	// context so that existing cards don't need a edit pass to update positioning.
-	sheet.paintImage( g, image, new Region(-bleed, -bleed, image.getWidth(), image.getHeight()) );
+	sheet.paintImage( g, source, new Region(-bleed, -bleed, image.getWidth(), image.getHeight()) );
 }
 
 function getForceDisplay( key ) {
