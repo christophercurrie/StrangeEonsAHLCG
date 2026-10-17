@@ -1877,6 +1877,10 @@ function layoutPortraitsWithPanels( diy, bindings, frontPortrait, backPortrait, 
 		);
 	}
 
+	var templateBleedBox = new checkBox( @AHLCG-TemplateReplacementBleed, false, null );
+	bindings.add( 'TemplateReplacementBleed', templateBleedBox, diy.faceStyle != FaceStyle.PLAIN_BACK ? [0, 1] : [0] );
+	templatePanel.place( templateBleedBox, 'skip, span 2, wrap' );
+
 	PortraitTab.place( templatePanel, 'wrap, pushx, growx' );
 	resultArray.push( templatePanel );
 

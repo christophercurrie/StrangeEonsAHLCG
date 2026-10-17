@@ -46,8 +46,26 @@ function image( resource, folder, ext ) {
 	return ImageUtils.get( imageName );
 }
 
+// templates for these types are print pages without a bleed margin
+const NO_BLEED_TYPES = {
+	'Guide75': true,
+	'GuideA4': true,
+	'GuideLetter': true,
+	'BoxCover': true,
+	'PackCover': true
+};
+
+// 0.12" bleed, in points
+const BLEED_MARGIN = 8.64;
+
+function setBleedMargin( diy ) {
+	diy.bleedMargin = NO_BLEED_TYPES[CardTypes[0]] ? 0 : BLEED_MARGIN;
+}
+
 // readEncounter is for older versions of WeaknessEnemy and WeaknessTreachery that do not include an encounter portrait
 function readPortraits( diy, oos, typeList, readEncounter ) {
+	setBleedMargin( diy );
+
 	for ( let index = 0; index < typeList.length; index++ ) {
 		// read portrait
 		var fullKey = typeList[index];
@@ -837,7 +855,7 @@ function createPortraits( diy, portraitKeys ) {
 
 	var AHLCGObject = Eons.namedObjects.AHLCGObject;
 
-	diy.bleedMargin = 0;
+	setBleedMargin( diy );
 
 	for ( let index = 0; index < portraitKeys.length; index++ ) {
 		let fullKey = portraitKeys[index];

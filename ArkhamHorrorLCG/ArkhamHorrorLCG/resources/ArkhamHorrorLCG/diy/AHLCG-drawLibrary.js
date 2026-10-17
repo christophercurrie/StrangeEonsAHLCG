@@ -245,7 +245,13 @@ function drawReplacementTemplate(g, sheet, faceIndex ) {
 	try {
 		image = ImageUtils.read( templateReplacement );
 		if (image) {
-			sheet.paintImage( g, image, new Region(0, 0, sheet.getTemplateWidth(), sheet.getTemplateHeight()) );
+			// replacement images cover the trim area unless the user indicates they include bleed
+			var bleed = getBleedPixels( sheet );
+			var region = new Region(0, 0, sheet.getTemplateWidth() - 2 * bleed, sheet.getTemplateHeight() - 2 * bleed);
+			if ( $( 'TemplateReplacementBleed' ) == '1' ) {
+				region = new Region(-bleed, -bleed, sheet.getTemplateWidth(), sheet.getTemplateHeight());
+			}
+			sheet.paintImage( g, image, region );
 			return true;
 		}
 	} catch ( ex ) {
@@ -395,13 +401,23 @@ function drawFadedPortrait( g, diy, sheet, portrait, mask ) {
 	var cx = image.getWidth() / 2 - imagePanX;
 	var cy = image.getHeight() / 2 - imagePanY;
 
-	var sx = region.width / imageScale;
-	var sy = region.height / imageScale;
+	// the clip region positions the portrait (and is what the portrait panel
+	// shows); the optional bleed region is the larger area actually drawn
+	var drawRegion = region;
+	if ( getBleedPixels( sheet ) > 0 ) {
+		drawRegion = diy.settings.getRegion( getExpandedKey( FACE_FRONT, portrait + '-portrait-bleed-region' ) ) || region;
+	}
 
-	imageCropped = ImageUtils.crop( image, cx - sx/2, cy - sy/2, sx, sy );
+	var sx = drawRegion.width / imageScale;
+	var sy = drawRegion.height / imageScale;
+
+	var x0 = cx - ( region.getCenterX() - drawRegion.x ) / imageScale;
+	var y0 = cy - ( region.getCenterY() - drawRegion.y ) / imageScale;
+
+	imageCropped = ImageUtils.crop( image, x0, y0, sx, sy );
 	imageCropped = createStencilImage( imageCropped, mask );
 
-	sheet.paintImage(g, imageCropped, region );
+	sheet.paintImage(g, imageCropped, drawRegion );
 }
 
 function drawSubtitleTemplate( g, sheet, className ) {
@@ -2651,7 +2667,7 @@ function drawCollectorInfo( g, diy, sheet, collectionNumberBox, collectionSuffix
 	if ( encounterNumberBox ) encounterNumberBox.defaultStyle = diy.settings.getTextStyle(getExpandedKey( faceIndex, 'EncounterNumber-style'), null);
 	if ( copyrightBox ) copyrightBox.defaultStyle = diy.settings.getTextStyle(getExpandedKey( faceIndex, 'Copyright-style'), null);
 
-	var collectorX = sheet.getTemplateWidth();
+	var collectorX = sheet.getTemplateWidth() - 2 * getBleedPixels( sheet );
 
 	if ( collectionNumberBox ) {
 		collectorX = drawCollectionNumber( g, diy, sheet, collectionNumberBox, collectionSuffix );

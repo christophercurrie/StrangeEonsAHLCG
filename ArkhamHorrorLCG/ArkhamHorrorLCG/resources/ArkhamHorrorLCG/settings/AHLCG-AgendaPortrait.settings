@@ -10,7 +10,7 @@ AHLCG-AgendaPortrait-Body-alignment = left, middle
 
 AHLCG-AgendaPortrait-BackPortrait-portrait-template = ArkhamHorrorLCG/default-portraits/DefaultTexture.jp2
 AHLCG-AgendaPortrait-BackPortrait-portrait-pany = 0
-AHLCG-AgendaPortrait-BackPortrait-portrait-clip-region = 0,0,525,375
+AHLCG-AgendaPortrait-BackPortrait-portrait-clip-region = -18,-18,561,411
 
 AHLCG-AgendaPortrait-Encounter-portrait-clip-region = 33,235,38,38
 AHLCG-AgendaPortrait-ReturnEncounter-portrait-clip-region = 29,231,45,45

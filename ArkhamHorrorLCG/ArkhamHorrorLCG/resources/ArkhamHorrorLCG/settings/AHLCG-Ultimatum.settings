@@ -1,6 +1,7 @@
 AHLCG-Ultimatum-Default-template = ArkhamHorrorLCG/templates/ultimatums/Ultimatum-Common.png
 AHLCG-Ultimatum-Default-dpi = 290
 AHLCG-UltimatumBack-Default-template = ArkhamHorrorLCG/templates/ultimatums/Ultimatum-Back.png
+AHLCG-UltimatumBack-Default-dpi = 290
 
 AHLCG-Ultimatum-Name-region = 150,134,742,60
 AHLCG-Ultimatum-NameWithSubtitle-region = 190,104,642,60
@@ -33,7 +34,7 @@ AHLCG-Ultimatum-Collection-portrait-clip-region = 750,1400,13,13
 
 AHLCG-Ultimatum-Portrait-portrait-template = ArkhamHorrorLCG/images/empty1x1.png
 AHLCG-Ultimatum-Portrait-portrait-pany = 0
-AHLCG-Ultimatum-Portrait-portrait-clip-region = 0,230,1100,1024
+AHLCG-Ultimatum-Portrait-portrait-clip-region = -35,230,1135,1024
 
 AHLCG-Ultimatum-Text-region = 100,156,800,305
 AHLCG-Ultimatum-Text-alignment = center, middle

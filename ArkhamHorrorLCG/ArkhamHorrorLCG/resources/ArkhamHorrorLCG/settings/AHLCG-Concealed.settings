@@ -11,4 +11,4 @@ AHLCG-Concealed-DecoyName-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFa
 
 AHLCG-Concealed-Portrait-portrait-template = ArkhamHorrorLCG/default-portraits/DefaultTexture.jp2
 AHLCG-Concealed-Portrait-portrait-pany = 0
-AHLCG-Concealed-Portrait-portrait-clip-region = 0,10,244,244
+AHLCG-Concealed-Portrait-portrait-clip-region = -18,10,280,244

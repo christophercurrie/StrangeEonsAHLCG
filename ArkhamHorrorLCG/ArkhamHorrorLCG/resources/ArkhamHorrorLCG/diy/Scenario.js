@@ -360,6 +360,7 @@ function onRead(diy, oos) {
 	else createPortrait( diy, PortraitTypeList[3] );
 
 	diy.setCornerRadius(8);
+	setBleedMargin( diy );
 	diy.version = 17;
 }
 
