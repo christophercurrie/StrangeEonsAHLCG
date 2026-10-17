@@ -1,5 +1,7 @@
 AHLCG-Divider-Default-template = ArkhamHorrorLCG/templates/AHLCG-Divider.jp2
+AHLCG-Divider-Default-bleed-margin = 8.64
 AHLCG-DividerBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-Divider.jp2
+AHLCG-DividerBack-Default-bleed-margin = 8.64
 
 AHLCG-Divider-Name-region = 123,20,286,25
 AHLCG-Divider-Name-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE: {Eons.namedObjects.AHLCGObject.titleFontSize*1.136}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: WIDTH_REGULAR; FOREGROUND: #000000

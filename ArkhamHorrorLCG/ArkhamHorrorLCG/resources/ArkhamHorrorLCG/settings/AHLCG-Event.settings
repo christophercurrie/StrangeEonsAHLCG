@@ -1,5 +1,7 @@
 AHLCG-Event-Default-template = ArkhamHorrorLCG/templates/AHLCG-Event-G.jp2
+AHLCG-Event-Default-bleed-margin = 8.64
 AHLCG-EventBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-PlayerBack.jp2
+AHLCG-EventBack-Default-bleed-margin = 8.64
 
 AHLCG-Event-Name-region = 40,304,297,29
 AHLCG-Event-Subtype-region = 86,333,203,15

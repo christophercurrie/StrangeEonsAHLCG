@@ -1,11 +1,12 @@
 AHLCG-Agenda-Default-template       = ArkhamHorrorLCG/templates/AHLCG-Agenda.jp2
-#AHLCG-Agenda-Default-template-hires = ArkhamHorrorLCG/templates/AHLCG-Agenda-front-hires.jp2
+AHLCG-Agenda-Default-bleed-margin = 8.64
 AHLCG-AgendaBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-AgendaBack.jp2
+AHLCG-AgendaBack-Default-bleed-margin = 8.64
 
 AHLCG-Agenda-Name-region = 255,55,250,44
 AHLCG-Agenda-Name-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE: {Eons.namedObjects.AHLCGObject.titleFontSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.titleFontWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.titleFontTracking}; FOREGROUND: #000000
 
-AHLCG-AgendaBack-Name-region = 22,110,47,226
+AHLCG-AgendaBack-Name-region = 28,110,47,226
 AHLCG-AgendaBack-Name-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE: {Eons.namedObjects.AHLCGObject.titleFontSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.titleFontWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.titleFontTracking}; FOREGROUND: #000000
 AHLCG-AgendaBack-Name-alignment = center, middle
 
@@ -21,12 +22,12 @@ AHLCG-Agenda-DefaultPortrait-portrait-clip-region = -18,-18,323,411
 
 AHLCG-Agenda-Encounter-portrait-template = ArkhamHorrorLCG/images/empty1x1.png
 AHLCG-Agenda-Encounter-portrait-pany = 0
-AHLCG-Agenda-Encounter-portrait-clip-region = 366,23,32,32
-AHLCG-Agenda-DefaultEncounter-portrait-clip-region = 366,23,32,32
+AHLCG-Agenda-Encounter-portrait-clip-region = 366,32,27,27
+AHLCG-Agenda-DefaultEncounter-portrait-clip-region = 366,32,27,27
 AHLCG-Agenda-ReturnEncounter-portrait-clip-region = 364,22,35,35
 AHLCG-Agenda-DefaultReturnEncounter-portrait-clip-region = 364,22,35,35
-AHLCG-AgendaBack-Encounter-portrait-clip-region = 27,57,36,36
-AHLCG-AgendaBack-ReturnEncounter-portrait-clip-region = 20,50,49,48
+AHLCG-AgendaBack-Encounter-portrait-clip-region = 29,53,41,41
+AHLCG-AgendaBack-ReturnEncounter-portrait-clip-region = 25,50,49,48
 
 AHLCG-Agenda-Collection-portrait-template = ArkhamHorrorLCG/images/empty1x1.png
 AHLCG-Agenda-Collection-portrait-pany = 0
@@ -36,8 +37,8 @@ AHLCG-Agenda-DefaultCollection-portrait-clip-region = 476,358,13,13
 AHLCG-Agenda-EncounterNumber-region = 401,361,55,10
 AHLCG-Agenda-CollectionNumber-region = 472,361,37,10
 
-AHLCG-Agenda-ScenarioIndex-region = 314,8,134,21
-AHLCG-AgendaBack-BackScenarioIndex-region = 24,32,41,16
+AHLCG-Agenda-ScenarioIndex-region = 314,14,134,21
+AHLCG-AgendaBack-BackScenarioIndex-region = 24,32,48,16
 
 AHLCG-Agenda-Doom-region = 233,291,50,49
 AHLCG-Agenda-DoomPerInv-region = 228,291,50,49

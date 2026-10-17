@@ -1,4 +1,5 @@
 AHLCG-Chaos-Default-template = ArkhamHorrorLCG/templates/AHLCG-Chaos.jp2
+AHLCG-Chaos-Default-bleed-margin = 8.64
 
 AHLCG-Chaos-Name-region = 28,90,319,75
 AHLCG-Chaos-Name-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE: {Eons.namedObjects.AHLCGObject.titleFontSize*1.318}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.titleFontWidth*1.05}; TRACKING:{Eons.namedObjects.AHLCGObject.titleFontTracking};FOREGROUND: #000000

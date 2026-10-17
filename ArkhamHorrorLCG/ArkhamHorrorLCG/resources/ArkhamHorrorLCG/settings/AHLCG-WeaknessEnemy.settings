@@ -1,5 +1,7 @@
 AHLCG-WeaknessEnemy-Default-template = ArkhamHorrorLCG/templates/AHLCG-WeaknessEnemy.jp2
+AHLCG-WeaknessEnemy-Default-bleed-margin = 8.64
 AHLCG-WeaknessEnemyBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-PlayerBack.jp2
+AHLCG-WeaknessEnemyBack-Default-bleed-margin = 8.64
 
 #AHLCG-WeaknessEnemy-Name-region = 62,4,252,27
 AHLCG-WeaknessEnemy-Label-region = 158,305,58,15

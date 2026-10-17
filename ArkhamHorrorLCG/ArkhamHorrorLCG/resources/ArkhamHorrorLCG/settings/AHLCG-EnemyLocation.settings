@@ -1,5 +1,7 @@
 AHLCG-EnemyLocation-Default-template = ArkhamHorrorLCG/templates/AHLCG-EnemyLocation.jp2
+AHLCG-EnemyLocation-Default-bleed-margin = 8.64
 AHLCG-EnemyLocationBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-Location.jp2
+AHLCG-EnemyLocationBack-Default-bleed-margin = 8.64
 
 AHLCG-EnemyLocation-Name-region = 65,4,242,29
 AHLCG-EnemyLocation-Name-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE: {Eons.namedObjects.AHLCGObject.titleFontSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.titleFontWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.titleFontTracking}; FOREGROUND: #000000

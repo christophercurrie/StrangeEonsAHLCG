@@ -46,25 +46,25 @@ function image( resource, folder, ext ) {
 	return ImageUtils.get( imageName );
 }
 
-// templates for these types are print pages without a bleed margin
-const NO_BLEED_TYPES = {
-	'Guide75': true,
-	'GuideA4': true,
-	'GuideLetter': true,
-	'BoxCover': true,
-	'PackCover': true
-};
-
-// 0.12" bleed, in points
-const BLEED_MARGIN = 8.64;
-
-function setBleedMargin( diy ) {
-	diy.bleedMargin = NO_BLEED_TYPES[CardTypes[0]] ? 0 : BLEED_MARGIN;
+// Bleed margins come from the <templateKey>-bleed-margin settings, so they are not
+// saved with the component. Components saved by older versions have an explicit
+// margin of 0, which overrides the settings; there is no API to unset it.
+function clearBleedMargin( diy ) {
+	try {
+		var field = java.lang.Class.forName( 'ca.cgjennings.apps.arkham.diy.DIY', false, diy.getClass().getClassLoader() )
+			.getDeclaredField( 'hasExplicitBleedMargin' );
+		field.setAccessible( true );
+		field.setBoolean( diy, false );
+	}
+	catch ( ex ) {
+		Eons.log.warning( 'unable to clear bleed margin, using front face margin: ' + ex );
+		diy.bleedMargin = diy.settings.getDouble( diy.frontTemplateKey + '-bleed-margin', 0 );
+	}
 }
 
 // readEncounter is for older versions of WeaknessEnemy and WeaknessTreachery that do not include an encounter portrait
 function readPortraits( diy, oos, typeList, readEncounter ) {
-	setBleedMargin( diy );
+	clearBleedMargin( diy );
 
 	for ( let index = 0; index < typeList.length; index++ ) {
 		// read portrait
@@ -470,17 +470,11 @@ function getBleedPixels( sheet ) {
 	return Math.round( sheet.getBleedMargin() / 72 * sheet.getTemplateResolution() );
 }
 
-// high resolution counterparts of plug-in images are provided, at the same
-// relative path, by a separate plug-in
-const HIRES_ROOT = 'ArkhamHorrorLCG/hd/';
-const HiResExists = {};
-
-function getHiResPath( path ) {
-	path = String( path ).replace( /^res:\/\//, '' ).replace( /^\//, '' );
-
-	if ( path.indexOf( 'ArkhamHorrorLCG/' ) != 0 ) return null;
-
-	return HIRES_ROOT + path.substring( 'ArkhamHorrorLCG/'.length );
+// High resolution counterparts of plug-in images are provided by a separate
+// plug-in, which adds a setting for each image, named for the image file
+// without its extension: AHLCG-Act-hires = ArkhamHorrorLCG/hd/templates/AHLCG-Act.png
+function getHiResKey( path ) {
+	return String( path ).replace( /^.*\//, '' ).replace( /\.[^.]*$/, '' ) + '-hires';
 }
 
 // returns the high resolution version of an image resource when the sheet is
@@ -488,14 +482,9 @@ function getHiResPath( path ) {
 function getHiResImage( sheet, path ) {
 	if ( !sheet.isHighResolutionRendering() ) return null;
 
-	var hiResPath = getHiResPath( path );
-	if ( hiResPath == null ) return null;
+	var hiResPath = $( getHiResKey( path ) );
 
-	if ( HiResExists[hiResPath] === undefined ) {
-		HiResExists[hiResPath] = ResourceKit.composeResourceURL( hiResPath ) != null;
-	}
-
-	return HiResExists[hiResPath] ? ImageUtils.get( hiResPath ) : null;
+	return hiResPath ? ImageUtils.get( hiResPath ) : null;
 }
 
 // paints an image resource that covers the whole sheet, including any bleed margin
@@ -887,8 +876,6 @@ function createPortraits( diy, portraitKeys ) {
     diy.customPortraitHandling = true;
 
 	var AHLCGObject = Eons.namedObjects.AHLCGObject;
-
-	setBleedMargin( diy );
 
 	for ( let index = 0; index < portraitKeys.length; index++ ) {
 		let fullKey = portraitKeys[index];

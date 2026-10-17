@@ -1,4 +1,5 @@
 AHLCG-BackPortrait-Default-template = ArkhamHorrorLCG/templates/AHLCG-Scenario.jp2
+AHLCG-BackPortrait-Default-bleed-margin = 8.64
 
 AHLCG-BackPortrait-BackPortrait-portrait-template = ArkhamHorrorLCG/default-portraits/DefaultTexture.jp2
 AHLCG-BackPortrait-BackPortrait-portrait-pany = 0

@@ -1,4 +1,5 @@
 AHLCG-AgendaPortrait-Default-template = ArkhamHorrorLCG/templates/AHLCG-AgendaPortrait.jp2
+AHLCG-AgendaPortrait-Default-bleed-margin = 8.64
 
 AHLCG-AgendaPortrait-Name-region = 87,249,330,28
 #AHLCG-AgendaPortrait-Name-region = 87,241,330,44

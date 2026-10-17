@@ -304,7 +304,7 @@ function paintBack( g, diy, sheet ) {
 	drawBody( g, diy, sheet, BackBody_box, new Array( 'Traits', 'Keywords', 'Rules', 'Flavor' ) );
 	drawVictory( g, diy, sheet, BackVictory_box );
 
-	if ( $LocationIcon != 'None' ) drawLocationIcon( g, diy, sheet, 'LocationIcon', true );
+	if ( $LocationIconBack != 'None' ) drawLocationIcon( g, diy, sheet, 'LocationIcon', true );
 
 	drawShroud( g, diy, sheet );
 	drawClues( g, diy, sheet );

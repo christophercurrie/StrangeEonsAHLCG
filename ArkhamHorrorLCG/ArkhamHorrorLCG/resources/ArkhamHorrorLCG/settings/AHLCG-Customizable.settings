@@ -1,5 +1,7 @@
 AHLCG-Customizable-Default-template = ArkhamHorrorLCG/templates/AHLCG-Story.jp2
+AHLCG-Customizable-Default-bleed-margin = 8.64
 AHLCG-CustomizableBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-CustomizableBack.jp2
+AHLCG-CustomizableBack-Default-bleed-margin = 8.64
 
 AHLCG-Customizable-Name-region = 34,33,310,34
 AHLCG-Customizable-Label-region = 155,509,65,14

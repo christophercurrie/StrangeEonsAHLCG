@@ -1,5 +1,7 @@
 AHLCG-Concealed-Default-template = ArkhamHorrorLCG/templates/AHLCG-Concealed.jp2
+AHLCG-Concealed-Default-bleed-margin = 8.64
 AHLCG-ConcealedBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-ConcealedBack.jp2
+AHLCG-ConcealedBack-Default-bleed-margin = 8.64
 
 # Standard
 AHLCG-Concealed-Name-region =  31,256,186,65

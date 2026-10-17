@@ -1,5 +1,7 @@
 AHLCG-MiniInvestigator-Default-template = ArkhamHorrorLCG/templates/AHLCG-MiniInvestigator.jp2
+AHLCG-MiniInvestigator-Default-bleed-margin = 8.64
 AHLCG-MiniInvestigatorBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-MiniInvestigator.jp2
+AHLCG-MiniInvestigatorBack-Default-bleed-margin = 8.64
 
 AHLCG-MiniInvestigator-Portrait-portrait-template = ArkhamHorrorLCG/default-portraits/DefaultTexture.jp2
 AHLCG-MiniInvestigator-Portrait-portrait-pany = 0

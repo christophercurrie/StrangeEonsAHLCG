@@ -1,5 +1,7 @@
 AHLCG-Asset-Default-template = ArkhamHorrorLCG/templates/AHLCG-Asset-G.jp2
+AHLCG-Asset-Default-bleed-margin = 8.64
 AHLCG-AssetBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-PlayerBack.jp2
+AHLCG-AssetBack-Default-bleed-margin = 8.64
 
 AHLCG-Asset-NameG-region =  68,14,238,29
 AHLCG-Asset-NameK-region =  68,14,238,29

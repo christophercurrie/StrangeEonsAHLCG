@@ -1,5 +1,7 @@
 AHLCG-Skill-Default-template = ArkhamHorrorLCG/templates/AHLCG-Skill-N.jp2
+AHLCG-Skill-Default-bleed-margin = 8.64
 AHLCG-SkillBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-PlayerBack.jp2
+AHLCG-SkillBack-Default-bleed-margin = 8.64
 
 AHLCG-Skill-Name-region = 73,16,294,29
 AHLCG-Skill-Name-alignment = left, middle

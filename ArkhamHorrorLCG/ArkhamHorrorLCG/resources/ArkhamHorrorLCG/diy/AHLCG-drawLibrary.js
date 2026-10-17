@@ -437,6 +437,9 @@ function drawLocationEncounterOverlay( g, diy, sheet ) {
 
 	if ( templateReplacement && templateReplacement.length > 0 ) return;
 
+	// the location templates include the encounter overlay
+	if ( CardTypes[faceIndex] == 'Location' || CardTypes[faceIndex] == 'LocationBack' ) return;
+
 	var image = ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-LocationEncounter.png');
 
 	var region = diy.settings.getRegion( getExpandedKey( faceIndex, 'EncounterOverlay-region' ) );
@@ -3088,7 +3091,10 @@ function drawEncounterInfo( g, diy, sheet, encounterInfoBox, collectorX ) {
 
 	// Please don't ask me why I have to do a markupText += X in order to get the color to change
 	encounterInfoBox.markupText = encounterNumber;
-	if ( Eons.namedObjects.AHLCGObject.OS == 'Mac' ) {
+	if ( CardTypes[sheet.getSheetIndex()] == 'Story' ) {
+		encounterInfoBox.markupText += '/' + encounterTotal;
+	}
+	else if ( Eons.namedObjects.AHLCGObject.OS == 'Mac' ) {
 		encounterInfoBox.markupText += '\u200a/\u200a' + encounterTotal;
 	}
 	else {
@@ -3350,18 +3356,8 @@ function drawLocationIcon( g, diy, sheet, locationIconName, drawBaseCircle )
 	if ( locationIcon == 'Copy front' )	locationIcon = $( locationIconName );
 
 	if ( locationIcon != 'None' && locationIcon != 'Empty' && locationIcon != null) {
-		var index = AHLCGObject.locationIcons.indexOf( locationIcon );
-
-		var icon_tinter = new TintCache( new TintFilter(), Eons.namedObjects.AHLCGObject.baseLocationIcon );
-		var hsb = diy.settings.getTint( 'AHLCG-' + locationIcon + '-tint' );
-		icon_tinter.setFactors( hsb[0], hsb[1], hsb[2] );
-
-		var locationImage = icon_tinter.getTintedImage();
-
-		var ig = locationImage.createGraphics();
-		ig.drawImage( ImageUtils.get( 'ArkhamHorrorLCG/icons/AHLCG-Loc' + locationIcon + '.png' ), 5, 5, null );
-
-		sheet.paintImage(g, locationImage, region );
+		// location icon images include their colored base
+		sheet.paintImage( g, ImageUtils.get( 'ArkhamHorrorLCG/icons/AHLCG-Loc' + locationIcon + '.png' ), region );
 	}
 }
 

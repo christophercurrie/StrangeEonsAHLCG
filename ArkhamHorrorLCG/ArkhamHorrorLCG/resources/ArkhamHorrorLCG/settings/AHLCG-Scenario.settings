@@ -1,5 +1,7 @@
 AHLCG-Scenario-Default-template = ArkhamHorrorLCG/templates/AHLCG-Scenario.jp2
+AHLCG-Scenario-Default-bleed-margin = 8.64
 AHLCG-ScenarioBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-Scenario.jp2
+AHLCG-ScenarioBack-Default-bleed-margin = 8.64
 
 AHLCG-Scenario-Name-region = 51,43,270,43
 AHLCG-Scenario-Name-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE: {Eons.namedObjects.AHLCGObject.titleFontSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.titleFontWidth*1.05}; TRACKING: {Eons.namedObjects.AHLCGObject.titleFontTracking}; FOREGROUND: #000000

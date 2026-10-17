@@ -1,6 +1,8 @@
 AHLCG-Ultimatum-Default-template = ArkhamHorrorLCG/templates/ultimatums/Ultimatum-Common.png
+AHLCG-Ultimatum-Default-bleed-margin = 8.64
 AHLCG-Ultimatum-Default-dpi = 290
 AHLCG-UltimatumBack-Default-template = ArkhamHorrorLCG/templates/ultimatums/Ultimatum-Back.png
+AHLCG-UltimatumBack-Default-bleed-margin = 8.64
 AHLCG-UltimatumBack-Default-dpi = 290
 
 AHLCG-Ultimatum-Name-region = 150,134,742,60

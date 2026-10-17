@@ -1184,33 +1184,21 @@ function gameObject( masterSettings ) {
 			)
 		];
 
-	this.baseLocationIcon = ImageUtils.get( 'ArkhamHorrorLCG/icons/AHLCG-LocationBase.png' );
-
-	test_tinter = new TintCache( new TintFilter(), this.baseLocationIcon );
-
 	for( let index = 0; index < this.locationIcons.length; index++ ) {
 		let item = this.locationIcons[index];
 
-		var hsb = masterSettings.getTint( 'AHLCG-' + item + '-tint' );
-		test_tinter.setFactors( hsb[0], hsb[1], hsb[2] );
-
-		let iconBaseImage = test_tinter.getTintedImage();
-
-		let ig = iconBaseImage.createGraphics();
-
-		ig.drawImage( ImageUtils.get( 'ArkhamHorrorLCG/icons/AHLCG-Loc' + item + '.png' ), 4, 4, null );
+		// location icon images include their colored base
+		let iconImage = ImageUtils.get( 'ArkhamHorrorLCG/icons/AHLCG-Loc' + item + '.png' );
 
 		this.comboConnections[index+2] = ListItem(
 			item, @('AHLCG-LocIcon-' + item),
-			ImageUtils.createIcon(iconBaseImage, 12, 12)
+			ImageUtils.createIcon(iconImage, 12, 12)
 			);
 
 		this.comboConnectionsBack[index+3] = ListItem(
 			item, @('AHLCG-LocIcon-' + item),
-			ImageUtils.createIcon(iconBaseImage, 12, 12)
+			ImageUtils.createIcon(iconImage, 12, 12)
 			);
-
-		ig.dispose();
 	}
 
 	this.actTextShapes = new Array( null, null );

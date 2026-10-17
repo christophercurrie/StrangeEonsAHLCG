@@ -1,4 +1,5 @@
 AHLCG-AgendaFrontPortrait-Default-template = ArkhamHorrorLCG/templates/AHLCG-AgendaFrontPortrait.jp2
+AHLCG-AgendaFrontPortrait-Default-bleed-margin = 8.64
 
 AHLCG-AgendaFrontPortrait-Name-region = 87,227,330,22
 AHLCG-AgendaFrontPortrait-Name-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE: {Eons.namedObjects.AHLCGObject.titleFontSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.titleFontWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.titleFontTracking}; FOREGROUND: #000000

@@ -1,5 +1,7 @@
 AHLCG-WeaknessTreachery-Default-template = ArkhamHorrorLCG/templates/AHLCG-WeaknessTreachery.jp2
+AHLCG-WeaknessTreachery-Default-bleed-margin = 8.64
 AHLCG-WeaknessTreacheryBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-PlayerBack.jp2
+AHLCG-WeaknessTreacheryBack-Default-bleed-margin = 8.64
 
 #AHLCG-WeaknessTreachery-Name-region = 39,306,299,29
 #AHLCG-WeaknessTreachery-Label-region = 137,285,104,14
