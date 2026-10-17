@@ -440,6 +440,25 @@ function clearImage ( g, sheet ) {
 	var image = ImageUtils.create(w, h);
 
 	sheet.paintImage( g, image, new Region(0, 0, w, h) );
+
+	// card coordinates are relative to the trim edge, not the bleed edge
+	// making this translation means existing saved cards don't need to
+	// be upgraded to support the bleed templates.
+	var bleed = getBleedPixels( sheet );
+	g.translate( bleed, bleed );
+}
+
+function getBleedPixels( sheet ) {
+	return Math.round( sheet.getBleedMargin() / 72 * sheet.getTemplateResolution() );
+}
+
+// paints an image that covers the whole sheet, including any bleed margin
+function paintFullBleed( g, sheet, image ) {
+	var bleed = getBleedPixels( sheet );
+
+	// The negative offsets are because clearImage has translated the origin of the graphics
+	// context so that existing cards don't need a edit pass to update positioning.
+	sheet.paintImage( g, image, new Region(-bleed, -bleed, image.getWidth(), image.getHeight()) );
 }
 
 function getForceDisplay( key ) {

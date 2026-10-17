@@ -39,14 +39,11 @@ function drawTemplate( g, sheet, className ) {
 		image = ImageUtils.get('ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + '.jp2');
 	}
 
-	var w = image.getWidth();
-	var h = image.getHeight();
-
 	if ((CardTypes[faceIndex] == 'Act' || CardTypes[faceIndex] == 'Agenda') && $Orientation == 'Reversed' ) {
-		sheet.paintImage( g, ImageUtils.mirror(image, true, false), new Region(0, 0, w, h) );
+		paintFullBleed( g, sheet, ImageUtils.mirror(image, true, false) );
 	}
 	else {
-		sheet.paintImage( g, image, new Region(0, 0, w, h) );
+		paintFullBleed( g, sheet, image );
 	}
 }
 
@@ -63,10 +60,7 @@ function drawBackTemplate( g, sheet ) {
 
 	image = ImageUtils.get( $( templateSetting ) );
 
-	var w = image.getWidth();
-	var h = image.getHeight();
-
-	sheet.paintImage( g, image, new Region(0, 0, w, h) );
+	paintFullBleed( g, sheet, image );
 }
 
 function drawAssetTemplate( g, diy, sheet, className, className2, className3 ) {
@@ -94,10 +88,7 @@ function drawAssetTemplate( g, diy, sheet, className, className2, className3 ) {
 	// dual class
 	var image = ImageUtils.get( 'ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + '-D.jp2' );
 
-	var w = image.getWidth();
-	var h = image.getHeight();
-
-	sheet.paintImage( g, image, new Region(0, 0, w, h) );
+	paintFullBleed( g, sheet, image );
 
 	// draw class icons
 	var classInitials = [ getClassInitial( className ), null, null ];
@@ -129,10 +120,7 @@ function drawUltimatumTemplate( g, diy, sheet, ultimatum_type, subtitle) {
 
 	var image = ImageUtils.get( 'ArkhamHorrorLCG/templates/ultimatums/' + ultimatum_type + '-' + ultimatum_subtype + '.png' );
 
-	var w = image.getWidth();
-	var h = image.getHeight();
-
-	sheet.paintImage( g, image, new Region(0, 0, w, h) );
+	paintFullBleed( g, sheet, image );
 }
 
 function drawUltimatumSubtitle( g, diy, sheet, textBox, text ) {
@@ -201,10 +189,7 @@ function drawEventTemplate( g, diy, sheet, className, className2, className3 ) {
 	// dual class
 	var image = ImageUtils.get( 'ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + '-D.jp2' );
 
-	var w = image.getWidth();
-	var h = image.getHeight();
-
-	sheet.paintImage( g, image, new Region(0, 0, w, h) );
+	paintFullBleed( g, sheet, image );
 
 	// draw class icons
 	var classInitials = [ getClassInitial( classes[0] ), getClassInitial( classes[1] )];
@@ -436,10 +421,7 @@ function drawSubtitleTemplate( g, sheet, className ) {
 		image = ImageUtils.get('ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + 'ST.jp2');
 	}
 
-	var w = image.getWidth();
-	var h = image.getHeight();
-
-	sheet.paintImage( g, image, new Region(0, 0, w, h) );
+	paintFullBleed( g, sheet, image );
 }
 
 function drawLocationEncounterOverlay( g, diy, sheet ) {
