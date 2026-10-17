@@ -62,9 +62,19 @@ function clearBleedMargin( diy ) {
 	}
 }
 
+// Older versions chose Player and Encounter backs by saving a template path over the
+// face's template setting; the back type alone now selects the template.
+function clearTemplateOverrides( diy ) {
+	for ( let it = diy.settings.getKeySet().iterator(); it.hasNext(); ) {
+		let key = String( it.next() );
+		if ( /^AHLCG-.*-Default-template$/.test( key ) ) diy.settings.reset( key );
+	}
+}
+
 // readEncounter is for older versions of WeaknessEnemy and WeaknessTreachery that do not include an encounter portrait
 function readPortraits( diy, oos, typeList, readEncounter ) {
 	clearBleedMargin( diy );
+	clearTemplateOverrides( diy );
 
 	for ( let index = 0; index < typeList.length; index++ ) {
 		// read portrait
@@ -470,35 +480,39 @@ function getBleedPixels( sheet ) {
 	return Math.round( sheet.getBleedMargin() / 72 * sheet.getTemplateResolution() );
 }
 
-// High resolution counterparts of plug-in images are provided by a separate
-// plug-in, which adds a setting for each image, named for the image file
-// without its extension: AHLCG-Act-hires = ArkhamHorrorLCG/hd/templates/AHLCG-Act.png
-function getHiResKey( path ) {
-	return String( path ).replace( /^.*\//, '' ).replace( /\.[^.]*$/, '' ) + '-hires';
+// key of the template image setting for a template name, e.g. EnemyST or Asset-G
+function getTemplateKey( name ) {
+	return 'AHLCG-' + name + '-template';
 }
 
-// returns the high resolution version of an image resource when the sheet is
-// being rendered for export or printing and one is available, otherwise null
-function getHiResImage( sheet, path ) {
-	if ( !sheet.isHighResolutionRendering() ) return null;
-
-	var hiResPath = $( getHiResKey( path ) );
-
-	return hiResPath ? ImageUtils.get( hiResPath ) : null;
+// key of the template image setting for the image path held by a face template setting
+function getTemplateKeyForSetting( setting ) {
+	return Eons.namedObjects.AHLCGObject.templateKeys[$( setting )] || setting;
 }
 
-// paints an image resource that covers the whole sheet, including any bleed margin
-function paintFullBleed( g, sheet, path, mirror ) {
-	var bleed = getBleedPixels( sheet );
-	var image = ImageUtils.get( path );
-
-	// a high resolution image is drawn into the same area as the standard one
-	var source = getHiResImage( sheet, path ) || image;
-	if ( mirror ) source = ImageUtils.mirror( source, true, false );
+// Paints the template image set by key, which covers the whole sheet, including any bleed margin.
+// When rendering for export or printing, a high resolution version of the image set by
+// <key>-hires is used instead, if available; it is provided by a separate plug-in.
+function paintFullBleed( g, sheet, key, mirror ) {
+	if ( $( key ) == null ) {
+		Eons.log.warning( 'missing template setting: ' + key );
+		return;
+	}
 
 	// The negative offsets are because clearImage has translated the origin of the graphics
 	// context so that existing cards don't need a edit pass to update positioning.
-	sheet.paintImage( g, source, new Region(-bleed, -bleed, image.getWidth(), image.getHeight()) );
+	var bleed = getBleedPixels( sheet );
+
+	if ( !mirror ) {
+		sheet.paintImage( g, key, -bleed, -bleed );
+		return;
+	}
+
+	// mirrored templates need manual high resolution substitution
+	var image = ImageUtils.get( $( key ) );
+	var hiResPath = sheet.isHighResolutionRendering() ? $( key + '-hires' ) : null;
+	var source = ImageUtils.mirror( hiResPath ? ImageUtils.get( hiResPath ) : image, true, false );
+	sheet.paintImage( g, source, new Region( -bleed, -bleed, image.getWidth(), image.getHeight() ) );
 }
 
 function getForceDisplay( key ) {
@@ -1443,36 +1457,18 @@ function updateReversableTextBoxShape( diy, orientation ) {
 	setTextShape( Body_box, region, reverse );
 }
 
-function updateCardType( diy, type, faceIndex, defaultType, setting ) {
-	var templateName = defaultType;
-
+function updateCardType( diy, type, faceIndex, defaultType ) {
 	if ( type == 'Story' ) {
  		CardTypes[faceIndex] = 'Story';
- 		templateName = 'Story';
  	}
 	else if ( type == 'Chaos' ) {
  		CardTypes[faceIndex] = 'StoryChaos';
- 		templateName = 'Chaos';
  	}
 	else if ( type == 'ChaosFull' ) {
  		CardTypes[faceIndex] = 'StoryChaosFull';
- 		templateName = 'Chaos';
- 	}
-	else if ( type == 'Player' ) {
- 		CardTypes[faceIndex] = defaultType;
-		templateName = 'PlayerBack';
-	}
-	else if ( type == 'Encounter' ) {
- 		CardTypes[faceIndex] = defaultType;
-		templateName = 'EncounterBack';
  	}
  	else {
  		CardTypes[faceIndex] = defaultType;
- 		templateName = defaultType;
- 	}
-
- 	if ( setting.length > 0 ) {
- 		diy.settings.set(setting, 'ArkhamHorrorLCG/templates/AHLCG-' + templateName + '.jp2');
  	}
 }
 

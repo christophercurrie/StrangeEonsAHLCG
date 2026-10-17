@@ -12,7 +12,7 @@ importClass( java.lang.reflect.Field );
 
 function drawTemplate( g, sheet, className ) {
 	var faceIndex = sheet.getSheetIndex();
-	var path;
+	var name;
 
 	if ( useReplacementTemplate( faceIndex )) {
 		drawReplacementTemplate( g, sheet, faceIndex );
@@ -22,29 +22,30 @@ function drawTemplate( g, sheet, className ) {
 	if ( className != null && className.length > 0 ) {
 		// asset basic weaknesses should use the AssetStory template
 		if ( CardTypes[faceIndex] == 'Asset' && className == 'BasicWeakness' )
-			path = 'ArkhamHorrorLCG/templates/AHLCG-AssetStory' + '-' + getClassInitial( className ) + '.jp2';
+			name = 'AssetStory-' + getClassInitial( className );
 		else
-			path = 'ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + '-' + getClassInitial( className ) + '.jp2';
+			name = CardTypes[faceIndex] + '-' + getClassInitial( className );
 	}
 	else if ( CardTypes[faceIndex] == 'StoryChaos' || CardTypes[faceIndex] == 'ChaosStory' ) {
-		path = 'ArkhamHorrorLCG/templates/AHLCG-Chaos.jp2';
+		name = 'Chaos';
 	}
 	else if ( 'Concealed' ) {
-		if ( $Template == 'Decoy' ) path = 'ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + 'Decoy.jp2';
-		else if ( $Template == 'NamedDecoy' ) path = 'ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + 'NamedDecoy.jp2';
-		else path = 'ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + '.jp2';
+		if ( $Template == 'Decoy' ) name = CardTypes[faceIndex] + 'Decoy';
+		else if ( $Template == 'NamedDecoy' ) name = CardTypes[faceIndex] + 'NamedDecoy';
+		else name = CardTypes[faceIndex];
 	}
 	else
 	{
-		path = 'ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + '.jp2';
+		name = CardTypes[faceIndex];
 	}
 
 	var mirror = (CardTypes[faceIndex] == 'Act' || CardTypes[faceIndex] == 'Agenda') && $Orientation == 'Reversed';
 
-	paintFullBleed( g, sheet, path, mirror );
+	paintFullBleed( g, sheet, getTemplateKey( name ), mirror );
 }
 
-function drawBackTemplate( g, sheet ) {
+// backType is the selected back for cards that offer Player and Encounter backs
+function drawBackTemplate( g, sheet, backType ) {
 	var faceIndex = sheet.getSheetIndex();
 
 	if ( useReplacementTemplate( faceIndex )) {
@@ -52,9 +53,12 @@ function drawBackTemplate( g, sheet ) {
 		return;
 	}
 
-	var templateSetting = getExpandedKey( faceIndex, 'Default-template');
+	var key;
+	if ( backType == 'Player' ) key = getTemplateKey( 'PlayerBack' );
+	else if ( backType == 'Encounter' ) key = getTemplateKey( 'EncounterBack' );
+	else key = getTemplateKeyForSetting( getExpandedKey( faceIndex, 'Default-template' ) );
 
-	paintFullBleed( g, sheet, $( templateSetting ) );
+	paintFullBleed( g, sheet, key );
 }
 
 function drawAssetTemplate( g, diy, sheet, className, className2, className3 ) {
@@ -80,7 +84,7 @@ function drawAssetTemplate( g, diy, sheet, className, className2, className3 ) {
 	}
 
 	// dual class
-	paintFullBleed( g, sheet, 'ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + '-D.jp2' );
+	paintFullBleed( g, sheet, getTemplateKey( CardTypes[faceIndex] + '-D' ) );
 
 	// draw class icons
 	var classInitials = [ getClassInitial( className ), null, null ];
@@ -110,7 +114,7 @@ function drawUltimatumTemplate( g, diy, sheet, ultimatum_type, subtitle) {
 
 	var ultimatum_subtype = subtitle.length == 0 ? 'Common' : 'Refraction';
 
-	paintFullBleed( g, sheet, 'ArkhamHorrorLCG/templates/ultimatums/' + ultimatum_type + '-' + ultimatum_subtype + '.png' );
+	paintFullBleed( g, sheet, getTemplateKey( ultimatum_type + '-' + ultimatum_subtype ) );
 }
 
 function drawUltimatumSubtitle( g, diy, sheet, textBox, text ) {
@@ -177,7 +181,7 @@ function drawEventTemplate( g, diy, sheet, className, className2, className3 ) {
 	}
 
 	// dual class
-	paintFullBleed( g, sheet, 'ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + '-D.jp2' );
+	paintFullBleed( g, sheet, getTemplateKey( CardTypes[faceIndex] + '-D' ) );
 
 	// draw class icons
 	var classInitials = [ getClassInitial( classes[0] ), getClassInitial( classes[1] )];
@@ -410,7 +414,7 @@ function drawFadedPortrait( g, diy, sheet, portrait, mask ) {
 
 function drawSubtitleTemplate( g, sheet, className ) {
 	var faceIndex = sheet.getSheetIndex();
-	var path;
+	var name;
 
 	if ( useReplacementTemplate( faceIndex )) {
 		drawReplacementTemplate( g, sheet, faceIndex );
@@ -418,14 +422,14 @@ function drawSubtitleTemplate( g, sheet, className ) {
 	}
 
 	if (className != null && className.length > 0) {
-		path = 'ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + 'ST-' + getClassInitial( className ) + '.jp2';
+		name = CardTypes[faceIndex] + 'ST-' + getClassInitial( className );
 	}
 	else
 	{
-		path = 'ArkhamHorrorLCG/templates/AHLCG-' + CardTypes[faceIndex] + 'ST.jp2';
+		name = CardTypes[faceIndex] + 'ST';
 	}
 
-	paintFullBleed( g, sheet, path );
+	paintFullBleed( g, sheet, getTemplateKey( name ) );
 }
 
 function drawLocationEncounterOverlay( g, diy, sheet ) {

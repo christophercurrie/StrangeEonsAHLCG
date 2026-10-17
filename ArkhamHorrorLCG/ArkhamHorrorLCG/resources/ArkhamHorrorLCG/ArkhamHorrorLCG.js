@@ -29,6 +29,7 @@ function initialize() {
 	);
 
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/AHLCG-Game.settings');
+	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/AHLCG-Templates.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/AHLCG-Asset.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/AHLCG-Event.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/AHLCG-Skill.settings');
@@ -483,6 +484,15 @@ function gameObject( masterSettings ) {
 	}
 
 	setupFonts( this );
+
+	// template image setting keys, by image path, to find the image key of a face template setting
+	this.templateKeys = {};
+	var templates = new Settings();
+	templates.addSettingsFrom( 'ArkhamHorrorLCG/settings/AHLCG-Templates.settings' );
+	for ( let it = templates.getKeySet().iterator(); it.hasNext(); ) {
+		let key = String( it.next() );
+		this.templateKeys[templates.get( key )] = key;
+	}
 
 	// updated arrays for language support
 	this.comboClassesI = new Array(

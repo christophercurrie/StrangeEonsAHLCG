@@ -268,7 +268,7 @@ function createFrontPainter( diy, sheet ) {
 	Encounter_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_FRONT, 'EncounterNumber-style'), null);
 	Encounter_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_FRONT, 'EncounterNumber-alignment'));
 
-	updateCardType( diy, $Template, FACE_FRONT, 'Story', '' );
+	updateCardType( diy, $Template, FACE_FRONT, 'Story' );
 }
 
 function createBackPainter( diy, sheet ) {
@@ -328,7 +328,7 @@ function createBackPainter( diy, sheet ) {
 	BackEncounter_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey( FACE_BACK, 'EncounterNumber-style'), null);
 	BackEncounter_box.alignment = diy.settings.getTextAlignment(getExpandedKey( FACE_BACK, 'EncounterNumber-alignment'));
 
-	updateCardType( diy, $TemplateBack, FACE_BACK, 'Story', 'AHLCG-Story-Default-template' );
+	updateCardType( diy, $TemplateBack, FACE_BACK, 'Story' );
 }
 
 function paintFront( g, diy, sheet ) {
@@ -420,7 +420,7 @@ function paintBack( g, diy, sheet ) {
 		drawCollectorInfo( g, diy, sheet, collectionBox, collectionSuffix, $ShowCollectionNumberBack == '1', encounterBox, false, copyrightBox, null );
 	}
 	else {
-		drawBackTemplate( g, sheet );
+		drawBackTemplate( g, sheet, $TemplateBack );
 	}
 }
 

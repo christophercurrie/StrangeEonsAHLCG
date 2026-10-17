@@ -223,7 +223,7 @@ function createFrontPainter( diy, sheet ) {
 	Encounter_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_FRONT, 'EncounterNumber-style'), null);
 	Encounter_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_FRONT, 'EncounterNumber-alignment'));
 
-	updateCardType( diy, $Template, FACE_FRONT, 'ChaosStory', '' );
+	updateCardType( diy, $Template, FACE_FRONT, 'ChaosStory' );
 }
 
 function createBackPainter( diy, sheet ) {

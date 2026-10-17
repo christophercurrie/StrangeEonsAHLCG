@@ -213,7 +213,7 @@ function paintFront( g, diy, sheet ) {
 function paintBack( g, diy, sheet ) {
 	clearImage( g, sheet );
 
-	drawBackTemplate( g, sheet );
+	drawBackTemplate( g, sheet, $BackTypeBack );
 }
 
 function onClear() {

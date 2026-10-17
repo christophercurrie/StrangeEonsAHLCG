@@ -800,7 +800,7 @@ function layoutScenarioStats( diy, bindings, faceIndex ) {
 	TemplateList.addActionListener( function updateTemplate( actionEvent ) {
 		let type = (String)(TemplateList.getSelectedItem());
 
-		updateCardType( diy, type, faceIndex, 'Scenario', '' );
+		updateCardType( diy, type, faceIndex, 'Scenario' );
 /*
 		if ( type == 'Chaos' ) {
  			CardTypes[faceIndex] = 'StoryChaos';
@@ -889,19 +889,6 @@ function layoutBackTypeStats( diy, bindings, faceIndex ) {
 	var BackList = new comboBox( Eons.namedObjects.AHLCGObject.comboBacks, null );
 	bindings.add( 'BackType' + BindingSuffixes[faceIndex], BackList, [ 1 ] );
 
-	BackList.addActionListener( function updateShape( actionEvent ) {
-		try {
-			if ( (String)(BackList.getSelectedItem()) == 'Player' ) {
-				diy.settings.set( 'AHLCG-' + CardTypes[1] + '-Default-template', 'ArkhamHorrorLCG/templates/AHLCG-PlayerBack.jp2' );
-			}
-			else {
-				diy.settings.set( 'AHLCG-' + CardTypes[1] + '-Default-template', 'ArkhamHorrorLCG/templates/AHLCG-EncounterBack.jp2' );
-			}
-		} catch (ex) {
-			Error.handleUncaught( ex );
-		}
-	});
-
 	StatsPanel.place(
 		@AHLCG-Back, 'align right ', BackList, 'wrap, width 40%'
 		);
@@ -915,22 +902,6 @@ function layoutLocationBackTypeStats( diy, bindings, faceIndex ) {
 
 	var BackList = new comboBox( Eons.namedObjects.AHLCGObject.comboLocationBacks, null);
 	bindings.add( 'BackType' + BindingSuffixes[faceIndex], BackList, [1] );
-
- 	BackList.addActionListener( function updateShape( actionEvent ) {
-		try {
-			if ( (String)(BackList.getSelectedItem()) == 'Player' ) {
-				$AHLCG-LocationBack-Default-template = 'ArkhamHorrorLCG/templates/AHLCG-PlayerBack.jp2';
-			}
-			else if ( (String)(BackList.getSelectedItem()) == 'Encounter' ) {
-				$AHLCG-LocationBack-Default-template = 'ArkhamHorrorLCG/templates/AHLCG-EncounterBack.jp2';
-			}
-			else {
-				$AHLCG-LocationBack-Default-template = 'ArkhamHorrorLCG/templates/AHLCG-LocationBack.jp2';
-			}
-		} catch (ex) {
-			Error.handleUncaught( ex );
-		}
-	});
 
 	StatsPanel.place(
 		@AHLCG-Back, 'align right ', BackList, 'wrap, width 40%'
@@ -981,7 +952,7 @@ function layoutStoryChaosStats( diy, bindings, faceIndex ) {
 	TemplateList.addActionListener( function updateTemplate( actionEvent ) {
 		let type = (String)(TemplateList.getSelectedItem());
 
-		updateCardType( diy, type, faceIndex, 'ChaosStory', '' );
+		updateCardType( diy, type, faceIndex, 'ChaosStory' );
 /*
 		if ( type == 'Story' ) {
  			CardTypes[faceIndex] = 'Story';
@@ -1017,7 +988,7 @@ function layoutStoryStats( diy, bindings, faceIndex ) {
 	TemplateList.addActionListener( function updateTemplate( actionEvent ) {
 		let type = (String)(TemplateList.getSelectedItem());
 
-		updateCardType( diy, type, faceIndex, 'Story', '' );
+		updateCardType( diy, type, faceIndex, 'Story' );
 /*
 		if ( type == 'Story' ) {
  			CardTypes[faceIndex] = 'Story';
@@ -1057,7 +1028,7 @@ function layoutStoryBackStats( diy, bindings, faceIndex, selectBack ) {
 		try {
 			let type = (String)(BackList.getSelectedItem());
 
-			updateCardType( diy, type, faceIndex, 'Story', 'AHLCG-Story-Default-template' );
+			updateCardType( diy, type, faceIndex, 'Story' );
 /*
 			if ( type == 'Chaos' ) {
 	 			CardTypes[faceIndex] = 'StoryChaos';

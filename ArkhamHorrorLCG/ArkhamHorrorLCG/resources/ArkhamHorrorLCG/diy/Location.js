@@ -325,7 +325,7 @@ function paintBack( g, diy, sheet ) {
 		if ( $Copyright.length > 0 ) drawCopyright( g, diy, sheet, BackCopyright_box );
 	}
 	else {
-		drawBackTemplate( g, sheet );
+		drawBackTemplate( g, sheet, $BackTypeBack );
 	}
 }
 

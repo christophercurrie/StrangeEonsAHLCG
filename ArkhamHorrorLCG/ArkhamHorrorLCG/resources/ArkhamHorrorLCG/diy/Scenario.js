@@ -152,7 +152,7 @@ function createFrontPainter( diy, sheet ) {
 	Encounter_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_FRONT, 'EncounterNumber-style'), null);
 	Encounter_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_FRONT, 'EncounterNumber-alignment'));
 
-	updateCardType( diy, $Template, FACE_FRONT, 'Scenario', '' );
+	updateCardType( diy, $Template, FACE_FRONT, 'Scenario' );
 }
 
 function createBackPainter( diy, sheet ) {
@@ -193,7 +193,7 @@ function createBackPainter( diy, sheet ) {
 	BackEncounter_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_BACK, 'EncounterNumber-style'), null);
 	BackEncounter_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_BACK, 'EncounterNumber-alignment'));
 
-	updateCardType( diy, $TemplateBack, FACE_BACK, 'Scenario', '' );
+	updateCardType( diy, $TemplateBack, FACE_BACK, 'Scenario' );
 }
 
 function paintFront( g, diy, sheet ) {
