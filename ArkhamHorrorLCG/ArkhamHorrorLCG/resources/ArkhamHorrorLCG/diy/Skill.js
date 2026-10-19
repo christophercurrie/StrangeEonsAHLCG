@@ -196,11 +196,12 @@ function paintFront( g, diy, sheet ) {
         drawIcon = true;
         sheet.paintImage(
             g,
-            ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-Skill-EncounterSetOverlay.png'),
+            ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-Asset-EncounterSetOverlay.png'),
             diy.settings.getRegion('AHLCG-Skill-Encounter-overlay-region')
         );
     } else if ($CardClass == 'StoryWeakness'){
       drawIcon = true;
+      drawOverlay( g, diy, sheet, 'StoryWeaknessSkill' );
     }
 
     drawCollectorInfo(

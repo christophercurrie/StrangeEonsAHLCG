@@ -215,15 +215,23 @@ function drawEventTemplate( g, diy, sheet, className, className2, className3 ) {
 	}
 }
 
-// story assets use the asset art and story investigators use the neutral investigator art,
-// with the level and encounter set circles drawn separately
-function getClassTemplateName( faceIndex, className ) {
-	var type = CardTypes[faceIndex] == 'AssetStory' ? 'Asset' : CardTypes[faceIndex];
+// story cards are drawn on the neutral art and story weaknesses on the weakness art,
+// with the encounter set circle drawn separately
+function getArtClassInitial( faceIndex, className ) {
+	var type = CardTypes[faceIndex];
 	var classInitial = getClassInitial( className );
 
-	if ( classInitial == 'S' && ( type == 'Investigator' || type == 'InvestigatorBack' ) ) classInitial = 'N';
+	if ( classInitial == 'S' && ( type == 'Event' || type == 'Skill' || type == 'Investigator' || type == 'InvestigatorBack' ) ) return 'N';
+	if ( classInitial == 'SW' && ( type == 'Event' || type == 'Skill' ) ) return 'W';
 
-	return type + '-' + classInitial;
+	return classInitial;
+}
+
+// story assets use the asset art, with the level and encounter set circles drawn separately
+function getClassTemplateName( faceIndex, className ) {
+	var type = CardTypes[faceIndex] == 'AssetStory' ? 'Asset' : CardTypes[faceIndex];
+
+	return type + '-' + getArtClassInitial( faceIndex, className );
 }
 
 function drawStoryEncounterOverlay( g, diy, sheet ) {
@@ -2759,10 +2767,10 @@ function drawCost( g, diy, sheet ) {
 	var costRegion = diy.settings.getRegion( getExpandedKey( faceIndex, 'Cost-region' ) );
 
 	if ( cost == '-' ) {
-		if ( CardTypes[ faceIndex ] == 'AssetStory' || $CardClass == 'Weakness' || $CardClass == 'BasicWeakness' )
+		if ( CardTypes[ faceIndex ] == 'AssetStory' || $CardClass == 'BasicWeakness' || getArtClassInitial( faceIndex, $CardClass ) == 'W' )
 			drawDash( g, diy, sheet, costRegion, 0, 0 );
 		// the level circle overlay is centered on the cost region; older art is not
-		else if ( LevelCircleTypes[CardTypes[faceIndex]] && LevelCircleClasses[getClassInitial( $CardClass )] )
+		else if ( LevelCircleTypes[CardTypes[faceIndex]] && LevelCircleClasses[getArtClassInitial( faceIndex, $CardClass )] )
 			drawDash( g, diy, sheet, costRegion, 0, 0 );
 		else
 			drawDash( g, diy, sheet, costRegion, 2, 0 );
@@ -2793,7 +2801,7 @@ function paintLevelCircle( g, diy, sheet, classInitial, level ) {
 function drawWeaknessLevel( g, diy, sheet, className ) {
 	var faceIndex = sheet.getSheetIndex();
 
-	if ( LevelCircleTypes[CardTypes[faceIndex]] && getClassInitial( className ) == 'W' ) {
+	if ( LevelCircleTypes[CardTypes[faceIndex]] && getArtClassInitial( faceIndex, className ) == 'W' ) {
 		paintLevelCircle( g, diy, sheet, 'W', 'None' );
 	}
 }
@@ -2801,7 +2809,7 @@ function drawWeaknessLevel( g, diy, sheet, className ) {
 function drawLevel( g, diy, sheet, className ) {
 	var faceIndex = sheet.getSheetIndex();
 	var level = $( 'Level' + BindingSuffixes[faceIndex] );
-	var classInitial = getClassInitial( className );
+	var classInitial = getArtClassInitial( faceIndex, className );
 
 	if ( LevelCircleTypes[CardTypes[faceIndex]] && LevelCircleClasses[classInitial] ) {
 		paintLevelCircle( g, diy, sheet, classInitial, level );
@@ -2834,7 +2842,7 @@ function drawSkillIcons( g, diy, sheet, className ) {
 		let skillName = $( 'Skill' + index + BindingSuffixes[faceIndex] );
 
 		if ( skillName != 'None' ) {
-			sheet.paintImage( g, ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-SkillBox-' + getClassInitial( className ) + '.png'),
+			sheet.paintImage( g, ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-SkillBox-' + getArtClassInitial( faceIndex, className ) + '.png'),
 				diy.settings.getRegion( getExpandedKey( faceIndex, 'Skill' + index + '-region' ) ) );
 
 			if ( className == 'Weakness' || className == 'BasicWeakness' || className == 'StoryWeakness' ) {

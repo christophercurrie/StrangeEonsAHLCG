@@ -194,11 +194,12 @@ function paintFront( g, diy, sheet ) {
         drawIcon = true;
         sheet.paintImage(
             g,
-            ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-StoryEventOverlay.jp2'),
+            ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-Asset-EncounterSetOverlay.png'),
             diy.settings.getRegion( getExpandedKey( FACE_FRONT, 'Encounter-overlay-region' ) )
         );
     } else if ( $CardClass == 'StoryWeakness' ){
       drawIcon = true;
+      drawOverlay( g, diy, sheet, 'BasicWeaknessEvent' );
     }
 
 	drawCollectorInfo(
