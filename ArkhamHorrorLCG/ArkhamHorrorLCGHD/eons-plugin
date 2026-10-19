@@ -1,0 +1,13 @@
+#
+# Arkham Horror LCG HD templates Root File
+#
+
+id = CATALOGUEID{0ec872c5-d29e-488b-a34d-ca60c1065b23:2026-9-19-4-19-42-608}
+
+priority = LOW
+
+catalog-game = AHLCG
+catalog-requires = \
+    CATALOGUEID{0b899f3c-78ae-40b8-bcfc-b06479b1f136:2026-9-17-5-53-37-279}
+
+res://ArkhamHorrorLCG/ArkhamHorrorLCGHD.js
