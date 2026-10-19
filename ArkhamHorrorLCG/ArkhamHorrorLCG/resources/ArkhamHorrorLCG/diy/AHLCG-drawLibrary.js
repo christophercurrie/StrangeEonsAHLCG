@@ -20,7 +20,7 @@ function drawTemplate( g, sheet, className ) {
 	}
 
 	if ( className != null && className.length > 0 ) {
-		name = getSubtitledTemplateName( faceIndex, CardTypes[faceIndex] + '-' + getClassInitial( className ) );
+		name = getSubtitledTemplateName( faceIndex, getClassTemplateName( faceIndex, className ) );
 	}
 	else if ( CardTypes[faceIndex] == 'StoryChaos' || CardTypes[faceIndex] == 'ChaosStory' ) {
 		name = 'Chaos';
@@ -215,6 +215,26 @@ function drawEventTemplate( g, diy, sheet, className, className2, className3 ) {
 	}
 }
 
+// story assets use the asset art, with the level and encounter set circles drawn separately
+function getClassTemplateName( faceIndex, className ) {
+	var type = CardTypes[faceIndex] == 'AssetStory' ? 'Asset' : CardTypes[faceIndex];
+
+	return type + '-' + getClassInitial( className );
+}
+
+function drawStoryAssetOverlays( g, diy, sheet, className ) {
+	var faceIndex = sheet.getSheetIndex();
+
+	if ( useReplacementTemplate( faceIndex ) ) return;
+
+	var classInitial = getClassInitial( className );
+	var overlay = classInitial == 'W' ? 'BasicWeaknessAsset' : 'Asset-EncounterSetOverlay';
+
+	paintLevelCircle( g, diy, sheet, classInitial, 'None' );
+	sheet.paintImage( g, ImageUtils.get( 'ArkhamHorrorLCG/overlays/AHLCG-' + overlay + '.png' ),
+		diy.settings.getRegion( getExpandedKey( faceIndex, 'Encounter-overlay-region' ) ) );
+}
+
 function hasTemplate( name ) {
 	return $( getTemplateKey( name ) ) != null;
 }
@@ -229,7 +249,7 @@ function getSubtitledTemplateName( faceIndex, name ) {
 }
 
 function hasSubtitleTemplate( faceIndex, className ) {
-	return !useReplacementTemplate( faceIndex ) && hasTemplate( CardTypes[faceIndex] + '-' + getClassInitial( className ) + 'S' );
+	return !useReplacementTemplate( faceIndex ) && hasTemplate( getClassTemplateName( faceIndex, className ) + 'S' );
 }
 
 function useReplacementTemplate( faceIndex ) {
@@ -2722,9 +2742,7 @@ function drawCost( g, diy, sheet ) {
 	var costRegion = diy.settings.getRegion( getExpandedKey( faceIndex, 'Cost-region' ) );
 
 	if ( cost == '-' ) {
-		if ( CardTypes[ faceIndex ] == 'AssetStory' )
-			drawDash( g, diy, sheet, costRegion, 0, -2 );
-		else if ( $CardClass == 'Weakness' || $CardClass == 'BasicWeakness' )
+		if ( CardTypes[ faceIndex ] == 'AssetStory' || $CardClass == 'Weakness' || $CardClass == 'BasicWeakness' )
 			drawDash( g, diy, sheet, costRegion, 0, 0 );
 		// the level circle overlay is centered on the cost region; older art is not
 		else if ( LevelCircleTypes[CardTypes[faceIndex]] && LevelCircleClasses[getClassInitial( $CardClass )] )

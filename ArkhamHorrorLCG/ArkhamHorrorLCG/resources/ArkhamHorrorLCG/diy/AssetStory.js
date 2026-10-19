@@ -169,6 +169,7 @@ function paintFront( g, diy, sheet ) {
 	PortraitList[getPortraitIndex( 'Portrait' )].paint( g, sheet.getRenderTarget() );
 
 	drawTemplate( g, sheet, $CardClass );
+	drawStoryAssetOverlays( g, diy, sheet, $CardClass );
 
 	drawLabel( g, diy, sheet, Label_box, #AHLCG-Label-Asset );
 	drawName( g, diy, sheet, Name_box );

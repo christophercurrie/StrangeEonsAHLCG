@@ -249,6 +249,7 @@ function paintBack( g, diy, sheet ) {
 	PortraitList[getPortraitIndex( 'BackPortrait' )].paint( g, sheet.getRenderTarget() );
 
 	drawTemplate( g, sheet, $CardClassBack );
+	drawStoryAssetOverlays( g, diy, sheet, $CardClassBack );
 	drawLabel( g, diy, sheet, BackLabel_box, #AHLCG-Label-Asset );
 	drawName( g, diy, sheet, BackName_box );
 
