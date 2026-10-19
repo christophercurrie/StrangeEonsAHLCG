@@ -26,8 +26,8 @@ AHLCG-Scenario-BackPortrait-portrait-template = ArkhamHorrorLCG/default-portrait
 AHLCG-Scenario-BackPortrait-portrait-pany = 0
 AHLCG-Scenario-BackPortrait-portrait-clip-region = -18,-18,411,561
 
-AHLCG-Scenario-PageOdd-region = 179,479,20,32
-AHLCG-Scenario-PageEven-region = 179,479,20,32
+AHLCG-Scenario-PageOdd-region = 177,479,21,32
+AHLCG-Scenario-PageEven-region = 177,479,21,32
 AHLCG-Scenario-Page-alignment = center, middle
 AHLCG-Scenario-Page-style = FAMILY: {Eons.namedObjects.AHLCGObject.skillFamily}; SIZE: 8.1; WEIGHT: WEIGHT_MEDIUM; WIDTH: 0.98; FOREGROUND: #000000
 
