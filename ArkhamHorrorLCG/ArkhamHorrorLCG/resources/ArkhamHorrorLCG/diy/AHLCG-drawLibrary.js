@@ -2726,6 +2726,9 @@ function drawCost( g, diy, sheet ) {
 			drawDash( g, diy, sheet, costRegion, 0, -2 );
 		else if ( $CardClass == 'Weakness' || $CardClass == 'BasicWeakness' )
 			drawDash( g, diy, sheet, costRegion, 0, 0 );
+		// the level circle overlay is centered on the cost region; older art is not
+		else if ( LevelCircleTypes[CardTypes[faceIndex]] && LevelCircleClasses[getClassInitial( $CardClass )] )
+			drawDash( g, diy, sheet, costRegion, 0, 0 );
 		else
 			drawDash( g, diy, sheet, costRegion, 2, 0 );
 	}
