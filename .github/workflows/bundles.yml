@@ -1,0 +1,54 @@
+name: Bundles
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bundles-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build bundles
+        run: |
+          python3 .github/scripts/build_bundles.py -o dist \
+            ArkhamHorrorLCG/ArkhamHorrorLCG \
+            ArkhamHorrorLCG/ArkhamHorrorLCGHD
+
+      # tags get a versioned release; branches get a rolling prerelease
+      # that is replaced on each commit
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          if [ "$REF_TYPE" = tag ]; then
+            tag="$REF_NAME"
+            title="$REF_NAME"
+            flags=()
+          else
+            tag="latest-${REF_NAME//\//-}"
+            title="Latest build ($REF_NAME)"
+            flags=(--prerelease)
+            gh release delete "$tag" --cleanup-tag --yes || true
+          fi
+          gh release create "$tag" dist/*.seext \
+            --target "$GITHUB_SHA" \
+            --title "$title" \
+            --notes "Built from ${GITHUB_SHA::7}." \
+            "${flags[@]}"
