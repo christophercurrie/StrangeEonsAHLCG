@@ -215,11 +215,24 @@ function drawEventTemplate( g, diy, sheet, className, className2, className3 ) {
 	}
 }
 
-// story assets use the asset art, with the level and encounter set circles drawn separately
+// story assets use the asset art and story investigators use the neutral investigator art,
+// with the level and encounter set circles drawn separately
 function getClassTemplateName( faceIndex, className ) {
 	var type = CardTypes[faceIndex] == 'AssetStory' ? 'Asset' : CardTypes[faceIndex];
+	var classInitial = getClassInitial( className );
 
-	return type + '-' + getClassInitial( className );
+	if ( classInitial == 'S' && ( type == 'Investigator' || type == 'InvestigatorBack' ) ) classInitial = 'N';
+
+	return type + '-' + classInitial;
+}
+
+function drawStoryEncounterOverlay( g, diy, sheet ) {
+	var faceIndex = sheet.getSheetIndex();
+
+	if ( useReplacementTemplate( faceIndex ) ) return;
+
+	sheet.paintImage( g, ImageUtils.get( 'ArkhamHorrorLCG/overlays/AHLCG-Asset-EncounterSetOverlay.png' ),
+		diy.settings.getRegion( getExpandedKey( faceIndex, 'Encounter-overlay-region' ) ) );
 }
 
 function drawStoryAssetOverlays( g, diy, sheet, className ) {
@@ -228,11 +241,15 @@ function drawStoryAssetOverlays( g, diy, sheet, className ) {
 	if ( useReplacementTemplate( faceIndex ) ) return;
 
 	var classInitial = getClassInitial( className );
-	var overlay = classInitial == 'W' ? 'BasicWeaknessAsset' : 'Asset-EncounterSetOverlay';
 
 	paintLevelCircle( g, diy, sheet, classInitial, 'None' );
-	sheet.paintImage( g, ImageUtils.get( 'ArkhamHorrorLCG/overlays/AHLCG-' + overlay + '.png' ),
-		diy.settings.getRegion( getExpandedKey( faceIndex, 'Encounter-overlay-region' ) ) );
+	if ( classInitial == 'W' ) {
+		sheet.paintImage( g, ImageUtils.get( 'ArkhamHorrorLCG/overlays/AHLCG-BasicWeaknessAsset.png' ),
+			diy.settings.getRegion( getExpandedKey( faceIndex, 'Encounter-overlay-region' ) ) );
+	}
+	else {
+		drawStoryEncounterOverlay( g, diy, sheet );
+	}
 }
 
 function hasTemplate( name ) {

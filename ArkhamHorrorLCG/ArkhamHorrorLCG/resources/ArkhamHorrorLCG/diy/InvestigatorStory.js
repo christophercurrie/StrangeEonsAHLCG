@@ -201,6 +201,7 @@ function paintFront( g, diy, sheet ) {
 	clearImage( g, sheet );
 
 	drawTemplate( g, sheet, 'Story' );
+	drawStoryEncounterOverlay( g, diy, sheet );
 
 	drawFadedPortrait( g, diy, sheet, 'TransparentPortrait', 'Investigator' );
 
@@ -225,6 +226,7 @@ function paintBack( g, diy, sheet ) {
 	PortraitList[getPortraitIndex( 'Portrait' )].paint( g, sheet.getRenderTarget() );
 
 	drawTemplate( g, sheet, 'Story' );
+	drawStoryEncounterOverlay( g, diy, sheet );
 
 	drawName( g, diy, sheet, BackName_box );
 
