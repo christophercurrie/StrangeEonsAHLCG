@@ -20,11 +20,7 @@ function drawTemplate( g, sheet, className ) {
 	}
 
 	if ( className != null && className.length > 0 ) {
-		// asset basic weaknesses should use the AssetStory template
-		if ( CardTypes[faceIndex] == 'Asset' && className == 'BasicWeakness' )
-			name = 'AssetStory-' + getClassInitial( className );
-		else
-			name = CardTypes[faceIndex] + '-' + getClassInitial( className );
+		name = getSubtitledTemplateName( faceIndex, CardTypes[faceIndex] + '-' + getClassInitial( className ) );
 	}
 	else if ( CardTypes[faceIndex] == 'StoryChaos' || CardTypes[faceIndex] == 'ChaosStory' ) {
 		name = 'Chaos';
@@ -84,7 +80,7 @@ function drawAssetTemplate( g, diy, sheet, className, className2, className3 ) {
 	}
 
 	// dual class
-	paintFullBleed( g, sheet, getTemplateKey( CardTypes[faceIndex] + '-D' ) );
+	paintFullBleed( g, sheet, getTemplateKey( getSubtitledTemplateName( faceIndex, CardTypes[faceIndex] + '-D' ) ) );
 
 	// draw class icons
 	var classInitials = [ getClassInitial( className ), null, null ];
@@ -217,6 +213,23 @@ function drawEventTemplate( g, diy, sheet, className, className2, className3 ) {
 
 		sheet.paintImage( g, symbolImage, symbolRegion );
 	}
+}
+
+function hasTemplate( name ) {
+	return $( getTemplateKey( name ) ) != null;
+}
+
+// templates with the subtitle bar drawn in are named with an S suffix
+function getSubtitledTemplateName( faceIndex, name ) {
+	var subtitle = $( 'Subtitle' + BindingSuffixes[faceIndex] );
+
+	if ( subtitle == null || String( subtitle ).length == 0 ) return name;
+
+	return hasTemplate( name + 'S' ) ? name + 'S' : name;
+}
+
+function hasSubtitleTemplate( faceIndex, className ) {
+	return !useReplacementTemplate( faceIndex ) && hasTemplate( CardTypes[faceIndex] + '-' + getClassInitial( className ) + 'S' );
 }
 
 function useReplacementTemplate( faceIndex ) {
@@ -734,7 +747,7 @@ function drawSubtitle( g, diy, sheet, subtitleBox, className, drawBox ) {
 		subtitleBox.alignment = diy.settings.getTextAlignment(getExpandedKey(faceIndex, 'Subtitle-alignment'));
 	}
 
-	if ( drawBox ) {
+	if ( drawBox && !hasSubtitleTemplate( faceIndex, className ) ) {
 		var image = ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-Subtitle-' + getClassInitial( className )  + '.png');
 
 		var region = diy.settings.getRegion( getExpandedKey( faceIndex, 'Subtitle' + getClassInitial( className ) + '-region' ) );
@@ -2724,9 +2737,38 @@ function drawCost( g, diy, sheet ) {
 	}
 }
 
+// player card art without the level circle drawn in, which is painted as an overlay
+var LevelCircleTypes = { 'Asset': true, 'Event': true, 'Skill': true };
+var LevelCircleClasses = { 'D': true, 'G': true, 'K': true, 'M': true, 'N': true, 'P': true, 'R': true, 'V': true };
+
+function paintLevelCircle( g, diy, sheet, classInitial, level ) {
+	var faceIndex = sheet.getSheetIndex();
+
+	// skills share one circle below the class symbol, except specialist skills, which have no symbol
+	var circle = ( CardTypes[faceIndex] == 'Skill' && classInitial != 'P' ) ? 'Skill' : classInitial;
+
+	sheet.paintImage( g, ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-LevelCircle-' + circle + '-' + level + '.png'),
+		diy.settings.getRegion( getExpandedKey( faceIndex, 'LevelCircle-region' ) ) );
+}
+
+// weakness art without the unleveled circle drawn in
+function drawWeaknessLevel( g, diy, sheet, className ) {
+	var faceIndex = sheet.getSheetIndex();
+
+	if ( LevelCircleTypes[CardTypes[faceIndex]] && getClassInitial( className ) == 'W' ) {
+		paintLevelCircle( g, diy, sheet, 'W', 'None' );
+	}
+}
+
 function drawLevel( g, diy, sheet, className ) {
 	var faceIndex = sheet.getSheetIndex();
 	var level = $( 'Level' + BindingSuffixes[faceIndex] );
+	var classInitial = getClassInitial( className );
+
+	if ( LevelCircleTypes[CardTypes[faceIndex]] && LevelCircleClasses[classInitial] ) {
+		paintLevelCircle( g, diy, sheet, classInitial, level );
+		return;
+	}
 
 	if (level == 'None') {
 		if ( CardTypes[ faceIndex] == 'Skill' ) {

@@ -251,9 +251,12 @@ function paintFront( g, diy, sheet ) {
 	if ( cClass != 'Dual' && $Subtitle.length > 0 ) drawSubtitle( g, diy, sheet, Subtitle_box, cClass, true );
 
 	if ($CardClass == 'Weakness' ) {
+		drawWeaknessLevel( g, diy, sheet, $CardClass );
 		drawSubtype( g, diy, sheet, Subtype_box, #AHLCG-Label-Weakness );
 	}
 	else if ($CardClass == 'BasicWeakness' ) {
+		drawWeaknessLevel( g, diy, sheet, $CardClass );
+		drawOverlay( g, diy, sheet, 'BasicWeaknessAsset' );
 		drawSubtype( g, diy, sheet, Subtype_box, #AHLCG-Label-BasicWeakness );
 	}
 	else {
@@ -292,9 +295,12 @@ function paintBack( g, diy, sheet ) {
 	if ( $SubtitleBack.length > 0 ) drawSubtitle( g, diy, sheet, BackSubtitle_box, cClass, true );
 
 	if ($CardClassBack == 'Weakness' ) {
+		drawWeaknessLevel( g, diy, sheet, $CardClassBack );
 		drawSubtype( g, diy, sheet, BackSubtype_box, #AHLCG-Label-Weakness );
 	}
 	else if ($CardClassBack == 'BasicWeakness' ) {
+		drawWeaknessLevel( g, diy, sheet, $CardClassBack );
+		drawOverlay( g, diy, sheet, 'BasicWeaknessAsset' );
 		drawSubtype( g, diy, sheet, BackSubtype_box, #AHLCG-Label-BasicWeakness );
 	}
 	else {

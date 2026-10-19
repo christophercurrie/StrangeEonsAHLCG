@@ -35,12 +35,12 @@ AHLCG-Copyright-alignment = center, middle
 
 AHLCG-Level-region = 14,36,48,23
 AHLCG-NoLevel-region = 8,5,60,58
-AHLCG-Skill1-region = 0,80,54,44
-AHLCG-Skill2-region = 0,122,54,44
-AHLCG-Skill3-region = 0,164,54,44
-AHLCG-Skill4-region = 0,206,54,44
-AHLCG-Skill5-region = 0,248,54,44
-AHLCG-Skill6-region = 0,290,54,44
+AHLCG-Skill1-region = -18,80,72,44
+AHLCG-Skill2-region = -18,122,72,44
+AHLCG-Skill3-region = -18,164,72,44
+AHLCG-Skill4-region = -18,206,72,44
+AHLCG-Skill5-region = -18,248,72,44
+AHLCG-Skill6-region = -18,290,72,44
 AHLCG-SkillIcon1-region = 13,87,25,26
 AHLCG-SkillIcon2-region = 13,129,25,26
 AHLCG-SkillIcon3-region = 13,171,25,26
@@ -380,3 +380,5 @@ LocStar-tag = lsta
 LocQuote-tag = lquo
 LocClover-tag = lclo
 LocSpade-tag = lspa
+
+AHLCG-LevelCircle-region = 8,5,60,58

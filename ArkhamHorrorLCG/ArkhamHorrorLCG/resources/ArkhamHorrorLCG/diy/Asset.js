@@ -167,9 +167,12 @@ function paintFront( g, diy, sheet ) {
 	if ( $Subtitle.length > 0 ) drawSubtitle( g, diy, sheet, Subtitle_box, cClass, true );
 
 	if ($CardClass == 'Weakness' ) {
+		drawWeaknessLevel( g, diy, sheet, $CardClass );
 		drawSubtype( g, diy, sheet, Subtype_box, #AHLCG-Label-Weakness );
 	}
 	else if ($CardClass == 'BasicWeakness' ) {
+		drawWeaknessLevel( g, diy, sheet, $CardClass );
+		drawOverlay( g, diy, sheet, 'BasicWeaknessAsset' );
 		drawBasicWeaknessIcon( g, diy, sheet );
 		drawSubtype( g, diy, sheet, Subtype_box, #AHLCG-Label-BasicWeakness );
 	}

@@ -160,25 +160,30 @@ function paintFront( g, diy, sheet ) {
 	drawLabel( g, diy, sheet, Label_box, #AHLCG-Label-Event );
 	drawName( g, diy, sheet, Name_box );
 
+	var cClass = $CardClass;
+	if ( getClassCount( $CardClass, $CardClass2, $CardClass3 ) > 1 ) cClass = 'Dual';
+
 	var subtypeRegion = diy.settings.getRegion( getExpandedKey( FACE_FRONT, 'Subtype-region' ) );
 	if ( Eons.namedObjects.AHLCGObject.bodyFamily == 'Times New Roman' ) subtypeRegion.y -= 2;
 
 	if ($CardClass == 'Weakness' || $CardClass == 'StoryWeakness' ) {
+		drawWeaknessLevel( g, diy, sheet, $CardClass );
 		drawSubtype( g, diy, sheet, Subtype_box, #AHLCG-Label-Weakness );
 	}
 	else if ($CardClass == 'BasicWeakness' ) {
+		drawWeaknessLevel( g, diy, sheet, $CardClass );
 		drawSubtype( g, diy, sheet, Subtype_box, #AHLCG-Label-BasicWeakness );
 
 		drawOverlay( g, diy, sheet, 'BasicWeaknessEvent' );
 		drawBasicWeaknessIcon( g, diy, sheet );
 	}
 	else {
-		drawLevel( g, diy, sheet, $CardClass );
+		drawLevel( g, diy, sheet, cClass );
 	}
 
 	drawCost( g, diy, sheet );
 
-	drawSkillIcons( g, diy, sheet, $CardClass );
+	drawSkillIcons( g, diy, sheet, cClass );
 
 	var regionName = 'Body';
 	if ( $CardClass == 'Weakness' || $CardClass == 'BasicWeakness' || $CardClass == 'StoryWeakness') regionName = 'WeaknessBody';

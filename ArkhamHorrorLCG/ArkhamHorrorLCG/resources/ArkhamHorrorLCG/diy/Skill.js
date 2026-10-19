@@ -164,6 +164,7 @@ function paintFront( g, diy, sheet ) {
 	drawName( g, diy, sheet, Name_box );
 
 	if ($CardClass == 'Weakness' ) {
+		drawWeaknessLevel( g, diy, sheet, $CardClass );
 		drawSubtype( g, diy, sheet, Subtype_box, #AHLCG-Label-Weakness );
 	}
 	else if ($CardClass == 'StoryWeakness' ) {
@@ -172,6 +173,7 @@ function paintFront( g, diy, sheet ) {
 		drawSubtype( g, diy, sheet, Subtype_box, #AHLCG-Label-Weakness );
 	}
 	else if ($CardClass == 'BasicWeakness' ) {
+		drawWeaknessLevel( g, diy, sheet, $CardClass );
 		drawSubtype( g, diy, sheet, Subtype_box, #AHLCG-Label-BasicWeakness );
 
 		drawOverlay( g, diy, sheet, 'BasicWeaknessSkill' );
