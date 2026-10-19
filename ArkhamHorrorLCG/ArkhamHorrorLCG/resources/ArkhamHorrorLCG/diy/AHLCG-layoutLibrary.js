@@ -231,6 +231,7 @@ function layoutAgendaStats( diy, bindings, faceIndex, portraitPanels ) {
 	// update portrait region, text box shape
 	orientationList.addActionListener( function updatePosition( actionEvent ) {
 		try {
+			let index = getPortraitIndex( 'Portrait' );
 			updateOrientation( diy, portraitPanels[index].portrait, (String)(orientationList.getSelectedItem()), 'Agenda' );
 		} catch ( ex if ex instanceof ReferenceError ) {
 			// means Body_box has not been created yet (during createInterface)
