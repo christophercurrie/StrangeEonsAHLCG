@@ -3,10 +3,10 @@ AHLCG-Customizable-Default-bleed-margin = 8.64
 AHLCG-CustomizableBack-Default-template = ArkhamHorrorLCG/templates/AHLCG-CustomizableBack.jp2
 AHLCG-CustomizableBack-Default-bleed-margin = 8.64
 
-AHLCG-Customizable-Name-region = 34,33,310,34
-AHLCG-Customizable-Label-region = 155,509,65,14
+AHLCG-Customizable-Name-region = 34,36,310,34
+AHLCG-Customizable-Label-region = 155,503,65,14
 AHLCG-Customizable-Label-alignment = center, middle
-AHLCG-Customizable-Label-style = FAMILY: {Eons.namedObjects.AHLCGObject.typeFamily}; SIZE: {Eons.namedObjects.AHLCGObject.smallLabelSize*1.15}; WEIGHT: {Eons.namedObjects.AHLCGObject.largeLabelWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.largeLabelWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.largeLabelTracking}; FOREGROUND: #000000
+AHLCG-Customizable-Label-style = FAMILY: {Eons.namedObjects.AHLCGObject.typeFamily}; SIZE: {Eons.namedObjects.AHLCGObject.smallLabelSize*1.2}; WEIGHT: WEIGHT_REGULAR; WIDTH: {Eons.namedObjects.AHLCGObject.largeLabelWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.largeLabelTracking}; FOREGROUND: #000000
 
 AHLCG-Customizable-Body-region = 32,99,316,387
 AHLCG-Customizable-Body-style = FAMILY: {Eons.namedObjects.AHLCGObject.bodyFamily}; SIZE: {Eons.namedObjects.AHLCGObject.bodyFontSize*0.94}; WEIGHT: {Eons.namedObjects.AHLCGObject.bodyFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.bodyFontWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.bodyFontTracking}; FOREGROUND: #000000

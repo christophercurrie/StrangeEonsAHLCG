@@ -9,4 +9,5 @@ open-folders = \
     rkhamHorrorLCG/text
 notes = 
 res-id = tim
-type = TASKGROUP
+type = PROJECT
+
