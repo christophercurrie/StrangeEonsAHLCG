@@ -560,9 +560,10 @@ function drawName( g, diy, sheet, nameBox, cClass ) {
 		}
 
 		region.y += parseInt(Eons.namedObjects.AHLCGObject.titleFontOffset);
-		if ( CardTypes[faceIndex] == 'Event' && $CardClass == 'Neutral' ) region.y -= 2;
-		if ( CardTypes[faceIndex] == 'Event' && ( $CardClass == 'Weakness' || $CardClass == 'BasicWeakness' )) region.y -= 3;
-		if ( CardTypes[faceIndex] == 'Skill' && ( $CardClass == 'Weakness' || $CardClass == 'BasicWeakness' )) region.y -= 1;
+		var artClass = getArtClassInitial( faceIndex, $CardClass );
+		if ( CardTypes[faceIndex] == 'Event' && artClass == 'W' ) region.y -= 3;
+		else if ( CardTypes[faceIndex] == 'Event' && ( artClass == 'N' || ( LevelCircleClasses[artClass] && !useReplacementTemplate( faceIndex ) ) ) ) region.y -= 2;
+		if ( CardTypes[faceIndex] == 'Skill' && artClass == 'W' ) region.y -= 1;
 		if ( $Orientation == 'Reversed' ) region = reverseRegion( region );
 
 		if ( CardTypes[faceIndex] == 'Asset' ) {
