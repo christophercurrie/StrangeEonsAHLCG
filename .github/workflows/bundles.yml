@@ -23,6 +23,9 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Test build script
+        run: python3 -m unittest discover -s .github/scripts
+
       - name: Build bundles
         run: |
           python3 .github/scripts/build_bundles.py -o dist \

@@ -9,7 +9,9 @@ are skipped, matching the Make Bundle task.
 
 import argparse
 import fnmatch
+import shutil
 import sys
+import tempfile
 import zipfile
 from pathlib import Path
 
@@ -37,9 +39,10 @@ def build(task, output):
     if not (task / 'eons-plugin').is_file():
         raise ValueError(f'{task} has no eons-plugin root file')
     output.parent.mkdir(parents=True, exist_ok=True)
-    with open(output, 'wb') as out:
-        out.write(WEB_SAFE_MARKER)
-        with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as bundle:
+    # Strange Eons strips the marker before opening the archive, so ZIP
+    # offsets must be relative to the end of the marker, not the file start
+    with tempfile.TemporaryFile() as archive:
+        with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as bundle:
             for path in members(task):
                 rel = path.relative_to(task)
                 if rel == Path(TASK_SETTINGS):
@@ -48,6 +51,10 @@ def build(task, output):
                     bundle.writestr(rel.as_posix() + '/', b'')
                 else:
                     bundle.write(path, rel.as_posix())
+        archive.seek(0)
+        with open(output, 'wb') as out:
+            out.write(WEB_SAFE_MARKER)
+            shutil.copyfileobj(archive, out)
     return output
 
 
