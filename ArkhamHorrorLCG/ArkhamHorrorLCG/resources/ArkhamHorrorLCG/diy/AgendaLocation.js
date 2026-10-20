@@ -226,7 +226,7 @@ function createBackPainter( diy, sheet ) {
 function paintFront( g, diy, sheet ) {
 	clearImage( g, sheet );
 
-	PortraitList[getPortraitIndex( 'Portrait' )].paint( g, sheet.getRenderTarget() );
+	paintPortrait( g, diy, sheet, 'Portrait' );
 
 	drawTemplate( g, sheet, '' );
 
@@ -245,7 +245,7 @@ function paintFront( g, diy, sheet ) {
 function paintBack( g, diy, sheet ) {
 	clearImage( g, sheet );
 
-	PortraitList[getPortraitIndex( 'BackPortrait' )].paint( g, sheet.getRenderTarget() );
+	paintPortrait( g, diy, sheet, 'BackPortrait' );
 
 	if ( $SubtitleBack.length > 0) drawSubtitleTemplate( g, sheet, '' );
 	else drawTemplate( g, sheet, '' );

@@ -335,7 +335,7 @@ function paintFront( g, diy, sheet ) {
 function paintBack( g, diy, sheet ) {
 	clearImage( g, sheet );
 
-	PortraitList[getPortraitIndex( 'BackPortrait' )].paint( g, sheet.getRenderTarget() );
+	paintPortrait( g, diy, sheet, 'BackPortrait' );
 
 	drawTemplate( g, sheet, $CardClassBack );
 	drawStoryAssetOverlays( g, diy, sheet, $CardClassBack );

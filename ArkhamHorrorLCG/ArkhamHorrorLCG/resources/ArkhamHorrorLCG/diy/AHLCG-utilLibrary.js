@@ -515,6 +515,106 @@ function paintFullBleed( g, sheet, key, mirror ) {
 	sheet.paintImage( g, source, new Region( -bleed, -bleed, image.getWidth(), image.getHeight() ) );
 }
 
+// paints a portrait; with the Mirror edges portrait bleed preference, image edges that
+// reach the trim edge are extended into the bleed by mirroring the image across them
+function paintPortrait( g, diy, sheet, name ) {
+	var portrait = PortraitList[getPortraitIndex( name )];
+	var image = portrait.getImage();
+	var bleed = getBleedPixels( sheet );
+
+	if ( Settings.getUser().get( 'AHLCG-PortraitBleed', 'None' ) != 'MirrorEdges' || bleed == 0
+			|| image == null || portrait.getRotation() != 0 ) {
+		portrait.paint( g, sheet.getRenderTarget() );
+		return;
+	}
+
+	var clip = diy.settings.getRegion( portrait.getBaseKey() + '-portrait-clip' );
+	var scale = portrait.getScale();
+	var trimWidth = sheet.getTemplateWidth() - 2 * bleed;
+	var trimHeight = sheet.getTemplateHeight() - 2 * bleed;
+
+	// image bounds as DefaultPortrait paints them
+	var w = Math.floor( image.getWidth() * scale + 0.5 );
+	var h = Math.floor( image.getHeight() * scale + 0.5 );
+	var x = Math.floor( clip.getCenterX() - image.getWidth() * scale / 2 + portrait.getPanX() );
+	var y = Math.floor( clip.getCenterY() - image.getHeight() * scale / 2 + portrait.getPanY() );
+
+	var pad = getPortraitBleedPadding( x, y, w, h, clip, trimWidth, trimHeight, w / image.getWidth(), h / image.getHeight() );
+	if ( pad == null ) {
+		portrait.paint( g, sheet.getRenderTarget() );
+		return;
+	}
+
+	var extended = mirrorImageEdges( image, pad );
+	var sx = w / image.getWidth();
+	var sy = h / image.getHeight();
+
+	var oldClip = g.getClip();
+	if ( portrait.getClipping() ) g.clip( clip );
+	if ( portrait.isBackgroundFilled() ) {
+		g.setPaint( Color.WHITE );
+		g.fillRect( clip.x, clip.y, clip.width, clip.height );
+	}
+	var xform = java.awt.geom.AffineTransform.getTranslateInstance( x - pad.left * sx, y - pad.top * sy );
+	xform.scale( sx, sy );
+	g.drawImage( extended, xform, null );
+	g.setClip( oldClip );
+}
+
+// source pixels to add on each side of a portrait image whose scaled bounds (x, y, w, h)
+// reach the trim edge (within a pixel) but stop short of where the clip region ends in
+// the bleed, or null if no edge qualifies
+function getPortraitBleedPadding( x, y, w, h, clip, trimWidth, trimHeight, sx, sy ) {
+	const tolerance = 1;
+	var pad = { left: 0, top: 0, right: 0, bottom: 0 };
+	var right = x + w;
+	var bottom = y + h;
+
+	if ( x <= tolerance && clip.x < x ) pad.left = Math.ceil( ( x - clip.x ) / sx );
+	if ( y <= tolerance && clip.y < y ) pad.top = Math.ceil( ( y - clip.y ) / sy );
+	if ( right >= trimWidth - tolerance && clip.x + clip.width > right )
+		pad.right = Math.ceil( ( clip.x + clip.width - right ) / sx );
+	if ( bottom >= trimHeight - tolerance && clip.y + clip.height > bottom )
+		pad.bottom = Math.ceil( ( clip.y + clip.height - bottom ) / sy );
+
+	if ( pad.left + pad.top + pad.right + pad.bottom == 0 ) return null;
+	return pad;
+}
+
+// copy of image extended outward by pad pixels on each side by mirroring the image
+// across its edges
+function mirrorImageEdges( image, pad ) {
+	var w = image.getWidth();
+	var h = image.getHeight();
+	var result = ImageUtils.create( w + pad.left + pad.right, h + pad.top + pad.bottom, true );
+	var g = result.createGraphics();
+	try {
+		var l = pad.left, t = pad.top, r = l + w, b = t + h;
+		var R = result.getWidth(), B = result.getHeight();
+
+		// source span next to each edge: as much image as the mirror fills, up to all of it
+		var sl = Math.min( l, w );
+		var sr = Math.min( R - r, w );
+		var st = Math.min( t, h );
+		var sb = Math.min( B - b, h );
+
+		g.drawImage( image, l, t, null );
+		// edges; reversed source coordinates flip the image
+		g.drawImage( image, 0, t, l, b, sl, 0, 0, h, null );
+		g.drawImage( image, r, t, R, b, w, 0, w - sr, h, null );
+		g.drawImage( image, l, 0, r, t, 0, st, w, 0, null );
+		g.drawImage( image, l, b, r, B, 0, h, w, h - sb, null );
+		// corners
+		g.drawImage( image, 0, 0, l, t, sl, st, 0, 0, null );
+		g.drawImage( image, r, 0, R, t, w, st, w - sr, 0, null );
+		g.drawImage( image, 0, b, l, B, sl, h, 0, h - sb, null );
+		g.drawImage( image, r, b, R, B, w, h, w - sr, h - sb, null );
+	} finally {
+		g.dispose();
+	}
+	return result;
+}
+
 function getForceDisplay( key ) {
 	var forceDisplay = false;
 

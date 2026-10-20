@@ -157,7 +157,7 @@ function paintFront( g, diy, sheet ) {
 	diy.settings.reset('AHLCG-Skill-DefaultEncounter-portrait-clip-region');
     diy.settings.reset('AHLCG-Skill-DefaultReturnEncounter-portrait-clip-region');
 
-	PortraitList[getPortraitIndex( 'Portrait' )].paint( g, sheet.getRenderTarget() );
+	paintPortrait( g, diy, sheet, 'Portrait' );
 
 	drawTemplate( g, sheet, $CardClass );
 	drawLabel( g, diy, sheet, Label_box, #AHLCG-Label-Skill );

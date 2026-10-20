@@ -177,6 +177,12 @@ function createSetData() {
 				this.dcComboBox = comboBox( itemArray );
 				this.dcComboBox.setPreferredSize( boxSize );
 
+				this.pbComboBox = comboBox( [
+					ListItem( 'None', @AHLCG-Pref-PortraitBleed-None ),
+					ListItem( 'MirrorEdges', @AHLCG-Pref-PortraitBleed-MirrorEdges )
+				] );
+				this.pbComboBox.setPreferredSize( boxSize );
+
 				// font controls
 				var fontArray = createFontData();
 
@@ -313,6 +319,10 @@ try {
 	pc.label( @AHLCG-Pref-DefaultCollection );
 	pc.join();
 	pc.addUnmanagedControl( data.dcComboBox );
+
+	pc.label( @AHLCG-Pref-PortraitBleed );
+	pc.join();
+	pc.addUnmanagedControl( data.pbComboBox );
 	
 	data.seTableModel.addTableModelListener( eTableListener );
 	data.ueTableModel.addTableModelListener( eTableListener );
@@ -683,6 +693,8 @@ function loadAHLCGPreferences( data ) {
 	var defaultEncounter = settings.get( 'AHLCG-DefaultEncounterSet' );
 	var defaultCollection = settings.get( 'AHLCG-DefaultCollection' );
 
+	data.pbComboBox.setSelectedIndex( settings.get( 'AHLCG-PortraitBleed', 'None' ) == 'MirrorEdges' ? 1 : 0 );
+
 	// user sets
 	data.seTableModel.setRowCount( 0 );
 	data.ueTableModel.setRowCount( 0 );
@@ -792,6 +804,7 @@ function storeAHLCGPreferences( data ) {
 	// defaults
 	settings.set( 'AHLCG-DefaultEncounterSet', data.deComboBox.getSelectedItem().toString() );
 	settings.set( 'AHLCG-DefaultCollection', data.dcComboBox.getSelectedItem().toString() );
+	settings.set( 'AHLCG-PortraitBleed', data.pbComboBox.getSelectedItem().toString() );
 
 	// user sets
 	var usedString = '';

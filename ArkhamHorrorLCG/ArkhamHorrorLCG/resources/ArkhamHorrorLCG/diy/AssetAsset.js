@@ -239,7 +239,7 @@ function createBackPainter( diy, sheet ) {
 function paintFront( g, diy, sheet ) {
 	clearImage( g, sheet );
 
-	PortraitList[getPortraitIndex( 'Portrait' )].paint( g, sheet.getRenderTarget() );
+	paintPortrait( g, diy, sheet, 'Portrait' );
 	drawAssetTemplate( g, diy, sheet, $CardClass, $CardClass2, $CardClass3 );
 	drawLabel( g, diy, sheet, Label_box, #AHLCG-Label-Asset );
 	var cClass = $CardClass;
@@ -284,7 +284,7 @@ function paintFront( g, diy, sheet ) {
 function paintBack( g, diy, sheet ) {
 	clearImage( g, sheet );
 
-	PortraitList[getPortraitIndex( 'BackPortrait' )].paint( g, sheet.getRenderTarget() );
+	paintPortrait( g, diy, sheet, 'BackPortrait' );
 	drawAssetTemplate( g, diy, sheet, $CardClassBack, $CardClass2Back, $CardClass3Back );
 	drawLabel( g, diy, sheet, BackLabel_box, #AHLCG-Label-Asset );
 	var cClass = $CardClassBack;

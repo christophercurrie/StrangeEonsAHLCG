@@ -1,13 +1,8 @@
 # WARNING: If this file is deleted, Strange Eons will no longer
 # see this as a project/task folder!
-first-row = 94
-selected-members = rkhamHorrorLCG.seext
-open-folders = \
-    rkhamHorrorLCGrkhamHorrorLCG/resourcesrkhamHorrorLCG/resources/ArkhamHorrorLCGrkh\
-    amHorrorLCG/resources/ArkhamHorrorLCG/diyrkhamHorrorLCG/resources/ArkhamHorrorLCG\
-    /fontsrkhamHorrorLCG/resources/ArkhamHorrorLCG/settingsrkhamHorrorLCG/resources/A\
-    rkhamHorrorLCG/text
+first-row = 0
+selected-members = :ArkhamHorrorLCG.seext
+open-folders = 
 notes = 
 res-id = tim
 type = PROJECT
-

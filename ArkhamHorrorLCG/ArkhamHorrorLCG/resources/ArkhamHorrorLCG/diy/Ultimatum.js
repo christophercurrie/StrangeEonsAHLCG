@@ -133,7 +133,7 @@ function createBackPainter( diy, sheet ) {
 function paintFront( g, diy, sheet ) {
 	clearImage( g, sheet );
 
-	PortraitList[getPortraitIndex( 'Portrait' )].paint( g, sheet.getRenderTarget() );
+	paintPortrait( g, diy, sheet, 'Portrait' );
 
 	var card_type = $Traits.indexOf('Boon') > -1 ? 'Boon' : 'Ultimatum';
 	drawUltimatumTemplate( g, diy, sheet, card_type, $Subtitle);

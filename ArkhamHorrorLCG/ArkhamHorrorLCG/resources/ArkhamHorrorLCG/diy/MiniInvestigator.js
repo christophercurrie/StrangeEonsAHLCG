@@ -54,7 +54,7 @@ function paintFront( g, diy, sheet ) {
 
 	drawTemplate( g, sheet, '' );
 
-	PortraitList[getPortraitIndex( 'Portrait' )].paint( g, sheet.getRenderTarget() );
+	paintPortrait( g, diy, sheet, 'Portrait' );
 	drawArtist( g, diy, sheet, Artist_box, false );
 }
 
