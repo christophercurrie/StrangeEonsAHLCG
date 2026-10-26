@@ -11,24 +11,20 @@ strangeEonsRenderTest {
     strangeEonsDir = file(providers.gradleProperty("strangeEonsDir").getOrElse("$projects/strange-eons"))
     pluginFolder = file("ArkhamHorrorLCG/ArkhamHorrorLCG")
     pluginBundleName = "ArkhamHorrorLCG.seext"
-    components = file("src/renderTest/components")
+    // -PcomponentsDir renders another fixture set against the same masters
+    components = file(providers.gradleProperty("componentsDir").getOrElse("src/renderTest/components"))
     // high-res templates; catches sub-pixel layout shifts
     resolution = 300
 }
 
-// Writes .eon fixtures with the current plug-in. Existing fixtures are kept
-// unless -PoverwriteFixtures is set, since they also guard save compatibility.
-val generateFixtures by tasks.registering(Exec::class) {
-    group = "render test"
-    description = "Creates the render-test .eon fixtures with Strange Eons."
+val fixtureScript = file("src/renderTest/generate-fixtures.js")
+
+// Runs the fixture script in Strange Eons with the packaged plug-in.
+fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolean = false) {
     val buildSe = tasks.named<BuildStrangeEons>("buildStrangeEons")
     val pack = tasks.named<PackagePluginFolder>("packagePluginFolder")
     dependsOn(buildSe, pack)
     val launcher = strangeEonsRenderTest.launcher
-    val script = file("src/renderTest/generate-fixtures.js")
-    val out = file("src/renderTest/components")
-    val work = layout.buildDirectory.dir("render-test/fixtures").get().asFile
-    val overwrite = providers.gradleProperty("overwriteFixtures").isPresent
     isIgnoreExitValue = true
     doFirst {
         work.deleteRecursively()
@@ -41,6 +37,7 @@ val generateFixtures by tasks.registering(Exec::class) {
             launcher.get().executablePath.asFile.absolutePath,
             "--add-opens=java.desktop/javax.swing.table=ALL-UNNAMED",
             "--enable-native-access=ALL-UNNAMED",
+            "-Dfx.mode=$mode",
             "-Dfx.out=${out.absolutePath}",
             "-Dfx.results=${work.resolve("results.txt").absolutePath}",
             "-Dfx.overwrite=$overwrite",
@@ -49,7 +46,7 @@ val generateFixtures by tasks.registering(Exec::class) {
             "--xDisableJreCheck", "--xDisablePluginLoading",
             "--glang", "en", "--ulang", "en",
             "--plugintest", pack.get().bundle.get().asFile.absolutePath,
-            "--run", script.absolutePath,
+            "--run", fixtureScript.absolutePath,
         )
     }
     doLast {
@@ -58,8 +55,8 @@ val generateFixtures by tasks.registering(Exec::class) {
             throw GradleException("Fixture script stopped early. See $results")
         }
         val failed = results.readLines().filter { it.startsWith("FAIL") }
-        results.readLines().filter { it != "DONE" }.forEach { logger.lifecycle(it) }
-        if (failed.isNotEmpty()) throw GradleException("${failed.size} fixture(s) failed")
+        failed.forEach { logger.error(it) }
+        if (failed.isNotEmpty()) throw GradleException("${failed.size} handler(s) failed. See $results")
     }
 }
 
@@ -87,3 +84,72 @@ val verifyCardVersions by tasks.registering {
 }
 
 tasks.named("check") { dependsOn(verifyCardVersions) }
+
+// Writes .eon fixtures with the current plug-in. Existing fixtures are kept
+// unless -PoverwriteFixtures is set, since they also guard save compatibility.
+// -PfixturesDir writes them elsewhere.
+val generateFixtures by tasks.registering(Exec::class) {
+    group = "render test"
+    description = "Creates the render-test .eon fixtures with Strange Eons."
+    runFixtureScript(
+        "fixtures",
+        file(providers.gradleProperty("fixturesDir").getOrElse("src/renderTest/components")),
+        layout.buildDirectory.dir("render-test/fixtures").get().asFile,
+        providers.gradleProperty("overwriteFixtures").isPresent,
+    )
+}
+
+val defaultsDump = layout.buildDirectory.dir("render-test/defaults/actual")
+val defaultsExpected = file("src/renderTest/defaults")
+
+val dumpDefaults by tasks.registering(Exec::class) {
+    group = "render test"
+    description = "Lists the state of a newly created component for each card handler."
+    inputs.dir(strangeEonsRenderTest.pluginFolder)
+    inputs.file(fixtureScript)
+    outputs.dir(defaultsDump)
+    runFixtureScript("defaults", defaultsDump.get().asFile, layout.buildDirectory.dir("render-test/defaults/work").get().asFile)
+}
+
+val verifyDefaults by tasks.registering {
+    group = "verification"
+    description = "Compares new-component state for each card handler with src/renderTest/defaults."
+    dependsOn(dumpDefaults)
+    inputs.dir(defaultsDump)
+    inputs.dir(defaultsExpected)
+    doLast {
+        val actual = defaultsDump.get().asFile
+        val names = sortedSetOf<String>().apply {
+            actual.list()?.let { addAll(it) }
+            defaultsExpected.list()?.let { addAll(it) }
+        }
+        val failures = names.mapNotNull { name ->
+            val a = actual.resolve(name)
+            val e = defaultsExpected.resolve(name)
+            when {
+                !e.exists() -> "$name: no expected file"
+                !a.exists() -> "$name: not produced"
+                else -> {
+                    val al = a.readLines().toSet()
+                    val el = e.readLines().toSet()
+                    val diff = (el - al).map { "- $it" } + (al - el).map { "+ $it" }
+                    if (diff.isEmpty()) null else "$name:\n  " + diff.joinToString("\n  ")
+                }
+            }
+        }
+        if (failures.isNotEmpty()) {
+            throw GradleException("${failures.size} handler(s) differ:\n" + failures.joinToString("\n"))
+        }
+        logger.lifecycle("${names.size} handler(s) match")
+    }
+}
+
+val updateDefaults by tasks.registering(Copy::class) {
+    group = "render test"
+    description = "Replaces src/renderTest/defaults with the current new-component state."
+    dependsOn(dumpDefaults)
+    from(defaultsDump)
+    into(defaultsExpected)
+}
+
+tasks.named("check") { dependsOn(verifyDefaults) }
