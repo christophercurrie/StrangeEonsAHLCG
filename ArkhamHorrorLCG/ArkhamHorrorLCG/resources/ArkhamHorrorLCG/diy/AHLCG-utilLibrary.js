@@ -1524,6 +1524,11 @@ function createPortraitShareButton( bindings ) {
 	return shareButton;
 }
 
+// orientation belongs to the act/agenda front; other faces never reverse
+function isReversed( faceIndex ) {
+	return faceIndex == FACE_FRONT && $Orientation == 'Reversed';
+}
+
 function reverseRegion( region ) {
 	region.x = 525 - ( region.x + region.width );
 

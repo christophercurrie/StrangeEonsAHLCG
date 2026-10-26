@@ -35,7 +35,7 @@ function drawTemplate( g, sheet, className ) {
 		name = CardTypes[faceIndex];
 	}
 
-	var mirror = (CardTypes[faceIndex] == 'Act' || CardTypes[faceIndex] == 'Agenda') && $Orientation == 'Reversed';
+	var mirror = (CardTypes[faceIndex] == 'Act' || CardTypes[faceIndex] == 'Agenda') && isReversed( faceIndex );
 
 	paintFullBleed( g, sheet, getTemplateKey( name ), mirror );
 }
@@ -564,7 +564,7 @@ function drawName( g, diy, sheet, nameBox, cClass ) {
 		if ( CardTypes[faceIndex] == 'Event' && artClass == 'W' ) region.y -= 3;
 		else if ( CardTypes[faceIndex] == 'Event' && ( artClass == 'N' || ( LevelCircleClasses[artClass] && !useReplacementTemplate( faceIndex ) ) ) ) region.y -= 2;
 		if ( CardTypes[faceIndex] == 'Skill' && artClass == 'W' ) region.y -= 1;
-		if ( $Orientation == 'Reversed' ) region = reverseRegion( region );
+		if ( isReversed( faceIndex ) ) region = reverseRegion( region );
 
 		if ( CardTypes[faceIndex] == 'Asset' ) {
 			let class1 = $CardClass;
@@ -658,7 +658,7 @@ function draw2LineName( g, diy, sheet, nameBox ) {
 		if ( CardTypes[faceIndex] == 'Concealed' && $Template == 'NamedDecoy' ) region = diy.settings.getRegion( 'AHLCG-Concealed-DecoyName-region' );
 
 		region.y += parseInt(Eons.namedObjects.AHLCGObject.titleFontOffset);
-		if ( $Orientation == 'Reversed' ) region = reverseRegion( region );
+		if ( isReversed( faceIndex ) ) region = reverseRegion( region );
 
 		// new system - align tline 1 to top, line 2 to bottom / single line should be centered
 
@@ -892,7 +892,7 @@ function drawBody( g, diy, sheet, bodyBox, partsArray ) {
 
 	var region = diy.settings.getRegion( getExpandedKey( faceIndex, 'Body-region') );
 	region.y += parseInt(Eons.namedObjects.AHLCGObject.bodyFontOffset);
-	if ( $Orientation == 'Reversed' ) region = reverseRegion( region );
+	if ( isReversed( faceIndex ) ) region = reverseRegion( region );
 //	if ( AHLCGObject.bodyFamily == 'Times New Roman' ) region.y -= 2;
 
 	// setting an action listener is hard because the box doesn't exist during layout, this is just easier...
@@ -932,7 +932,7 @@ function drawInvBackBody( g, diy, sheet, bodyBox, partsArray ) {
 
 	var region = diy.settings.getRegion( getExpandedKey( faceIndex, 'Body-region') );
 	region.y += parseInt(Eons.namedObjects.AHLCGObject.bodyFontOffset);
-	if ( $Orientation == 'Reversed' ) region = reverseRegion( region );
+	if ( isReversed( faceIndex ) ) region = reverseRegion( region );
 //	if ( AHLCGObject.bodyFamily == 'Times New Roman' ) region.y -= 2;
 
 	bodyBox.setLineTightness( $(getExpandedKey(faceIndex, 'Body', '-tightness') + '-tightness') * AHLCGObject.bodyFontTightness );
@@ -2685,7 +2685,7 @@ function drawArtist( g, diy, sheet, artistBox, forceFrontValue ) {
 
 	if ( artistText.length > 0 ) {
 		var region = diy.settings.getRegion( getExpandedKey( faceIndex, 'Artist-region' ) );
-		if ( $Orientation == 'Reversed' ) region = shiftRegion( region, CardTypes[faceIndex] );
+		if ( isReversed( faceIndex ) ) region = shiftRegion( region, CardTypes[faceIndex] );
 //		if ( Eons.namedObjects.AHLCGObject.bodyFamily == 'Times New Roman' ) region.y -= 1;
 		region.y += parseInt(Eons.namedObjects.AHLCGObject.collectionFontOffset);
 
@@ -2701,7 +2701,7 @@ function drawCopyright( g, diy, sheet, copyrightBox, collectorX ) {
 
 	var region = diy.settings.getRegion( getExpandedKey( faceIndex, 'Copyright-region' ) );
 	region.y += parseInt(Eons.namedObjects.AHLCGObject.collectionFontOffset);
-	if ( $Orientation == 'Reversed' ) region = shiftRegion( region, CardTypes[faceIndex] );
+	if ( isReversed( faceIndex ) ) region = shiftRegion( region, CardTypes[faceIndex] );
 
 	if ( Eons.namedObjects.AHLCGObject.bodyFamily == 'Times New Roman' ) region.y -= 1;
 
@@ -3104,7 +3104,7 @@ function drawCollectionNumber( g, diy, sheet, collectionNumberBox, drawSuffix ) 
 
 	var region = diy.settings.getRegion( getExpandedKey( faceIndex, 'CollectionNumber-region' ) );
 	region.y += parseInt(Eons.namedObjects.AHLCGObject.collectionFontOffset);
-	if ( $Orientation == 'Reversed' ) region = shiftRegion( region, CardTypes[faceIndex] );
+	if ( isReversed( faceIndex ) ) region = shiftRegion( region, CardTypes[faceIndex] );
 //	if ( Eons.namedObjects.AHLCGObject.bodyFamily == 'Times New Roman' ) region.y -= 1;
 
 	collectionNumberBox.markupText = collectionNumber;
@@ -3131,7 +3131,7 @@ function drawCollectionIcon( g, diy, sheet, collectorX ) {
 		diy.settings.getRegion( getExpandedKey( faceIndex, 'Collection-portrait-clip-region' ) )
 	);
 
-	if ( faceIndex == FACE_FRONT && $Orientation == 'Reversed' ) region = shiftRegion( region, CardTypes[faceIndex] );
+	if ( isReversed( faceIndex ) ) region = shiftRegion( region, CardTypes[faceIndex] );
 
 	// x = left edge of region, using collectorX
 	var x = collectorX - region.width;
@@ -3172,7 +3172,7 @@ function drawEncounterInfo( g, diy, sheet, encounterInfoBox, collectorX ) {
 	var region = diy.settings.getRegion( getExpandedKey( faceIndex, 'EncounterNumber-region' ) );
 	region.y += parseInt(Eons.namedObjects.AHLCGObject.collectionFontOffset);
 
-	if ( $Orientation == 'Reversed' ) region = shiftRegion( region, CardTypes[faceIndex] );
+	if ( isReversed( faceIndex ) ) region = shiftRegion( region, CardTypes[faceIndex] );
 
 	// x = left edge of region, using collectorX
 	var x = collectorX - region.width;
@@ -3214,7 +3214,7 @@ function drawEncounterIcon( g, diy, sheet ) {
 		// default - if no DefaultEncounter defined, use normal Encounter
 		diy.settings.getRegion( getExpandedKey( faceIndex, 'Encounter-portrait-clip-region' ) ) );
 
-	if ( faceIndex == FACE_FRONT && $Orientation == 'Reversed' ) {
+	if ( isReversed( faceIndex ) ) {
 		region = reverseRegion( region );
 	}
 
@@ -3223,7 +3223,7 @@ function drawEncounterIcon( g, diy, sheet ) {
 			// default - if no DefaultReturnEncounter defined, use normal ReturnEncounter
 			diy.settings.getRegion( getExpandedKey( faceIndex, 'ReturnEncounter-portrait-clip-region' ) ) );
 
-		if ( faceIndex == FACE_FRONT && $Orientation == 'Reversed' ) {
+		if ( isReversed( faceIndex ) ) {
 			region = reverseRegion( region );
 		}
 
@@ -3569,7 +3569,7 @@ function drawClues( g, diy, sheet ) {
 	}
 
 	var region = diy.settings.getRegion( getExpandedKey( faceIndex, 'Clues-region' ) );
-	if ( $Orientation == 'Reversed' ) region = reverseRegion( region );
+	if ( isReversed( faceIndex ) ) region = reverseRegion( region );
 
 	if ( clues == '-' ) {
 		drawDash( g, diy, sheet, region, 0, 6 );
@@ -3587,7 +3587,7 @@ function drawClues( g, diy, sheet ) {
 			perInvRegion.x += 3;
 		}
 
-		if ( $Orientation == 'Reversed' ) {
+		if ( isReversed( faceIndex ) ) {
 			perInvCluesRegion = reverseRegion( perInvCluesRegion );
 			perInvRegion = reverseRegion( perInvRegion );
 
@@ -3681,7 +3681,7 @@ function drawDoom( g, diy, sheet ) {
 	var doom = $( 'Doom' + BindingSuffixes[faceIndex] );
 
 	var region = diy.settings.getRegion( getExpandedKey( faceIndex, 'Doom-region' ) );
-	if ( $Orientation == 'Reversed' ) region = reverseRegion( region );
+	if ( isReversed( faceIndex ) ) region = reverseRegion( region );
 
 	var textColor = new Color(0.996, 0.945, 0.859);
 	var borderColor = new Color(0, 0, 0);
@@ -3694,7 +3694,7 @@ function drawDoom( g, diy, sheet ) {
 		let perInvDoomRegion = diy.settings.getRegion( getExpandedKey( faceIndex, 'DoomPerInv-region' ) );
 		let perInvRegion = diy.settings.getRegion( getExpandedKey( faceIndex, 'DoomPerInvIcon-region' ) );
 
-		if ( $Orientation == 'Reversed' ) {
+		if ( isReversed( faceIndex ) ) {
 			perInvDoomRegion = reverseRegion( perInvDoomRegion );
 			perInvRegion = reverseRegion( perInvRegion );
 
@@ -3771,7 +3771,7 @@ function drawDoom( g, diy, sheet ) {
 			sheet.drawOutlinedTitle( g, '*', region, Eons.namedObjects.AHLCGObject.chaosFont, 12.0, 0.8, textColor, borderColor, 0, true );
 		}
 		else {
-			if ( $Orientation == 'Reversed' ) {
+			if ( isReversed( faceIndex ) ) {
 				region.x -= 1;
 				}
 
@@ -3788,7 +3788,7 @@ function drawScenarioIndexFront( g, diy, sheet, typeText, textBox ) {
 	region.y += parseInt(Eons.namedObjects.AHLCGObject.typeFontOffset);
 //	if ( Eons.namedObjects.AHLCGObject.bodyFamily == 'Times New Roman' ) region.y -= 2;
 
-	if ( $Orientation == 'Reversed' ) {
+	if ( isReversed( faceIndex ) ) {
 		region = reverseRegion( region );
 		region.x -= 1;
 	}
