@@ -1,17 +1,19 @@
 // Strange Eons ui library: layouts, controls and bindings.
 //
-// Module: returns { Bindings, Grid, checkBox, comboBox, spinner, textArea,
-// tipButton }.
+// Module: returns { Bindings, Grid, button, checkBox, comboBox, spinner,
+// textArea, textField, tipButton }.
 useLibrary( 'ui' );
 
 define( function () {
 	return {
 		Bindings: Bindings,
 		Grid: Grid,
+		button: button,
 		checkBox: checkBox,
 		comboBox: comboBox,
 		spinner: spinner,
 		textArea: textArea,
+		textField: textField,
 		tipButton: tipButton
 	};
 } );

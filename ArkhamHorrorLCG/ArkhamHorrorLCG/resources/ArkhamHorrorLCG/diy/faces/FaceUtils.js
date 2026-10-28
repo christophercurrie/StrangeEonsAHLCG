@@ -1,13 +1,13 @@
 // Helpers shared by faces.
 //
 // Module: returns FaceUtils.
-define( [ 'se/eons', 'se/strings' ], function ( eons, strings ) {
+define( [ 'se/common', 'se/strings', 'se/ui' ], function ( common, strings, ui ) {
 	const POINTS_PER_INCH = 72;
 	const IconSizes = { s: '0.14in', m: '0.35in', l: '0.60in' };
 
 	// the plug-in's shared state: fonts, offsets and icon lists
 	function plugin() {
-		return eons.Eons.namedObjects.AHLCGObject;
+		return common.Eons.namedObjects.AHLCGObject;
 	}
 
 	function bleedPixels( sheet ) {
@@ -23,7 +23,7 @@ define( [ 'se/eons', 'se/strings' ], function ( eons, strings ) {
 	// whether an encounter set or collection is offered; sets not yet
 	// recorded in the user's choices are
 	function isUsed( type, index ) {
-		var used = String( eons.Settings.getUser().get( 'AHLCG-Use' + type + Math.floor( index / 40 + 1 ), '' ) );
+		var used = String( common.Settings.getUser().get( 'AHLCG-Use' + type + Math.floor( index / 40 + 1 ), '' ) );
 		var i = index % 40;
 		return used.length < i + 1 || used.charAt( i ) === '1';
 	}
@@ -35,7 +35,7 @@ define( [ 'se/eons', 'se/strings' ], function ( eons, strings ) {
 	}
 
 	function setUserIconTags( box, type ) {
-		var settings = eons.Settings.getUser();
+		var settings = common.Settings.getUser();
 		var count = settings.getInt( 'AHLCG-User' + type + 'Count', 0 );
 		for ( let i = 1; i <= count; i++ ) {
 			if ( !settings.getBoolean( 'AHLCG-UseUser' + type + i, true ) ) continue;
@@ -88,7 +88,68 @@ define( [ 'se/eons', 'se/strings' ], function ( eons, strings ) {
 		}
 	}
 
+	// Game text fields for parts (Traits, Header, Rules or another name),
+	// keyed <part><partSuffix><suffix>, with spacing spinners between them.
+	function createTextPanel( bindings, faceIndex, suffix, parts, partSuffix, rulesRows ) {
+		var panel = new ui.Grid();
+		panel.setTitle( strings.string( 'AHLCG-Rules' ) );
+
+		for ( let i = 0; i < parts.length; i++ ) {
+			let base = parts[i];
+			let key = base + partSuffix + suffix;
+			let label = strings.string( 'AHLCG-' + base );
+			let field;
+			let tipCount = 0;
+			let inlineTips = false;
+
+			switch ( base ) {
+				case 'Traits':
+					field = new ui.textField( '', 30 );
+					tipCount = 4;
+					inlineTips = true;
+					break;
+				case 'Header':
+					field = new ui.textArea( '', 2, 30 );
+					break;
+				case 'Rules':
+					field = new ui.textArea( '', rulesRows, 30 );
+					tipCount = 3;
+					break;
+				default:
+					field = new ui.textArea( '', 6, 30 );
+					break;
+			}
+			bindings.add( key, field, [ faceIndex ] );
+
+			if ( tipCount === 0 ) {
+				panel.place( label, 'aligny top, gaptop 5, align right', field, 'wrap, pushx, growx' );
+			}
+			else if ( inlineTips ) {
+				panel.place( label, 'aligny top, gaptop 5, align right', field, 'split' + tipCount + ', pushx, growx' );
+			}
+			else {
+				panel.place( label, 'spany ' + tipCount + ', aligny top, gaptop 5, align right',
+					field, 'spany ' + tipCount + ', pushx, growx' );
+			}
+
+			for ( let tip = 1; tip <= tipCount; tip++ ) {
+				let button = new ui.tipButton( strings.string( 'AHLCG-' + base + 'Tip' + tip ) );
+				let wrap = !inlineTips || tip === tipCount;
+				panel.place( button, ( wrap ? 'wrap, ' : '' ) + 'aligny top, gaptop 5' );
+			}
+
+			if ( i + 1 < parts.length ) {
+				let spacing = new ui.spinner( 0, 50, 1, 1 );
+				bindings.add( key + 'Spacing', spacing, [ faceIndex ] );
+				panel.place( strings.string( 'AHLCG-Spacing' ), 'align right', spacing, 'wrap' );
+			}
+		}
+
+		return panel;
+	}
+
 	return {
+		createTextPanel: createTextPanel,
 		plugin: plugin,
 		bleedPixels: bleedPixels,
 		translateToTrim: translateToTrim,

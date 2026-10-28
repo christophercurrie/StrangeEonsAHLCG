@@ -26,13 +26,9 @@ function ( Face, FaceUtils, markup, strings, ui ) {
 	ScenarioRulesFace.prototype.createInterface = function( diy, bindings, faceIndex ) {
 		var suffix = this.suffix( faceIndex );
 
-		var titlePanel = new ui.Grid();
-		var titleArea = new ui.textArea( '', 2, 30 );
-		if ( faceIndex === 0 ) diy.setNameField( titleArea );
-		else bindings.add( 'Title' + suffix, titleArea, [ faceIndex ] );
+		var titlePanel = this.createTitlePanel( diy, bindings, faceIndex );
 		var resolutionBox = new ui.checkBox( strings.string( 'AHLCG-ScenarioRules-Resolution' ) );
 		bindings.add( 'Resolution' + suffix, resolutionBox, [ faceIndex ] );
-		titlePanel.place( strings.string( 'AHLCG-Title' ), 'align right', titleArea, 'wrap, pushx, growx' );
 		titlePanel.place( resolutionBox, 'skip 1, wrap' );
 
 		var statPanel = new ui.Grid();
@@ -40,15 +36,7 @@ function ( Face, FaceUtils, markup, strings, ui ) {
 		bindings.add( 'Page' + suffix, pageSpinner, [ faceIndex ] );
 		statPanel.place( strings.string( 'AHLCG-Page' ), 'align right, gapx 10', pageSpinner, 'wrap' );
 
-		var textPanel = new ui.Grid();
-		textPanel.setTitle( strings.string( 'AHLCG-Rules' ) );
-		var rulesArea = new ui.textArea( '', 18, 30 );
-		bindings.add( 'Rules' + suffix, rulesArea, [ faceIndex ] );
-		textPanel.place( strings.string( 'AHLCG-Rules' ), 'spany 3, aligny top, gaptop 5, align right',
-			rulesArea, 'spany 3, pushx, growx' );
-		for ( let i = 1; i <= 3; i++ ) {
-			textPanel.place( new ui.tipButton( strings.string( 'AHLCG-RulesTip' + i ) ), 'wrap, aligny top, gaptop 5' );
-		}
+		var textPanel = FaceUtils.createTextPanel( bindings, faceIndex, suffix, [ 'Rules' ], '', 18 );
 
 		return {
 			general: [
@@ -59,13 +47,6 @@ function ( Face, FaceUtils, markup, strings, ui ) {
 				{ panel: textPanel, title: strings.string( 'AHLCG-Rules' ) }
 			]
 		};
-	};
-
-	ScenarioRulesFace.prototype.createBox = function( diy, sheet, name ) {
-		var box = markup.markupBox( sheet );
-		box.defaultStyle = diy.settings.getTextStyle( this.key( diy.settings, name + '-style' ), null );
-		box.alignment = diy.settings.getTextAlignment( this.key( diy.settings, name + '-alignment' ) );
-		return box;
 	};
 
 	ScenarioRulesFace.prototype.createPainter = function( diy, sheet, faceIndex ) {
@@ -84,7 +65,7 @@ function ( Face, FaceUtils, markup, strings, ui ) {
 	ScenarioRulesFace.prototype.paint = function( g, diy, sheet, boxes ) {
 		var faceIndex = sheet.getSheetIndex();
 		var suffix = this.suffix( faceIndex );
-		var title = faceIndex === 0 ? String( diy.name ) : String( diy.settings.get( 'Title' + suffix, '' ) );
+		var title = this.getTitle( diy, faceIndex );
 
 		this.paintTemplate( g, sheet );
 		FaceUtils.translateToTrim( g, sheet );
@@ -122,32 +103,6 @@ function ( Face, FaceUtils, markup, strings, ui ) {
 		g.setStroke( new java.awt.BasicStroke( 1.0 ) );
 		g.drawLine( left, y, right, y );
 		g.drawLine( left, y + 4, right, y + 4 );
-	};
-
-	// one line centered, or two lines at the top and bottom of the region
-	ScenarioRulesFace.prototype.paintTitle = function( g, diy, box, title ) {
-		box.markupText = '';
-		if ( title.length === 0 ) return;
-
-		var region = diy.settings.getRegion( this.key( diy.settings, 'Name-region' ) );
-		region.y += parseInt( FaceUtils.plugin().titleFontOffset );
-
-		var lines = title.split( '\n' );
-		if ( lines.length > 1 ) {
-			box.markupText = lines[0];
-			box.alignment = markup.LAYOUT_TOP | markup.LAYOUT_CENTER;
-			box.drawAsSingleLine( g, region );
-
-			box.markupText = lines[1];
-			box.alignment = markup.LAYOUT_BOTTOM | markup.LAYOUT_CENTER;
-			box.drawAsSingleLine( g, region );
-		}
-		else {
-			region.y += 1;
-			box.markupText = lines[0];
-			box.alignment = markup.LAYOUT_MIDDLE | markup.LAYOUT_CENTER;
-			box.drawAsSingleLine( g, region );
-		}
 	};
 
 	ScenarioRulesFace.prototype.paintPage = function( g, diy, box, page ) {

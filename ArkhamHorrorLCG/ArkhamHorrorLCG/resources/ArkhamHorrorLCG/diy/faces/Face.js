@@ -3,7 +3,7 @@
 // Settings keys take the face's binding suffix ('' or 'Back').
 //
 // Module: returns Face.
-define( function () {
+define( [ 'faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui' ], function ( FaceUtils, markup, strings, ui ) {
 	const Suffixes = [ '', 'Back' ];
 
 	function Face() {
@@ -31,7 +31,7 @@ define( function () {
 	};
 
 	// returns { general: [ { panel, title } ], tabs: [ { panel, title } ] }
-	Face.prototype.createInterface = function( diy, bindings, faceIndex ) {
+	Face.prototype.createInterface = function( diy, bindings, faceIndex, editor ) {
 		return { general: [], tabs: [] };
 	};
 
@@ -52,10 +52,68 @@ define( function () {
 
 	// sets each key + suffix
 	Face.prototype.setValues = function( diy, faceIndex, keep, values ) {
+		var suffixed = {};
 		for ( let key in values ) {
-			let fullKey = key + this.suffix( faceIndex );
-			if ( keep && diy.settings.getOverride( fullKey ) != null ) continue;
-			diy.settings.set( fullKey, values[key] );
+			suffixed[key + this.suffix( faceIndex )] = values[key];
+		}
+		this.setSettings( diy, keep, suffixed );
+	};
+
+	// sets each key as is
+	Face.prototype.setSettings = function( diy, keep, values ) {
+		for ( let key in values ) {
+			if ( keep && diy.settings.getOverride( key ) != null ) continue;
+			diy.settings.set( key, values[key] );
+		}
+	};
+
+	// markup box styled by the face's <name>-style and <name>-alignment
+	Face.prototype.createBox = function( diy, sheet, name ) {
+		var box = markup.markupBox( sheet );
+		box.defaultStyle = diy.settings.getTextStyle( this.key( diy.settings, name + '-style' ), null );
+		box.alignment = diy.settings.getTextAlignment( this.key( diy.settings, name + '-alignment' ) );
+		return box;
+	};
+
+	// the front's title is the component name; the back's is $TitleBack
+	Face.prototype.getTitle = function( diy, faceIndex ) {
+		if ( faceIndex === 0 ) return String( diy.name );
+		return String( diy.settings.get( 'Title' + this.suffix( faceIndex ), '' ) );
+	};
+
+	// panel with a two line title field
+	Face.prototype.createTitlePanel = function( diy, bindings, faceIndex ) {
+		var panel = new ui.Grid();
+		var titleArea = new ui.textArea( '', 2, 30 );
+		if ( faceIndex === 0 ) diy.setNameField( titleArea );
+		else bindings.add( 'Title' + this.suffix( faceIndex ), titleArea, [ faceIndex ] );
+		panel.place( strings.string( 'AHLCG-Title' ), 'align right', titleArea, 'wrap, pushx, growx' );
+		return panel;
+	};
+
+	// One line centered in <Name-region>, or two lines at its top and bottom.
+	Face.prototype.paintTitle = function( g, diy, box, title ) {
+		box.markupText = '';
+		if ( title.length === 0 ) return;
+
+		var region = diy.settings.getRegion( this.key( diy.settings, 'Name-region' ) );
+		region.y += parseInt( FaceUtils.plugin().titleFontOffset );
+
+		var lines = title.split( '\n' );
+		if ( lines.length > 1 ) {
+			box.markupText = lines[0];
+			box.alignment = markup.LAYOUT_TOP | markup.LAYOUT_CENTER;
+			box.drawAsSingleLine( g, region );
+
+			box.markupText = lines[1];
+			box.alignment = markup.LAYOUT_BOTTOM | markup.LAYOUT_CENTER;
+			box.drawAsSingleLine( g, region );
+		}
+		else {
+			region.y += 1;
+			box.markupText = lines[0];
+			box.alignment = markup.LAYOUT_MIDDLE | markup.LAYOUT_CENTER;
+			box.drawAsSingleLine( g, region );
 		}
 	};
 

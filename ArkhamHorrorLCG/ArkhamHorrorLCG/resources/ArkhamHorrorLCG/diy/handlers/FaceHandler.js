@@ -13,7 +13,7 @@
 // createGeneralPanels( diy, editor, bindings ).
 //
 // Module: returns FaceHandler.
-define( [ 'se/diy', 'se/strings', 'se/ui' ], function ( diyLibrary, strings, ui ) {
+define( [ 'se/diy', 'se/strings', 'se/ui', 'ui/Bindings' ], function ( diyLibrary, strings, ui, Bindings ) {
 	const FACE_FRONT = 0;
 	const FACE_BACK = 1;
 
@@ -89,13 +89,13 @@ define( [ 'se/diy', 'se/strings', 'se/ui' ], function ( diyLibrary, strings, ui 
 	};
 
 	FaceHandler.prototype.createInterface = function( diy, editor ) {
-		var bindings = new ui.Bindings( editor, diy );
+		var bindings = new Bindings( editor, diy );
 		var sideNames = [ strings.string( 'AHLCG-Front' ), strings.string( 'AHLCG-Back' ) ];
 
 		var general = this.createGeneralPanels( diy, editor, bindings );
 		var tabs = [];
 		for ( let faceIndex = 0; faceIndex < this.faces.length; faceIndex++ ) {
-			let faceUi = this.faces[faceIndex].createInterface( diy, bindings, faceIndex );
+			let faceUi = this.faces[faceIndex].createInterface( diy, bindings, faceIndex, editor );
 
 			for ( let j = 0; j < faceUi.general.length; j++ ) {
 				faceUi.general[j].panel.setTitle( faceUi.general[j].title + ': ' + sideNames[faceIndex] );
