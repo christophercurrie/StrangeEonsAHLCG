@@ -18,6 +18,7 @@ strangeEonsRenderTest {
 }
 
 val fixtureScript = file("src/renderTest/generate-fixtures.js")
+val amdScript = file("src/renderTest/amd-loader.js")
 
 // Runs the fixture script in Strange Eons with the packaged plug-in.
 fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolean = false) {
@@ -41,6 +42,7 @@ fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolea
             "-Dfx.out=${out.absolutePath}",
             "-Dfx.results=${work.resolve("results.txt").absolutePath}",
             "-Dfx.overwrite=$overwrite",
+            "-Dfx.amdScript=${amdScript.absolutePath}",
             "-cp", cp,
             "ca.cgjennings.apps.arkham.StrangeEons",
             "--xDisableJreCheck", "--xDisablePluginLoading",
@@ -107,6 +109,8 @@ val dumpDefaults by tasks.registering(Exec::class) {
     description = "Lists the state of a newly created component for each card handler."
     inputs.dir(strangeEonsRenderTest.pluginFolder)
     inputs.file(fixtureScript)
+    inputs.file(amdScript)
+    inputs.dir("src/renderTest/amd")
     outputs.dir(defaultsDump)
     // stale files would show up as handlers with no expected file
     doFirst { defaultsDump.get().asFile.deleteRecursively() }
@@ -140,9 +144,9 @@ val verifyDefaults by tasks.registering {
             }
         }
         if (failures.isNotEmpty()) {
-            throw GradleException("${failures.size} handler(s) differ:\n" + failures.joinToString("\n"))
+            throw GradleException("${failures.size} file(s) differ:\n" + failures.joinToString("\n"))
         }
-        logger.lifecycle("${names.size} handler(s) match")
+        logger.lifecycle("${names.size} file(s) match")
     }
 }
 
