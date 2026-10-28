@@ -367,16 +367,18 @@ function updateCollection() {
 		}
 	}
 
-	var userCount = settings.getInt( 'AHLCG-UserCollectionCount', 0 );
+	// user collections need a collection portrait; Concealed has none
+	var portraitIndex = getPortraitIndex( 'Collection' );
+	var userCount = portraitIndex == null ? 0 : settings.getInt( 'AHLCG-UserCollectionCount', 0 );
 
 	for ( let index = 0; index < userCount; index++) {
 		let name = settings.get( 'AHLCG-UserCollectionName' + (index+1), '' );
 		let icon = settings.get( 'AHLCG-UserCollectionIcon' + (index+1), '' );
-		let source = PortraitList[getPortraitIndex( 'Collection' )].getSource();
+		let source = PortraitList[portraitIndex].getSource();
 
 		if ( $Collection == createUserSettingValue( name ) && ( source == '' || icon == source ) ) {
 			if ( source == '' ) {
-				PortraitList[ getPortraitIndex( 'Collection' ) ].setSource( icon );
+				PortraitList[portraitIndex].setSource( icon );
 			}
 
 			let used = settings.getBoolean( 'AHLCG-UseUserCollection' + (index+1) );
