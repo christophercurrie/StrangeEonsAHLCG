@@ -1,5 +1,8 @@
 import org.strangeeons.gradle.rendertest.BuildStrangeEons
 import org.strangeeons.gradle.rendertest.PackagePluginFolder
+import org.strangeeons.gradle.rendertest.RenderComponents
+import org.strangeeons.gradle.rendertest.UpdateRenderMasters
+import org.strangeeons.gradle.rendertest.VerifyRenders
 
 plugins {
     id("org.strangeeons.render-test") version "1.0.1"
@@ -21,7 +24,7 @@ val fixtureScript = file("src/renderTest/generate-fixtures.js")
 val amdScript = file("src/renderTest/amd-loader.js")
 
 // Runs the fixture script in Strange Eons with the packaged plug-in.
-fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolean = false) {
+fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolean = false, flexibleOut: File = out) {
     val buildSe = tasks.named<BuildStrangeEons>("buildStrangeEons")
     val pack = tasks.named<PackagePluginFolder>("packagePluginFolder")
     dependsOn(buildSe, pack)
@@ -40,6 +43,7 @@ fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolea
             "--enable-native-access=ALL-UNNAMED",
             "-Dfx.mode=$mode",
             "-Dfx.out=${out.absolutePath}",
+            "-Dfx.flexibleOut=${flexibleOut.absolutePath}",
             "-Dfx.results=${work.resolve("results.txt").absolutePath}",
             "-Dfx.overwrite=$overwrite",
             "-Dfx.amdScript=${amdScript.absolutePath}",
@@ -89,16 +93,63 @@ tasks.named("check") { dependsOn(verifyCardVersions) }
 
 // Writes .eon fixtures with the current plug-in. Existing fixtures are kept
 // unless -PoverwriteFixtures is set, since they also guard save compatibility.
-// -PfixturesDir writes them elsewhere.
+// -PfixturesDir writes them elsewhere, as components/ and flexible/.
 val generateFixtures by tasks.registering(Exec::class) {
     group = "render test"
     description = "Creates the render-test .eon fixtures with Strange Eons."
+    val root = providers.gradleProperty("fixturesDir").map { file(it) }.getOrElse(file("src/renderTest"))
     runFixtureScript(
         "fixtures",
-        file(providers.gradleProperty("fixturesDir").getOrElse("src/renderTest/components")),
+        root.resolve("components"),
         layout.buildDirectory.dir("render-test/fixtures").get().asFile,
         providers.gradleProperty("overwriteFixtures").isPresent,
+        root.resolve("flexible"),
     )
+}
+
+// Flexible card fixtures render fronts only, one face each, against their
+// own masters.
+val flexiblePlatform = tasks.named<VerifyRenders>("verifyRenders").flatMap { it.platform }
+val flexiblePlatformMasters = layout.projectDirectory.dir(flexiblePlatform.map { "src/renderTest/flexible-masters/$it" })
+
+val renderFlexible by tasks.registering(RenderComponents::class) {
+    group = "render test"
+    description = "Renders the fronts of the flexible card fixtures."
+    val defaults = tasks.named<RenderComponents>("renderComponents").get()
+    applicationClasspath.from(defaults.applicationClasspath)
+    bundles.from(defaults.bundles)
+    components = file(providers.gradleProperty("flexibleDir").getOrElse("src/renderTest/flexible"))
+    resolution = strangeEonsRenderTest.resolution
+    gameLanguage = strangeEonsRenderTest.gameLanguage
+    uiLanguage = strangeEonsRenderTest.uiLanguage
+    jvmArgs = strangeEonsRenderTest.jvmArgs
+    userSettings = strangeEonsRenderTest.userSettings
+    renderBacks = false
+    launcher = strangeEonsRenderTest.launcher
+    outputDir = layout.buildDirectory.dir("render-test/flexible/actual")
+    workDir = layout.buildDirectory.dir("render-test/flexible/work")
+}
+
+val verifyFlexibleRenders by tasks.registering(VerifyRenders::class) {
+    group = "render test"
+    description = "Fails if any flexible card render differs from this platform's masters."
+    actual = renderFlexible.flatMap { it.outputDir }
+    mastersRoot = file("src/renderTest/flexible-masters")
+    platformMasters = flexiblePlatformMasters
+    platform = flexiblePlatform
+    javaVendor = strangeEonsRenderTest.launcher.map { it.metadata.vendor }
+    javaRuntimeVersion = strangeEonsRenderTest.launcher.map { it.metadata.javaRuntimeVersion }
+    diffs = layout.buildDirectory.dir("render-test/flexible/diffs")
+}
+
+val updateFlexibleRenderMasters by tasks.registering(UpdateRenderMasters::class) {
+    group = "render test"
+    description = "Replaces this platform's flexible card masters with the current renders."
+    actual = renderFlexible.flatMap { it.outputDir }
+    platformMasters = flexiblePlatformMasters
+    platform = flexiblePlatform
+    javaVendor = strangeEonsRenderTest.launcher.map { it.metadata.vendor }
+    javaRuntimeVersion = strangeEonsRenderTest.launcher.map { it.metadata.javaRuntimeVersion }
 }
 
 val defaultsDump = layout.buildDirectory.dir("render-test/defaults/actual")
@@ -158,4 +209,4 @@ val updateDefaults by tasks.registering(Copy::class) {
     into(defaultsExpected)
 }
 
-tasks.named("check") { dependsOn(verifyDefaults) }
+tasks.named("check") { dependsOn(verifyDefaults, verifyFlexibleRenders) }

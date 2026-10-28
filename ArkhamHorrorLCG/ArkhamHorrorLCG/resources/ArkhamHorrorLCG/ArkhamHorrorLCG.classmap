@@ -46,6 +46,7 @@ Story card variants
     @AHLCG-AssetStoryEnemy = diy:ArkhamHorrorLCG/diy/AssetStoryEnemy.js | ArkhamHorrorLCG/icons/AHLCG-Asset.png | AHLCG
 
 Other
+    @AHLCG-Flexible = diy:ArkhamHorrorLCG/diy/Flexible.js | ArkhamHorrorLCG/icons/AHLCG-Flexible.png | AHLCG
 	@AHLCG-MiniInvestigator = diy:ArkhamHorrorLCG/diy/MiniInvestigator.js | ArkhamHorrorLCG/icons/AHLCG-MiniInvestigator.png | AHLCG
 	@AHLCG-Divider = diy:ArkhamHorrorLCG/diy/Divider.js | ArkhamHorrorLCG/icons/AHLCG-Divider.png | AHLCG
     @AHLCG-Concealed = diy:ArkhamHorrorLCG/diy/Concealed.js | ArkhamHorrorLCG/icons/AHLCG-Concealed.png | AHLCG
