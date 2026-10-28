@@ -25,6 +25,11 @@ define( function () {
 	Face.prototype.setDefaults = function( diy, faceIndex, keep ) {
 	};
 
+	// removes settings that describe the face's type, when another face
+	// replaces it
+	Face.prototype.clearType = function( diy, faceIndex ) {
+	};
+
 	// returns { general: [ { panel, title } ], tabs: [ { panel, title } ] }
 	Face.prototype.createInterface = function( diy, bindings, faceIndex ) {
 		return { general: [], tabs: [] };
@@ -37,6 +42,12 @@ define( function () {
 
 	// paints the whole sheet, bleed margin included
 	Face.prototype.paint = function( g, diy, sheet, boxes ) {
+	};
+
+	// <template>-<name> if set, else the shared AHLCG-<name>
+	Face.prototype.key = function( settings, name ) {
+		var key = this.template + '-' + name;
+		return settings.get( key ) != null ? key : 'AHLCG-' + name;
 	};
 
 	// sets each key + suffix

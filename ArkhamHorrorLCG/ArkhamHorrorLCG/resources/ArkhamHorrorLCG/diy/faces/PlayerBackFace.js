@@ -17,6 +17,10 @@ define( [ 'faces/Face' ], function ( Face ) {
 		} );
 	};
 
+	PlayerBackFace.prototype.clearType = function( diy, faceIndex ) {
+		diy.settings.reset( 'BackType' + this.suffix( faceIndex ) );
+	};
+
 	PlayerBackFace.prototype.paint = function( g, diy, sheet, boxes ) {
 		this.paintTemplate( g, sheet );
 	};

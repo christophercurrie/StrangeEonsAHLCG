@@ -6,13 +6,14 @@ if ( String( sourcefile ) === 'Quickscript' ) {
 
 // A card whose faces are chosen in the editor. $FrontFace and $BackFace hold
 // the chosen face ids; any face can be used on either side.
-define( [ 'handlers/exportHandler', 'handlers/FaceHandler', 'se/strings', 'se/ui', 'faces/PlayerBackFace', 'faces/EncounterBackFace' ],
-function ( exportHandler, FaceHandler, strings, ui, PlayerBackFace, EncounterBackFace ) {
+define( [ 'handlers/exportHandler', 'handlers/FaceHandler', 'se/strings', 'se/ui', 'faces/PlayerBackFace', 'faces/EncounterBackFace', 'faces/ScenarioRulesFace' ],
+function ( exportHandler, FaceHandler, strings, ui, PlayerBackFace, EncounterBackFace, ScenarioRulesFace ) {
 	// face ids, in menu order, and their faces
-	const FaceChoices = [ 'playerBack', 'encounterBack' ];
+	const FaceChoices = [ 'playerBack', 'encounterBack', 'scenarioRules' ];
 	const FaceConstructors = {
 		playerBack: PlayerBackFace,
-		encounterBack: EncounterBackFace
+		encounterBack: EncounterBackFace,
+		scenarioRules: ScenarioRulesFace
 	};
 
 	const DefaultFaces = [ 'playerBack', 'encounterBack' ];
@@ -41,6 +42,7 @@ function ( exportHandler, FaceHandler, strings, ui, PlayerBackFace, EncounterBac
 		for ( let i = 0; i < this.faces.length; i++ ) {
 			let id = this.getFaceSetting( diy, i );
 			if ( this.faceIds[i] !== id ) {
+				this.faces[i].clearType( diy, i );
 				this.setFace( i, new FaceConstructors[id]() );
 				this.faceIds[i] = id;
 			}

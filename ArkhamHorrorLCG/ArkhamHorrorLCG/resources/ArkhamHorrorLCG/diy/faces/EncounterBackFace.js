@@ -17,6 +17,10 @@ define( [ 'faces/Face' ], function ( Face ) {
 		} );
 	};
 
+	EncounterBackFace.prototype.clearType = function( diy, faceIndex ) {
+		diy.settings.reset( 'BackType' + this.suffix( faceIndex ) );
+	};
+
 	EncounterBackFace.prototype.paint = function( g, diy, sheet, boxes ) {
 		this.paintTemplate( g, sheet );
 	};
