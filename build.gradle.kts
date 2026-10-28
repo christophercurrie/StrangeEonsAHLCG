@@ -108,6 +108,8 @@ val dumpDefaults by tasks.registering(Exec::class) {
     inputs.dir(strangeEonsRenderTest.pluginFolder)
     inputs.file(fixtureScript)
     outputs.dir(defaultsDump)
+    // stale files would show up as handlers with no expected file
+    doFirst { defaultsDump.get().asFile.deleteRecursively() }
     runFixtureScript("defaults", defaultsDump.get().asFile, layout.buildDirectory.dir("render-test/defaults/work").get().asFile)
 }
 
