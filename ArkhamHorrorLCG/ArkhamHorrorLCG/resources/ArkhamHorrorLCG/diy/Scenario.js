@@ -350,7 +350,7 @@ function onRead(diy, oos) {
 	if ( $Template == 'Portrait' ) PortraitList[0] = oos.readObject();
 	else createPortrait( diy, PortraitTypeList[0] );
 
-	if ( $PageTypeBack == 'Portrait' ) PortraitList[1] = oos.readObject();
+	if ( $TemplateBack == 'Portrait' ) PortraitList[1] = oos.readObject();
 	else createPortrait( diy, PortraitTypeList[1] );
 
 	if ( $Template == 'Chaos' || $TemplateBack == 'Chaos' ) PortraitList[2] = oos.readObject();
