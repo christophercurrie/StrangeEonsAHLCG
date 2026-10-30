@@ -23,7 +23,7 @@ function ( exportHandler, FaceHandler, strings, ui, PlayerBackFace, EncounterBac
 	function FlexibleHandler() {
 		FaceHandler.call( this, {
 			version: 1,
-			templateKeys: [ 'AHLCG-Flexible-Front', 'AHLCG-Flexible-Back' ]
+			templateKeys: [ 'AHLCG-FlexibleHandler-Front', 'AHLCG-FlexibleHandler-Back' ]
 		}, new FaceConstructors[DefaultFaces[0]](), new FaceConstructors[DefaultFaces[1]]() );
 
 		this.faceIds = DefaultFaces.slice();

@@ -9,7 +9,7 @@ function ( Face, FaceUtils, TextBlocks, common, imageutils, strings, ui ) {
 
 	StoryFace.prototype = Object.create( Face.prototype );
 	StoryFace.prototype.constructor = StoryFace;
-	StoryFace.prototype.template = 'AHLCG-Story';
+	StoryFace.prototype.template = 'AHLCG-StoryFace';
 
 	StoryFace.prototype.setDefaults = function( diy, faceIndex, keep ) {
 		var suffix = this.suffix( faceIndex );

@@ -1,0 +1,16 @@
+# Scenario rules face
+AHLCG-ScenarioRulesFace-Body-alignment = left, top
+AHLCG-ScenarioRulesFace-Body-region = 60,52,260,423
+AHLCG-ScenarioRulesFace-BodyName-region = 60,89,260,388
+AHLCG-ScenarioRulesFace-BodyResolution-region = 60,102,260,373
+AHLCG-ScenarioRulesFace-Header-alignment = center
+AHLCG-ScenarioRulesFace-Header-region = 105,53,170,35
+AHLCG-ScenarioRulesFace-Header-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE: 10.0; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: 1.07; FOREGROUND: #000000
+AHLCG-ScenarioRulesFace-Name-region = 51,43,270,43
+AHLCG-ScenarioRulesFace-Name-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE: {Eons.namedObjects.AHLCGObject.titleFontSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.titleFontWidth*1.05}; TRACKING: {Eons.namedObjects.AHLCGObject.titleFontTracking}; FOREGROUND: #000000
+AHLCG-ScenarioRulesFace-Name-tightness = 2.0
+AHLCG-ScenarioRulesFace-Page-alignment = center, middle
+AHLCG-ScenarioRulesFace-Page-style = FAMILY: {Eons.namedObjects.AHLCGObject.skillFamily}; SIZE: 8.1; WEIGHT: WEIGHT_MEDIUM; WIDTH: 0.98; FOREGROUND: #000000
+AHLCG-ScenarioRulesFace-PageEven-region = 177,479,21,32
+AHLCG-ScenarioRulesFace-PageOdd-region = 177,479,21,32
+AHLCG-ScenarioRulesFace-template = ArkhamHorrorLCG/templates/AHLCG-Scenario.jp2

@@ -1,0 +1,15 @@
+# Story face
+AHLCG-StoryFace-Body-region = 36,107,305,385
+AHLCG-StoryFace-Label-alignment = center, middle
+AHLCG-StoryFace-Label-region = 159,503,56,14
+AHLCG-StoryFace-Label-style = FAMILY: {Eons.namedObjects.AHLCGObject.typeFamily}; SIZE: {Eons.namedObjects.AHLCGObject.smallLabelSize*1.1}; WEIGHT: {Eons.namedObjects.AHLCGObject.smallLabelWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.smallLabelWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.smallLabelTracking}; FOREGROUND: #000000
+AHLCG-StoryFace-Name-region = 38,30,254,44
+AHLCG-StoryFace-Story-alignment = left
+AHLCG-StoryFace-Story-region = 51,105,290,379
+AHLCG-StoryFace-Story-style = FAMILY: {Eons.namedObjects.AHLCGObject.storyFamily}; SIZE: {Eons.namedObjects.AHLCGObject.bodyStorySize}; WEIGHT: {Eons.namedObjects.AHLCGObject.bodyStoryWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.bodyStoryWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.bodyStoryTracking}; POSTURE: POSTURE_OBLIQUE; FOREGROUND: #000000
+AHLCG-StoryFace-Story-tightness = 0.6
+AHLCG-StoryFace-TrackerBox-region = 34,393,307,85
+AHLCG-StoryFace-TrackerName-alignment = center, middle
+AHLCG-StoryFace-TrackerName-region = 46,397,280,20
+AHLCG-StoryFace-TrackerName-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE:{Eons.namedObjects.AHLCGObject.titleFontSize*0.836}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.titleFontWidth*1.02}; FOREGROUND: #000000
+AHLCG-StoryFace-template = ArkhamHorrorLCG/templates/AHLCG-Story.jp2

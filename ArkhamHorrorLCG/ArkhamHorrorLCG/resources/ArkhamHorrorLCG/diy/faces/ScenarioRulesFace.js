@@ -10,7 +10,7 @@ function ( Face, FaceUtils, markup, strings, ui ) {
 
 	ScenarioRulesFace.prototype = Object.create( Face.prototype );
 	ScenarioRulesFace.prototype.constructor = ScenarioRulesFace;
-	ScenarioRulesFace.prototype.template = 'AHLCG-Scenario';
+	ScenarioRulesFace.prototype.template = 'AHLCG-ScenarioRulesFace';
 
 	ScenarioRulesFace.prototype.setDefaults = function( diy, faceIndex, keep ) {
 		var values = {

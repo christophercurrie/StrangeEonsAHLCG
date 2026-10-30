@@ -123,3 +123,7 @@ AHLCG-WeaknessEnemy-Default-hires-ppi = 600
 AHLCG-WeaknessEnemyBack-Default-hires-ppi = 600
 AHLCG-WeaknessTreachery-Default-hires-ppi = 600
 AHLCG-WeaknessTreacheryBack-Default-hires-ppi = 600
+AHLCG-StoryFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-Story.png
+AHLCG-ScenarioRulesFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-Scenario.png
+AHLCG-PlayerBackFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-PlayerBack.png
+AHLCG-EncounterBackFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-EncounterBack.png

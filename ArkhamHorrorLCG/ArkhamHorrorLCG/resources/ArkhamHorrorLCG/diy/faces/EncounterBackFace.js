@@ -8,7 +8,7 @@ define( [ 'faces/Face' ], function ( Face ) {
 
 	EncounterBackFace.prototype = Object.create( Face.prototype );
 	EncounterBackFace.prototype.constructor = EncounterBackFace;
-	EncounterBackFace.prototype.template = 'AHLCG-EncounterBack';
+	EncounterBackFace.prototype.template = 'AHLCG-EncounterBackFace';
 
 	EncounterBackFace.prototype.setDefaults = function( diy, faceIndex, keep ) {
 		// the face's type, not user data, so set even with keep

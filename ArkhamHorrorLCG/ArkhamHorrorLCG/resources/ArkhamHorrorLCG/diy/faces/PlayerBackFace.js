@@ -8,7 +8,7 @@ define( [ 'faces/Face' ], function ( Face ) {
 
 	PlayerBackFace.prototype = Object.create( Face.prototype );
 	PlayerBackFace.prototype.constructor = PlayerBackFace;
-	PlayerBackFace.prototype.template = 'AHLCG-PlayerBack';
+	PlayerBackFace.prototype.template = 'AHLCG-PlayerBackFace';
 
 	PlayerBackFace.prototype.setDefaults = function( diy, faceIndex, keep ) {
 		// the face's type, not user data, so set even with keep

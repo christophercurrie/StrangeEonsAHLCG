@@ -79,10 +79,10 @@ define( [ 'faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui' ], function ( Fa
 	Face.prototype.paint = function( g, diy, sheet, boxes ) {
 	};
 
-	// <template>-<name> if set, else the shared AHLCG-<name>
+	// <template>-<name> if set, else the shared AHLCG-Face-<name>
 	Face.prototype.key = function( settings, name ) {
 		var key = this.template + '-' + name;
-		return settings.get( key ) != null ? key : 'AHLCG-' + name;
+		return settings.get( key ) != null ? key : 'AHLCG-Face-' + name;
 	};
 
 	// sets each key + suffix
