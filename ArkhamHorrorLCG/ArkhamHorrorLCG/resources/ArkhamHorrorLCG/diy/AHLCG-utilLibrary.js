@@ -975,9 +975,6 @@ function createPortrait( diy, fullKey ) {
 
 	setPortraitDefaults( diy, settingsFace, key, portraitKey );
 	if ( faces == 'Both' ) 	setPortraitDefaults( diy, FACE_BACK, key, portraitKey );
-    print('Portrait name:');
-    print(getExpandedKey(settingsFace, portraitKey, '-portrait-template'));
-    print('\n');
 	PortraitList[portraitIndex] = new DefaultPortrait( diy, getExpandedKey( settingsFace, portraitKey, '-portrait-template' ), allowRotation );
 
 	PortraitList[portraitIndex].facesToUpdate = facesArray;
