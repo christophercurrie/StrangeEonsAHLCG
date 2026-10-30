@@ -7,6 +7,9 @@ define( [ 'faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui' ], function ( Fa
 	const Suffixes = [ '', 'Back' ];
 
 	function Face() {
+		// what the face's interface added to the bindings
+		this.boundControls = [];
+		this.populateListeners = [];
 	}
 
 	// settings key prefix of the face's template: <template>-template is the
@@ -31,8 +34,40 @@ define( [ 'faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui' ], function ( Fa
 	};
 
 	// returns { general: [ { panel, title } ], tabs: [ { panel, title } ] }
-	Face.prototype.createInterface = function( diy, bindings, faceIndex, editor ) {
+	Face.prototype.createInterface = function( diy, bindings, faceIndex ) {
 		return { general: [], tabs: [] };
+	};
+
+	// binds control to the setting name + the face's suffix
+	Face.prototype.bind = function( bindings, faceIndex, name, control ) {
+		bindings.add( name + this.suffix( faceIndex ), control, [ faceIndex ] );
+		this.boundControls.push( control );
+	};
+
+	Face.prototype.unbind = function( bindings, control ) {
+		bindings.remove( control );
+		var index = this.boundControls.indexOf( control );
+		if ( index >= 0 ) this.boundControls.splice( index, 1 );
+	};
+
+	Face.prototype.addPopulateListener = function( bindings, listener ) {
+		bindings.addPopulateListener( listener );
+		this.populateListeners.push( listener );
+	};
+
+	// Detaches the face's interface from the bindings and the component, when
+	// another face replaces it. Bindings must be flushed first.
+	Face.prototype.removeInterface = function( diy, bindings, faceIndex ) {
+		this.boundControls.forEach( function ( control ) { bindings.remove( control ); } );
+		this.boundControls = [];
+		this.populateListeners.forEach( function ( listener ) { bindings.removePopulateListener( listener ); } );
+		this.populateListeners = [];
+
+		var nameField = diy.getNameField();
+		if ( faceIndex === 0 && nameField != null ) {
+			diy.setName( nameField.getText() );
+			diy.setNameField( null );
+		}
 	};
 
 	// returns the face's markup boxes
@@ -85,8 +120,11 @@ define( [ 'faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui' ], function ( Fa
 	Face.prototype.createTitlePanel = function( diy, bindings, faceIndex ) {
 		var panel = new ui.Grid();
 		var titleArea = new ui.textArea( '', 2, 30 );
-		if ( faceIndex === 0 ) diy.setNameField( titleArea );
-		else bindings.add( 'Title' + this.suffix( faceIndex ), titleArea, [ faceIndex ] );
+		if ( faceIndex === 0 ) {
+			diy.setNameField( titleArea );
+			titleArea.setText( diy.getName() );
+		}
+		else this.bind( bindings, faceIndex, 'Title', titleArea );
 		panel.place( strings.string( 'AHLCG-Title' ), 'align right', titleArea, 'wrap, pushx, growx' );
 		return panel;
 	};

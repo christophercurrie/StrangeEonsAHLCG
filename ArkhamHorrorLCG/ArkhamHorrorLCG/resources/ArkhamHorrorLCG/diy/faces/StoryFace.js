@@ -23,26 +23,24 @@ function ( Face, FaceUtils, TextBlocks, common, imageutils, strings, ui ) {
 		this.setSettings( diy, keep, values );
 	};
 
-	StoryFace.prototype.createInterface = function( diy, bindings, faceIndex, editor ) {
-		var suffix = this.suffix( faceIndex );
-
+	StoryFace.prototype.createInterface = function( diy, bindings, faceIndex ) {
 		var trackerPanel = new ui.Grid();
 		trackerPanel.setTitle( strings.string( 'AHLCG-TrackerBox' ) );
 		var trackerField = new ui.textField( '', 30 );
-		bindings.add( 'TrackerBox' + suffix, trackerField, [ faceIndex ] );
+		this.bind( bindings, faceIndex, 'TrackerBox', trackerField );
 		var heightSpinner = new ui.spinner( 50, 200, 1, 100 );
-		bindings.add( 'TrackerHeight' + suffix, heightSpinner, [ faceIndex ] );
+		this.bind( bindings, faceIndex, 'TrackerHeight', heightSpinner );
 		trackerPanel.place(
 			strings.string( 'AHLCG-TrackerBox' ), 'align right', trackerField, 'wrap, pushx, growx',
 			strings.string( 'AHLCG-Height' ), 'align right', heightSpinner, 'align left, split', '%', 'pushx, growx, align left'
 		);
 
 		var textTab = new ui.Grid();
-		textTab.place( TextBlocks.createPanel( diy, bindings, faceIndex, suffix, editor ), 'wrap, pushx, growx' );
+		textTab.place( TextBlocks.createPanel( diy, this, bindings, faceIndex ), 'wrap, pushx, growx' );
 		textTab.place( trackerPanel, 'wrap, pushx, growx' );
 
 		var scaleSpinner = new ui.spinner( 50, 150, 1, 100 );
-		bindings.add( 'ScaleModifier' + suffix, scaleSpinner, [ faceIndex ] );
+		this.bind( bindings, faceIndex, 'ScaleModifier', scaleSpinner );
 		textTab.place( strings.string( 'AHLCG-TextScale' ), 'align left, split', scaleSpinner, 'align left', '%', 'wrap, align left' );
 
 		return {

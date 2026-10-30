@@ -77,8 +77,9 @@ function ( FaceUtils, markup, strings, ui ) {
 	// One row per block: style, spacing, delete and the text. Adding or
 	// deleting a block rebuilds just the rows and their bindings, in place;
 	// bindings must be ui/Bindings, which can remove them.
-	function createPanel( diy, bindings, faceIndex, suffix, editor ) {
+	function createPanel( diy, face, bindings, faceIndex ) {
 		var settings = diy.settings;
+		var suffix = face.suffix( faceIndex );
 		var panel = new ui.Grid();
 		panel.setTitle( strings.string( 'AHLCG-Rules' ) );
 		// a Swing panel, unlike Grid, can be emptied and refilled
@@ -95,7 +96,7 @@ function ( FaceUtils, markup, strings, ui ) {
 		}
 
 		function bind( name, n, control ) {
-			bindings.add( key( name, n, suffix ), control, [ faceIndex ] );
+			face.bind( bindings, faceIndex, key( name, n, '' ), control );
 			bound.push( control );
 		}
 
@@ -141,7 +142,7 @@ function ( FaceUtils, markup, strings, ui ) {
 
 		// rebuilds the rows and their bindings from the settings
 		function populate() {
-			bound.forEach( function ( control ) { bindings.remove( control ); } );
+			bound.forEach( function ( control ) { face.unbind( bindings, control ); } );
 			bound = [];
 			rows.removeAll();
 			var total = count( settings, suffix );
@@ -165,13 +166,9 @@ function ( FaceUtils, markup, strings, ui ) {
 		} );
 
 		populate();
-		// The block count can change when the editor reloads the component,
-		// such as after Clear; this runs before the bindings populate, since
-		// it is registered first.
-		editor.addFieldPopulationListener( function populateBlocks() {
-			// skip panels an earlier interface left behind
-			if ( javax.swing.SwingUtilities.isDescendingFrom( rows, editor ) ) populate();
-		} );
+		// the block count can change when the editor reloads the component,
+		// such as after Clear
+		face.addPopulateListener( bindings, populate );
 
 		panel.place( rows, 'span 2, pushx, growx, wrap', add, 'span 2, wrap' );
 		return panel;

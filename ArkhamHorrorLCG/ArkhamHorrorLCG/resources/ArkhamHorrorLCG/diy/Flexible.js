@@ -82,11 +82,9 @@ function ( exportHandler, FaceHandler, strings, ui, PlayerBackFace, EncounterBac
 					let id = String( list.getSelectedItem() );
 					if ( id === handler.faceIds[faceIndex] ) return;
 
-					diy.settings.set( FaceSettings[faceIndex], id );
-					handler.applyFaceSettings( diy );
-					// rebuild after this event, since it replaces the control that sent it
-					java.awt.EventQueue.invokeLater( function () {
-						editor.replaceEditedComponent( diy );
+					handler.changeFace( diy, faceIndex, function () {
+						diy.settings.set( FaceSettings[faceIndex], id );
+						handler.applyFaceSettings( diy );
 					} );
 				} catch ( ex ) {
 					Error.handleUncaught( ex );

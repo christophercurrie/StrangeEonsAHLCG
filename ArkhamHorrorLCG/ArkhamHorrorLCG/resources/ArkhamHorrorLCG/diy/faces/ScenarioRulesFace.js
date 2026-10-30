@@ -24,19 +24,17 @@ function ( Face, FaceUtils, markup, strings, ui ) {
 	};
 
 	ScenarioRulesFace.prototype.createInterface = function( diy, bindings, faceIndex ) {
-		var suffix = this.suffix( faceIndex );
-
 		var titlePanel = this.createTitlePanel( diy, bindings, faceIndex );
 		var resolutionBox = new ui.checkBox( strings.string( 'AHLCG-ScenarioRules-Resolution' ) );
-		bindings.add( 'Resolution' + suffix, resolutionBox, [ faceIndex ] );
+		this.bind( bindings, faceIndex, 'Resolution', resolutionBox );
 		titlePanel.place( resolutionBox, 'skip 1, wrap' );
 
 		var statPanel = new ui.Grid();
 		var pageSpinner = new ui.spinner( 0, 50, 1, 1 );
-		bindings.add( 'Page' + suffix, pageSpinner, [ faceIndex ] );
+		this.bind( bindings, faceIndex, 'Page', pageSpinner );
 		statPanel.place( strings.string( 'AHLCG-Page' ), 'align right, gapx 10', pageSpinner, 'wrap' );
 
-		var textPanel = FaceUtils.createTextPanel( bindings, faceIndex, suffix, [ 'Rules' ], '', 18 );
+		var textPanel = FaceUtils.createTextPanel( this, bindings, faceIndex, [ 'Rules' ], '', 18 );
 
 		return {
 			general: [

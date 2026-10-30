@@ -89,14 +89,15 @@ define( [ 'se/common', 'se/strings', 'se/ui' ], function ( common, strings, ui )
 	}
 
 	// Game text fields for parts (Traits, Header, Rules or another name),
-	// keyed <part><partSuffix><suffix>, with spacing spinners between them.
-	function createTextPanel( bindings, faceIndex, suffix, parts, partSuffix, rulesRows ) {
+	// keyed <part><partSuffix> and bound by face, with spacing spinners between
+	// them.
+	function createTextPanel( face, bindings, faceIndex, parts, partSuffix, rulesRows ) {
 		var panel = new ui.Grid();
 		panel.setTitle( strings.string( 'AHLCG-Rules' ) );
 
 		for ( let i = 0; i < parts.length; i++ ) {
 			let base = parts[i];
-			let key = base + partSuffix + suffix;
+			let key = base + partSuffix;
 			let label = strings.string( 'AHLCG-' + base );
 			let field;
 			let tipCount = 0;
@@ -119,7 +120,7 @@ define( [ 'se/common', 'se/strings', 'se/ui' ], function ( common, strings, ui )
 					field = new ui.textArea( '', 6, 30 );
 					break;
 			}
-			bindings.add( key, field, [ faceIndex ] );
+			face.bind( bindings, faceIndex, key, field );
 
 			if ( tipCount === 0 ) {
 				panel.place( label, 'aligny top, gaptop 5, align right', field, 'wrap, pushx, growx' );
@@ -140,7 +141,7 @@ define( [ 'se/common', 'se/strings', 'se/ui' ], function ( common, strings, ui )
 
 			if ( i + 1 < parts.length ) {
 				let spacing = new ui.spinner( 0, 50, 1, 1 );
-				bindings.add( key + 'Spacing', spacing, [ faceIndex ] );
+				face.bind( bindings, faceIndex, key + 'Spacing', spacing );
 				panel.place( strings.string( 'AHLCG-Spacing' ), 'align right', spacing, 'wrap' );
 			}
 		}
