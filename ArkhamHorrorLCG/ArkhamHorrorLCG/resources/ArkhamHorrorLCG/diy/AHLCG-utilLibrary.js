@@ -518,7 +518,7 @@ function paintFullBleed( g, sheet, key, mirror ) {
 }
 
 // paints a portrait; with the Mirror edges portrait bleed preference, image edges that
-// reach the trim edge are extended into the bleed by mirroring the image across them
+// stop just short of the clip region are extended to it by mirroring the image across them
 function paintPortrait( g, diy, sheet, name ) {
 	var portrait = PortraitList[getPortraitIndex( name )];
 	var image = portrait.getImage();
@@ -532,8 +532,6 @@ function paintPortrait( g, diy, sheet, name ) {
 
 	var clip = diy.settings.getRegion( portrait.getBaseKey() + '-portrait-clip' );
 	var scale = portrait.getScale();
-	var trimWidth = sheet.getTemplateWidth() - 2 * bleed;
-	var trimHeight = sheet.getTemplateHeight() - 2 * bleed;
 
 	// image bounds as DefaultPortrait paints them
 	var w = Math.floor( image.getWidth() * scale + 0.5 );
@@ -541,7 +539,7 @@ function paintPortrait( g, diy, sheet, name ) {
 	var x = Math.floor( clip.getCenterX() - image.getWidth() * scale / 2 + portrait.getPanX() );
 	var y = Math.floor( clip.getCenterY() - image.getHeight() * scale / 2 + portrait.getPanY() );
 
-	var pad = getPortraitBleedPadding( x, y, w, h, clip, trimWidth, trimHeight, w / image.getWidth(), h / image.getHeight() );
+	var pad = getPortraitBleedPadding( x, y, w, h, clip, bleed, w / image.getWidth(), h / image.getHeight() );
 	if ( pad == null ) {
 		portrait.paint( g, sheet.getRenderTarget() );
 		return;
@@ -564,20 +562,20 @@ function paintPortrait( g, diy, sheet, name ) {
 }
 
 // source pixels to add on each side of a portrait image whose scaled bounds (x, y, w, h)
-// reach the trim edge (within a pixel) but stop short of where the clip region ends in
-// the bleed, or null if no edge qualifies
-function getPortraitBleedPadding( x, y, w, h, clip, trimWidth, trimHeight, sx, sy ) {
-	const tolerance = 1;
+// stop short of the clip region by no more than the bleed margin (within a pixel), or
+// null if no edge qualifies
+function getPortraitBleedPadding( x, y, w, h, clip, bleed, sx, sy ) {
+	const reach = bleed + 1;
 	var pad = { left: 0, top: 0, right: 0, bottom: 0 };
-	var right = x + w;
-	var bottom = y + h;
+	var left = x - clip.x;
+	var top = y - clip.y;
+	var right = clip.x + clip.width - ( x + w );
+	var bottom = clip.y + clip.height - ( y + h );
 
-	if ( x <= tolerance && clip.x < x ) pad.left = Math.ceil( ( x - clip.x ) / sx );
-	if ( y <= tolerance && clip.y < y ) pad.top = Math.ceil( ( y - clip.y ) / sy );
-	if ( right >= trimWidth - tolerance && clip.x + clip.width > right )
-		pad.right = Math.ceil( ( clip.x + clip.width - right ) / sx );
-	if ( bottom >= trimHeight - tolerance && clip.y + clip.height > bottom )
-		pad.bottom = Math.ceil( ( clip.y + clip.height - bottom ) / sy );
+	if ( left > 0 && left <= reach ) pad.left = Math.ceil( left / sx );
+	if ( top > 0 && top <= reach ) pad.top = Math.ceil( top / sy );
+	if ( right > 0 && right <= reach ) pad.right = Math.ceil( right / sx );
+	if ( bottom > 0 && bottom <= reach ) pad.bottom = Math.ceil( bottom / sy );
 
 	if ( pad.left + pad.top + pad.right + pad.bottom == 0 ) return null;
 	return pad;
