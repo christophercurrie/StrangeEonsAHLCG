@@ -2159,6 +2159,9 @@ function drawChaosBody( g, diy, sheet, textBoxes, headerBox, y ) {
 		let newY = headerBox.draw( g, headerRegion );
 
 		if ( newY <= 0 ) {
+			// measure returns a height only for a new layout; a repeated one returns a position
+			headerBox.markupText = '';
+			headerBox.markupText = $HeaderBack;
 			let hHeight = headerBox.measure( g, headerRegion );
 			newY = headerRegion.y + hHeight;
 		}
