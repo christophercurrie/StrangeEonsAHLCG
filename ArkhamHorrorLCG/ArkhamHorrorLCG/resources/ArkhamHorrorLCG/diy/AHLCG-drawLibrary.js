@@ -13,6 +13,8 @@ importClass( java.lang.reflect.Field );
 function drawTemplate( g, sheet, className ) {
 	var faceIndex = sheet.getSheetIndex();
 	var name;
+	// the chaos template is the full page art with a frame for the encounter icon
+	var hasEncounterFrame = CardTypes[faceIndex] == 'Chaos' || CardTypes[faceIndex] == 'StoryChaos' || CardTypes[faceIndex] == 'ChaosStory';
 
 	if ( useReplacementTemplate( faceIndex )) {
 		drawReplacementTemplate( g, sheet, faceIndex );
@@ -22,8 +24,8 @@ function drawTemplate( g, sheet, className ) {
 	if ( className != null && className.length > 0 ) {
 		name = getSubtitledTemplateName( faceIndex, getClassTemplateName( faceIndex, className ) );
 	}
-	else if ( CardTypes[faceIndex] == 'StoryChaos' || CardTypes[faceIndex] == 'ChaosStory' ) {
-		name = 'Chaos';
+	else if ( hasEncounterFrame ) {
+		name = 'StoryChaosFull';
 	}
 	else if ( 'Concealed' ) {
 		if ( $Template == 'Decoy' ) name = CardTypes[faceIndex] + 'Decoy';
@@ -38,6 +40,12 @@ function drawTemplate( g, sheet, className ) {
 	var mirror = (CardTypes[faceIndex] == 'Act' || CardTypes[faceIndex] == 'Agenda') && isReversed( faceIndex );
 
 	paintFullBleed( g, sheet, getTemplateKey( name ), mirror );
+
+	if ( hasEncounterFrame ) {
+		let bleed = getBleedPixels( sheet );
+		let region = sheet.getGameComponent().getSettings().getRegion( 'AHLCG-Chaos-EncounterFrame' );
+		sheet.paintImage( g, 'AHLCG-Chaos-EncounterFrame', region.x - bleed, region.y - bleed, region.width, region.height );
+	}
 }
 
 // backType is the selected back for cards that offer Player and Encounter backs

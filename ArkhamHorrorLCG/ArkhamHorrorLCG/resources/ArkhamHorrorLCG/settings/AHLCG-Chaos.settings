@@ -1,4 +1,6 @@
-AHLCG-Chaos-Default-template = ArkhamHorrorLCG/templates/AHLCG-Chaos.jp2
+AHLCG-Chaos-Default-template = ArkhamHorrorLCG/templates/AHLCG-StoryChaosFull.jp2
+AHLCG-Chaos-EncounterFrame = ArkhamHorrorLCG/overlays/AHLCG-EncounterFrame.png
+AHLCG-Chaos-EncounterFrame-region = 128,78,155,31
 AHLCG-Chaos-Default-bleed-margin = 8.64
 
 AHLCG-Chaos-Name-region = 28,90,319,75
