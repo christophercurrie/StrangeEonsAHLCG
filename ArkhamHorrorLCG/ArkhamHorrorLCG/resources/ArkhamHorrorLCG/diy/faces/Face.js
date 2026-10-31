@@ -150,7 +150,7 @@ define(['faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui'], function (
             strings.string('AHLCG-Title'),
             'align right',
             titleArea,
-            'wrap, pushx, growx'
+            'wrap, pushx, growx, ' + FaceUtils.textAreaWidth(titleArea)
         );
         return panel;
     };

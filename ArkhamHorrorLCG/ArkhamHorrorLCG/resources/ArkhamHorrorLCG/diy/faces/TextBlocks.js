@@ -115,9 +115,10 @@ define([
         var suffix = face.suffix(faceIndex);
         var panel = new ui.Grid();
         panel.setTitle(strings.string('AHLCG-Rules'));
-        // a Swing panel, unlike Grid, can be emptied and refilled
+        // a Swing panel, unlike Grid, can be emptied and refilled; the side
+        // insets keep combo boxes, placed by their visible edge, in the panel
         var rows = new javax.swing.JPanel(
-            new Packages.net.miginfocom.swing.MigLayout('insets 0')
+            new Packages.net.miginfocom.swing.MigLayout('insets 0 4 0 4')
         );
         var bound = [];
 
@@ -223,7 +224,10 @@ define([
             place(spacing, '');
             place(remove, 'gapx push, wrap');
             if (tokenRow != null) place(tokenRow, 'span 2, hidemode 3, wrap');
-            place(text, 'span 2, pushx, growx, wrap');
+            place(
+                text,
+                'span 2, pushx, growx, wrap, ' + FaceUtils.textAreaWidth(text)
+            );
         }
 
         // rebuilds the rows and their bindings from the settings

@@ -133,6 +133,12 @@ define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
     // Game text fields for parts (Traits, Header, Rules or another name),
     // keyed <part><partSuffix> and bound by face, with spacing spinners between
     // them.
+    // A wrapped text area's preferred and minimum widths follow its current
+    // width, so it would hold its tab open after widening. Call before layout.
+    function textAreaWidth(area) {
+        return 'w 0:' + area.getPreferredSize().width + ':';
+    }
+
     function createTextPanel(
         face,
         bindings,
@@ -170,27 +176,28 @@ define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
                     break;
             }
             face.bind(bindings, faceIndex, key, field);
+            let width = textAreaWidth(field);
 
             if (tipCount === 0) {
                 panel.place(
                     label,
                     'aligny top, gaptop 5, align right',
                     field,
-                    'wrap, pushx, growx'
+                    'wrap, pushx, growx, ' + width
                 );
             } else if (inlineTips) {
                 panel.place(
                     label,
                     'aligny top, gaptop 5, align right',
                     field,
-                    'split' + tipCount + ', pushx, growx'
+                    'split' + tipCount + ', pushx, growx, ' + width
                 );
             } else {
                 panel.place(
                     label,
                     'spany ' + tipCount + ', aligny top, gaptop 5, align right',
                     field,
-                    'spany ' + tipCount + ', pushx, growx'
+                    'spany ' + tipCount + ', pushx, growx, ' + width
                 );
             }
 
@@ -222,6 +229,7 @@ define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
 
     return {
         createTextPanel: createTextPanel,
+        textAreaWidth: textAreaWidth,
         plugin: plugin,
         isUsed: isUsed,
         bleedPixels: bleedPixels,
