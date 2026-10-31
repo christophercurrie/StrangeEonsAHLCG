@@ -155,10 +155,17 @@ define( [ 'faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui' ], function ( Fa
 		}
 	};
 
-	// Paints the template image over the whole sheet. When rendering for
-	// export or printing, the image set by <template>-template-hires is used
-	// instead, if available; it is provided by a separate plug-in.
+	// Paints the template image over the whole sheet, cleared first since a
+	// sheet reuses its image and templates can be partly transparent. When
+	// rendering for export or printing, the image set by
+	// <template>-template-hires is used instead, if available; it is provided
+	// by a separate plug-in.
 	Face.prototype.paintTemplate = function( g, sheet ) {
+		var composite = g.getComposite();
+		g.setComposite( java.awt.AlphaComposite.Clear );
+		g.fillRect( 0, 0, sheet.getTemplateWidth(), sheet.getTemplateHeight() );
+		g.setComposite( composite );
+
 		sheet.paintImage( g, this.template + '-template', 0, 0 );
 	};
 
