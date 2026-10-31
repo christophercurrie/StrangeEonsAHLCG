@@ -2110,15 +2110,15 @@ function drawChaosBody( g, diy, sheet, textBoxes, headerBox, y ) {
 	var region = diy.settings.getRegion( getExpandedKey( faceIndex, 'Body-region' ) );
 	var originalHeight = region.height;
 
-	// if back and no TrackerBoxBack, use the front
-	var trackerBox = null;
+	var trackerBox = '';
 	var trackerHeight = 0;
 	if ( $('TrackerBox' + BindingSuffixes[faceIndex]) ) {
 		trackerBox = String( $('TrackerBox' + BindingSuffixes[faceIndex]) );
 		trackerHeight = $('TrackerHeight' + BindingSuffixes[faceIndex]);
 	}
 
-	if ( !trackerBox ) {
+	// the sides of a chaos card share a tracking box; the front of another card has its own
+	if ( trackerBox.length == 0 && CardTypes[faceIndex] == 'Chaos' ) {
 		trackerBox = String( $TrackerBox );
 		trackerHeight = $TrackerHeight;
 	}
