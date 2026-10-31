@@ -2722,7 +2722,11 @@ function drawCollectorInfo( g, diy, sheet, collectionNumberBox, collectionSuffix
 
 	if ( collectionNumberBox ) collectionNumberBox.defaultStyle = diy.settings.getTextStyle(getExpandedKey( faceIndex, 'CollectionNumber-style'), null);
 	if ( encounterNumberBox ) encounterNumberBox.defaultStyle = diy.settings.getTextStyle(getExpandedKey( faceIndex, 'EncounterNumber-style'), null);
-	if ( copyrightBox ) copyrightBox.defaultStyle = diy.settings.getTextStyle(getExpandedKey( faceIndex, 'Copyright-style'), null);
+	if ( copyrightBox ) {
+		copyrightBox.defaultStyle = diy.settings.getTextStyle(getExpandedKey( faceIndex, 'Copyright-style'), null);
+		// the card type can change after the box is created
+		copyrightBox.alignment = diy.settings.getTextAlignment(getExpandedKey( faceIndex, 'Copyright-alignment'));
+	}
 
 	var collectorX = sheet.getTemplateWidth() - 2 * getBleedPixels( sheet );
 

@@ -253,7 +253,7 @@ function paintFront( g, diy, sheet ) {
 		drawCollectorInfo( g, diy, sheet, collectionBox, collectionSuffix, $ShowCollectionNumberFront == '1', encounterBox, encounterIcon, copyrightBox, null );
 	}
 
-	if ( $Artist != '' ) drawArtist( g, diy, sheet, Artist_box, false );
+	if ( $Template == 'Portrait' && $Artist != '' ) drawArtist( g, diy, sheet, Artist_box, false );
 }
 
 function paintBack( g, diy, sheet ) {
@@ -310,7 +310,7 @@ function paintBack( g, diy, sheet ) {
 		drawCollectorInfo( g, diy, sheet, collectionBox, collectionSuffix, $ShowCollectionNumberFront == '1', encounterBox, encounterIcon, copyrightBox, null );
 	}
 
-	if ( $ArtistBack != '' ) drawArtist( g, diy, sheet, BackArtist_box, false );
+	if ( $TemplateBack == 'Portrait' && $ArtistBack != '' ) drawArtist( g, diy, sheet, BackArtist_box, false );
 }
 
 function onClear() {
