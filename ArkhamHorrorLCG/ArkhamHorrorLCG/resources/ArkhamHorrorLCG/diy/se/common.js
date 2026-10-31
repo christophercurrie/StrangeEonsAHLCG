@@ -2,10 +2,10 @@
 //
 // Module: returns { Eons, Region, Settings }.
 /* global Eons, Region, Settings */
-define( function () {
-	return {
-		Eons: Eons,
-		Region: Region,
-		Settings: Settings
-	};
-} );
+define(function () {
+    return {
+        Eons: Eons,
+        Region: Region,
+        Settings: Settings,
+    };
+});

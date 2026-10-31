@@ -2,11 +2,11 @@
 //
 // Module: returns { DIY, FaceStyle }.
 /* global useLibrary, DIY, FaceStyle */
-useLibrary( 'diy' );
+useLibrary('diy');
 
-define( function () {
-	return {
-		DIY: DIY,
-		FaceStyle: FaceStyle
-	};
-} );
+define(function () {
+    return {
+        DIY: DIY,
+        FaceStyle: FaceStyle,
+    };
+});

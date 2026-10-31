@@ -6,10 +6,16 @@
   "author": "",
   "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "check": "npm run format:check && npm run lint:check",
+    "format:check": "prettier -c **",
+    "format:fix": "prettier -w **",
+    "lint:check": "eslint",
+    "lint:fix": "eslint --fix"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "eslint": "^10.14.0"
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "3.9.10"
   }
 }

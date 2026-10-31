@@ -2,8 +2,8 @@
 //
 // Module: returns { ImageUtils }.
 /* global useLibrary, ImageUtils */
-useLibrary( 'imageutils' );
+useLibrary('imageutils');
 
-define( function () {
-	return { ImageUtils: ImageUtils };
-} );
+define(function () {
+    return { ImageUtils: ImageUtils };
+});

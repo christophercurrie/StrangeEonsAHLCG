@@ -5,20 +5,28 @@
 //
 // Module: returns exportHandler( scope, handler ), where scope is the handler
 // script's global scope.
-define( [], function () {
-	// the DIY Handler and PortraitProvider functions
-	const HandlerMethods = [
-		'create', 'createInterface', 'createFrontPainter', 'createBackPainter',
-		'paintFront', 'paintBack', 'onClear', 'onRead', 'onWrite',
-		'getPortraitCount', 'getPortrait'
-	];
+define([], function () {
+    // the DIY Handler and PortraitProvider functions
+    const HandlerMethods = [
+        'create',
+        'createInterface',
+        'createFrontPainter',
+        'createBackPainter',
+        'paintFront',
+        'paintBack',
+        'onClear',
+        'onRead',
+        'onWrite',
+        'getPortraitCount',
+        'getPortrait',
+    ];
 
-	return function exportHandler( scope, handler ) {
-		HandlerMethods.forEach( function ( name ) {
-			if ( typeof handler[name] !== 'function' ) return;
-			scope[name] = function () {
-				return handler[name].apply( handler, arguments );
-			};
-		} );
-	};
-} );
+    return function exportHandler(scope, handler) {
+        HandlerMethods.forEach(function (name) {
+            if (typeof handler[name] !== 'function') return;
+            scope[name] = function () {
+                return handler[name].apply(handler, arguments);
+            };
+        });
+    };
+});

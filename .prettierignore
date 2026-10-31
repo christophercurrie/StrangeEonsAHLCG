@@ -1,0 +1,10 @@
+# the same files as eslint.config.mjs: only the new modules
+**/*
+!**/*/
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/Flexible.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/faces/**/*.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/handlers/**/*.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/se/**/*.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/ui/**/*.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/libraries/amd.js
+!src/renderTest/**/*.js

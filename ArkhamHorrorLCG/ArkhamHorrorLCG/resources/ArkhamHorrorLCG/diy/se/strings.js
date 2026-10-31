@@ -2,9 +2,9 @@
 //
 // Module: returns { string, gstring }.
 /* global string, gstring */
-define( function () {
-	return {
-		string: string,
-		gstring: gstring
-	};
-} );
+define(function () {
+    return {
+        string: string,
+        gstring: gstring,
+    };
+});

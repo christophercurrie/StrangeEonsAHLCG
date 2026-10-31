@@ -6,19 +6,19 @@
   useLibrary, Bindings, Grid, button, checkBox, comboBox, portraitPanel,
   spinner, textArea, textField, tipButton
  */
-useLibrary( 'ui' );
+useLibrary('ui');
 
-define( function () {
-	return {
-		Bindings: Bindings,
-		Grid: Grid,
-		button: button,
-		checkBox: checkBox,
-		comboBox: comboBox,
-		portraitPanel: portraitPanel,
-		spinner: spinner,
-		textArea: textArea,
-		textField: textField,
-		tipButton: tipButton
-	};
-} );
+define(function () {
+    return {
+        Bindings: Bindings,
+        Grid: Grid,
+        button: button,
+        checkBox: checkBox,
+        comboBox: comboBox,
+        portraitPanel: portraitPanel,
+        spinner: spinner,
+        textArea: textArea,
+        textField: textField,
+        tipButton: tipButton,
+    };
+});

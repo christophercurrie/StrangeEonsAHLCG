@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import { defineConfig, globalIgnores } from "eslint/config";
+import eslintConfigPrettier from "eslint-config-prettier/flat";
 
 const resources = "ArkhamHorrorLCG/ArkhamHorrorLCG/resources";
 const diy = `${resources}/ArkhamHorrorLCG/diy`;
@@ -20,7 +21,7 @@ export default defineConfig([
     `!${renderTest}/**/*.js`,
   ]),
   {
-    extends: ["js/recommended"],
+    extends: ["js/recommended", eslintConfigPrettier],
     files: [`${diy}/**/*.js`, amd, `${renderTest}/**/*.js`],
     plugins: { js },
     languageOptions: {
