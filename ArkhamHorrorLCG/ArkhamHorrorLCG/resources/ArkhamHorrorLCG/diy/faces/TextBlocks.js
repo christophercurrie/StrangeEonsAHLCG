@@ -4,14 +4,16 @@
 //   BlockStyle<n><suffix>    one of Styles
 //   BlockText<n><suffix>
 //   BlockSpacing<n><suffix>  points after the block (before, for victory)
+//   BlockTokens<n><suffix>   a token block's icons, separated by commas
 //
 // Blocks are laid out top to bottom and shrunk together in 4% steps until
 // they fit. Rule blocks split the text into parts; a rule is drawn before
-// each part that has text, except the first.
+// each part that has text, except the first. Intro and token blocks fit
+// themselves in what is left; see faces/TokenBlocks.js.
 //
 // Module: returns TextBlocks.
-define( [ 'faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui' ],
-function ( FaceUtils, markup, strings, ui ) {
+define( [ 'faces/FaceUtils', 'faces/TokenBlocks', 'se/markup', 'se/strings', 'se/ui' ],
+function ( FaceUtils, TokenBlocks, markup, strings, ui ) {
 	const Styles = [ 'traits', 'header', 'story', 'rules', 'victory', 'rule' ];
 	const StyleLabels = {
 		traits: 'AHLCG-Traits',
@@ -19,11 +21,15 @@ function ( FaceUtils, markup, strings, ui ) {
 		story: 'AHLCG-AccentedStory',
 		rules: 'AHLCG-Rules',
 		victory: 'AHLCG-Victory',
-		rule: 'AHLCG-Rule'
+		rule: 'AHLCG-Rule',
+		intro: 'AHLCG-Introduction',
+		token: 'AHLCG-Tokens'
 	};
 	const DefaultStyle = 'rules';
 	// measured height of a rule and the space around it, before scaling
 	const RuleHeight = 16;
+	// text does not shrink further to make room for tokens
+	const MinScale = 0.2;
 
 	function key( name, n, suffix ) {
 		return 'Block' + name + n + suffix;
@@ -42,7 +48,7 @@ function ( FaceUtils, markup, strings, ui ) {
 		return values;
 	}
 
-	// [ { style, text, spacing } ]; other styles read as the default
+	// [ { style, text, spacing, tokens } ]; other styles read as the default
 	function read( settings, suffix, styles ) {
 		var blocks = [];
 		for ( let n = 1; n <= count( settings, suffix ); n++ ) {
@@ -50,10 +56,16 @@ function ( FaceUtils, markup, strings, ui ) {
 			blocks.push( {
 				style: styles.indexOf( style ) >= 0 ? style : DefaultStyle,
 				text: String( settings.get( key( 'Text', n, suffix ), '' ) ),
-				spacing: parseInt( settings.get( key( 'Spacing', n, suffix ), '0' ), 10 ) || 0
+				spacing: parseInt( settings.get( key( 'Spacing', n, suffix ), '0' ), 10 ) || 0,
+				tokens: readTokens( settings, n, suffix )
 			} );
 		}
 		return blocks;
+	}
+
+	function readTokens( settings, n, suffix ) {
+		var tokens = String( settings.get( key( 'Tokens', n, suffix ), '' ) );
+		return tokens.length > 0 ? tokens.split( ',' ) : [];
 	}
 
 	function write( settings, suffix, blocks ) {
@@ -64,11 +76,14 @@ function ( FaceUtils, markup, strings, ui ) {
 				settings.set( key( 'Style', n, suffix ), block.style );
 				settings.set( key( 'Text', n, suffix ), block.text );
 				settings.set( key( 'Spacing', n, suffix ), String( block.spacing ) );
+				if ( block.tokens.length > 0 ) settings.set( key( 'Tokens', n, suffix ), block.tokens.join( ',' ) );
+				else settings.reset( key( 'Tokens', n, suffix ) );
 			}
 			else {
 				settings.reset( key( 'Style', n, suffix ) );
 				settings.reset( key( 'Text', n, suffix ) );
 				settings.reset( key( 'Spacing', n, suffix ) );
+				settings.reset( key( 'Tokens', n, suffix ) );
 			}
 		}
 		settings.set( 'BlockCount' + suffix, String( blocks.length ) );
@@ -109,6 +124,24 @@ function ( FaceUtils, markup, strings, ui ) {
 			populate();
 		}
 
+		// a check box per token; the tokens are written as they change
+		function createTokenRow( n ) {
+			var row = new javax.swing.JPanel( new Packages.net.miginfocom.swing.MigLayout( 'insets 0' ) );
+			var selected = readTokens( settings, n, suffix );
+			TokenBlocks.Tokens.forEach( function ( token ) {
+				var box = new javax.swing.JCheckBox( strings.string( 'AHLCG-' + token ), selected.indexOf( token ) >= 0 );
+				box.addActionListener( function selectToken( actionEvent ) {
+					var tokens = readTokens( settings, n, suffix ).filter( function ( t ) { return t !== token; } );
+					if ( box.isSelected() ) tokens.push( token );
+					tokens.sort( function ( a, b ) { return TokenBlocks.Tokens.indexOf( a ) - TokenBlocks.Tokens.indexOf( b ); } );
+					settings.set( key( 'Tokens', n, suffix ), tokens.join( ',' ) );
+					diy.markChanged( faceIndex );
+				} );
+				row['add(java.awt.Component)']( box );
+			} );
+			return row;
+		}
+
 		function addRow( n, total ) {
 			var styleList = new ui.comboBox( items, null );
 			var spacing = new ui.spinner( 0, 300, 1, 0 );
@@ -118,11 +151,14 @@ function ( FaceUtils, markup, strings, ui ) {
 			} );
 			remove.setEnabled( total > 1 );
 
-			// rules have no text or spacing
+			var tokenRow = face.blockStyles.indexOf( 'token' ) >= 0 ? createTokenRow( n ) : null;
+
+			// rules have no text; only flowing text has spacing
 			function updateControls() {
-				var textual = String( styleList.getSelectedItem() ) !== 'rule';
-				text.setEnabled( textual );
-				spacing.setEnabled( textual );
+				var style = String( styleList.getSelectedItem() );
+				text.setEnabled( style !== 'rule' );
+				spacing.setEnabled( style !== 'rule' && style !== 'intro' && style !== 'token' );
+				if ( tokenRow != null ) tokenRow.setVisible( style === 'token' );
 			}
 			styleList.addActionListener( function updateStyle( actionEvent ) {
 				updateControls();
@@ -137,6 +173,7 @@ function ( FaceUtils, markup, strings, ui ) {
 			place( strings.string( 'AHLCG-Spacing' ), 'gapx 10' );
 			place( spacing, '' );
 			place( remove, 'gapx push, wrap' );
+			if ( tokenRow != null ) place( tokenRow, 'span 2, hidemode 3, wrap' );
 			place( text, 'span 2, pushx, growx, wrap' );
 		}
 
@@ -155,7 +192,7 @@ function ( FaceUtils, markup, strings, ui ) {
 
 		var add = new ui.button( strings.string( 'AHLCG-AddBlock' ), null, function addBlock( actionEvent ) {
 			edit( function ( blocks ) {
-				blocks.push( { style: DefaultStyle, text: '', spacing: 0 } );
+				blocks.push( { style: DefaultStyle, text: '', spacing: 0, tokens: [] } );
 			} );
 			// show and focus the new block once laid out
 			var text = rows.getComponent( rows.getComponentCount() - 1 );
@@ -209,13 +246,40 @@ function ( FaceUtils, markup, strings, ui ) {
 		return { parts: parts, nonEmpty: nonEmpty };
 	}
 
+	// a block that takes part in the shared shrinking
+	function isFlowing( block ) {
+		return block.text.length > 0 && block.style !== 'rule' && block.style !== 'intro' && block.style !== 'token';
+	}
+
+	// Centered text, scaled to fit, down to the bottom of the Intro region.
+	// There is less space around it above a tracking box. Returns where the next
+	// block starts.
+	function paintIntro( g, diy, faceIndex, face, box, text, y, tracker ) {
+		var region = face.textRegion( diy, faceIndex, 'Intro' );
+		var top = y + ( tracker ? 2 : 12 );
+		region.height -= top - region.y;
+		region.y = top;
+
+		box.markupText = text;
+		var next = box.draw( g, region );
+		if ( next <= 0 ) {
+			// draw returns 0 for text without spaces when scaled, and measure
+			// returns a height only for a new layout
+			box.markupText = '';
+			box.markupText = text;
+			next = region.y + box.measure( g, region );
+		}
+		return next + ( tracker ? 5 : 15 );
+	}
+
 	function isPartText( block ) {
 		return ( block.style === 'header' || block.style === 'story' || block.style === 'rules' ) && block.text.length > 0;
 	}
 
 	// Paints blocks in the face's Body region and story text in its Story region,
 	// ending above the tracking box. boxes: traits, header, story, body.
-	// layout: trackerHeight, in percent, 0 without a tracking box.
+	// layout: top, where a first intro or token block starts; trackerHeight,
+	// in percent, 0 without a tracking box.
 	function paint( g, diy, sheet, face, boxes, blocks, scaleModifier, layout ) {
 		var settings = diy.settings;
 		var o = FaceUtils.plugin();
@@ -289,7 +353,9 @@ function ( FaceUtils, markup, strings, ui ) {
 			return parts[i] === 0 && block.style === 'header' && block.text.length > 0;
 		} );
 
+		// flowing text leaves room for the tokens
 		var fullHeight = fullRegion.height;
+		if ( blocks.some( isFlowing ) ) fullHeight -= TokenBlocks.minHeight( blocks );
 		var totalHeight;
 		var scale = 1.0;
 		var textSize = 100.0;
@@ -307,7 +373,7 @@ function ( FaceUtils, markup, strings, ui ) {
 			} );
 
 			blocks.forEach( function ( block ) {
-				if ( block.style === 'victory' || block.style === 'rule' || block.text.length === 0 ) return;
+				if ( !isFlowing( block ) || block.style === 'victory' ) return;
 				totalHeight += measure( block, textSize );
 				if ( block.style === 'header' || block.style === 'story' ) totalHeight += block.spacing + 4;
 				else totalHeight += block.spacing;
@@ -322,7 +388,7 @@ function ( FaceUtils, markup, strings, ui ) {
 
 			if ( totalHeight > fullHeight ) scale -= 0.04;
 			textSize = scale * 100.0;
-		} while ( totalHeight > fullHeight );
+		} while ( totalHeight > fullHeight && scale > MinScale );
 
 		var textScale = scale * 0.98;
 		textSize = textScale * scaleModifier;
@@ -331,9 +397,51 @@ function ( FaceUtils, markup, strings, ui ) {
 		// top of the next block, in whole pixels
 		var y = region.y;
 		var firstPartText = true;
+		var started = false;
+		var afterIntro = false;
+
+		// the height of the blocks from index on, at the final text size
+		function heightFrom( index ) {
+			var height = 0;
+			blocks.slice( index ).forEach( function ( block ) {
+				if ( block.style === 'token' && block.text.length > 0 ) height += TokenBlocks.groupMinHeight( block );
+				if ( !isFlowing( block ) ) return;
+				let b = boxFor( block.style );
+				setTextSize( b.box, b.size, textSize );
+				b.box.markupText = blockMarkup( block );
+				height += Math.ceil( b.box.measure( g, b.region ) ) + block.spacing;
+			} );
+			return height;
+		}
 
 		blocks.forEach( function ( block, i ) {
 			var part = parts[i];
+
+			if ( block.style === 'token' ) {
+				// consecutive token blocks are painted together
+				if ( i > 0 && blocks[i - 1].style === 'token' ) return;
+				let end = i;
+				while ( end < blocks.length && blocks[end].style === 'token' ) end++;
+				let run = blocks.slice( i, end ).filter( function ( b ) { return b.text.length > 0; } );
+				if ( run.length === 0 ) return;
+				if ( !started ) y = layout.top;
+				started = true;
+
+				let tokenRegion = face.textRegion( diy, faceIndex, 'Token' );
+				let after = heightFrom( end );
+				let bottom = tokenRegion.y + tokenRegion.height - after;
+				// keep the bottom in place
+				let shift = y - tokenRegion.y;
+				if ( afterIntro || shift > 0 ) {
+					tokenRegion.y = y;
+					tokenRegion.height -= shift;
+				}
+				tokenRegion.height -= after;
+				TokenBlocks.paint( g, diy, sheet, face, boxes, run, tokenRegion, layout.trackerHeight, afterIntro );
+				y = bottom;
+				afterIntro = false;
+				return;
+			}
 
 			if ( block.style === 'rule' ) {
 				if ( !nonEmpty[part] ) return;
@@ -345,6 +453,16 @@ function ( FaceUtils, markup, strings, ui ) {
 				return;
 			}
 			if ( block.text.length === 0 ) return;
+
+			if ( block.style === 'intro' ) {
+				if ( !started ) y = layout.top;
+				y = paintIntro( g, diy, faceIndex, face, boxes.intro, block.text, y, layout.trackerHeight > 0 );
+				started = true;
+				afterIntro = true;
+				return;
+			}
+			started = true;
+			afterIntro = false;
 
 			// the first text sits a little lower
 			if ( part === 0 && isPartText( block ) && firstPartText ) {

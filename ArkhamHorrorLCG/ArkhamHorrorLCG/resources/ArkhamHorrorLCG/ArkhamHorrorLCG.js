@@ -60,6 +60,7 @@ function initialize() {
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/AHLCG-Key.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/faces/Face.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/faces/StoryFace.settings');
+	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/faces/TokenRulesFace.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/faces/ScenarioRulesFace.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/faces/PlayerBackFace.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/faces/EncounterBackFace.settings');
