@@ -7,3 +7,14 @@ AHLCG-Face-Header-style = FAMILY: {Eons.namedObjects.AHLCGObject.victoryFamily};
 AHLCG-Face-Header-tightness = 0.6
 AHLCG-Face-Name-alignment = center, middle
 AHLCG-Face-Name-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE: {Eons.namedObjects.AHLCGObject.titleFontSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.titleFontWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.titleFontTracking}; FOREGROUND: #000000
+AHLCG-Face-CollectionNumber-alignment = right, middle
+AHLCG-Face-EncounterNumber-alignment = right, middle
+# Card portraits for custom icons; each face paints them in its own regions
+AHLCG-Face-Collection-portrait-template = ArkhamHorrorLCG/images/empty1x1.png
+AHLCG-Face-Collection-portrait-pany = 0
+AHLCG-Face-Collection-portrait-rotation = 0
+AHLCG-Face-Collection-portrait-clip-region = 268,486,13,13
+AHLCG-Face-Encounter-portrait-template = ArkhamHorrorLCG/images/empty1x1.png
+AHLCG-Face-Encounter-portrait-pany = 0
+AHLCG-Face-Encounter-portrait-rotation = 0
+AHLCG-Face-Encounter-portrait-clip-region = 307,33,32,32

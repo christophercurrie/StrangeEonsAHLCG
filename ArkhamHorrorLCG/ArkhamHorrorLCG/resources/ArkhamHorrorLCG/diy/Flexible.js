@@ -51,6 +51,7 @@ function ( exportHandler, FaceHandler, strings, ui, PlayerBackFace, EncounterBac
 			this.faces[i].setDefaults( diy, i, true );
 		}
 		this.setFaceTemplates( diy );
+		this.updateCollector( diy );
 	};
 
 	// brings the faces in line with the settings after they change outside the editor

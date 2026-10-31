@@ -20,6 +20,15 @@ define( [ 'faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui' ], function ( Fa
 	// template resolution in pixels per inch, or null for the default
 	Face.prototype.dpi = null;
 
+	// whether the face draws the card's collection and encounter set; the
+	// editor offers a set only when a face draws it
+	Face.prototype.usesCollection = false;
+	Face.prototype.usesEncounter = false;
+	// collection icons are dark on art that needs them light
+	Face.prototype.invertCollectionIcon = true;
+	// the encounter total without space around the slash
+	Face.prototype.compactEncounterTotal = false;
+
 	Face.prototype.suffix = function( faceIndex ) {
 		return Suffixes[faceIndex];
 	};
@@ -75,8 +84,9 @@ define( [ 'faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui' ], function ( Fa
 		return {};
 	};
 
-	// paints the whole sheet, bleed margin included
-	Face.prototype.paint = function( g, diy, sheet, boxes ) {
+	// paints the whole sheet, bleed margin included. collector: see
+	// faces/CollectorInfo.js
+	Face.prototype.paint = function( g, diy, sheet, boxes, collector ) {
 	};
 
 	// <template>-<name> if set, else the shared AHLCG-Face-<name>

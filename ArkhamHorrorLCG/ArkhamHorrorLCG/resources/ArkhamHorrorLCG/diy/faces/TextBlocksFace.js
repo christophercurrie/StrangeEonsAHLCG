@@ -2,14 +2,24 @@
 // title, the blocks and an optional tracking box.
 //
 // Module: returns TextBlocksFace.
-define( [ 'faces/Face', 'faces/FaceUtils', 'faces/TextBlocks', 'se/common', 'se/imageutils', 'se/strings', 'se/ui' ],
-function ( Face, FaceUtils, TextBlocks, common, imageutils, strings, ui ) {
+define( [
+	'faces/CollectorInfo',
+	'faces/Face',
+	'faces/FaceUtils',
+	'faces/TextBlocks',
+	'se/common',
+	'se/imageutils',
+	'se/strings',
+	'se/ui'
+], function ( CollectorInfo, Face, FaceUtils, TextBlocks, common, imageutils, strings, ui ) {
 	function TextBlocksFace() {
 		Face.call( this );
 	}
 
 	TextBlocksFace.prototype = Object.create( Face.prototype );
 	TextBlocksFace.prototype.constructor = TextBlocksFace;
+	TextBlocksFace.prototype.usesCollection = true;
+	TextBlocksFace.prototype.usesEncounter = true;
 	// the block styles offered in the editor
 	TextBlocksFace.prototype.blockStyles = TextBlocks.Styles;
 
@@ -69,7 +79,9 @@ function ( Face, FaceUtils, TextBlocks, common, imageutils, strings, ui ) {
 			header: this.createBox( diy, sheet, 'Header' ),
 			story: this.createBox( diy, sheet, 'Story' ),
 			body: this.createBox( diy, sheet, 'Body' ),
-			tracker: this.createBox( diy, sheet, 'TrackerName' )
+			tracker: this.createBox( diy, sheet, 'TrackerName' ),
+			collectionNumber: this.createBox( diy, sheet, 'CollectionNumber' ),
+			encounterNumber: this.createBox( diy, sheet, 'EncounterNumber' )
 		};
 		FaceUtils.initBodyTags( diy, boxes.name );
 		FaceUtils.initBodyTags( diy, boxes.traits );
@@ -101,6 +113,12 @@ function ( Face, FaceUtils, TextBlocks, common, imageutils, strings, ui ) {
 		} );
 	};
 
+	TextBlocksFace.prototype.paintCollector = function( g, diy, sheet, boxes, collector, encounterIcon ) {
+		CollectorInfo.paint( g, diy, sheet, this, boxes, collector, encounterIcon );
+	};
+
+	// a box image stretched to the tracker height (percent), aligned to the
+	// bottom of <TrackerBox-region>, with the name at its top
 	TextBlocksFace.prototype.paintTracker = function( g, diy, sheet, box, name, height ) {
 		var ImageUtils = imageutils.ImageUtils;
 		var Region = common.Region;

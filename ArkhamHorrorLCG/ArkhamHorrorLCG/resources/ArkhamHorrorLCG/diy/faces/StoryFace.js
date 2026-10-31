@@ -10,6 +10,8 @@ function ( FaceUtils, TextBlocksFace, strings ) {
 	StoryFace.prototype = Object.create( TextBlocksFace.prototype );
 	StoryFace.prototype.constructor = StoryFace;
 	StoryFace.prototype.template = 'AHLCG-StoryFace';
+	StoryFace.prototype.invertCollectionIcon = false;
+	StoryFace.prototype.compactEncounterTotal = true;
 
 	StoryFace.prototype.createPainter = function( diy, sheet, faceIndex ) {
 		var boxes = TextBlocksFace.prototype.createPainter.call( this, diy, sheet, faceIndex );
@@ -17,7 +19,7 @@ function ( FaceUtils, TextBlocksFace, strings ) {
 		return boxes;
 	};
 
-	StoryFace.prototype.paint = function( g, diy, sheet, boxes ) {
+	StoryFace.prototype.paint = function( g, diy, sheet, boxes, collector ) {
 		var faceIndex = sheet.getSheetIndex();
 
 		this.paintTemplate( g, sheet );
@@ -26,6 +28,7 @@ function ( FaceUtils, TextBlocksFace, strings ) {
 		this.paintLabel( g, diy, boxes.label );
 		this.paintTitle( g, diy, boxes.name, this.getTitle( diy, faceIndex ) );
 		this.paintText( g, diy, sheet, boxes, 0 );
+		this.paintCollector( g, diy, sheet, boxes, collector, true );
 	};
 
 	StoryFace.prototype.paintLabel = function( g, diy, box ) {

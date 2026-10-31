@@ -152,6 +152,7 @@ define( [ 'se/common', 'se/strings', 'se/ui' ], function ( common, strings, ui )
 	return {
 		createTextPanel: createTextPanel,
 		plugin: plugin,
+		isUsed: isUsed,
 		bleedPixels: bleedPixels,
 		translateToTrim: translateToTrim,
 		initBodyTags: initBodyTags

@@ -80,7 +80,7 @@ function ( FaceUtils, TextBlocks, TextBlocksFace, markup, strings, ui ) {
 		return region;
 	};
 
-	TokenRulesFace.prototype.paint = function( g, diy, sheet, boxes ) {
+	TokenRulesFace.prototype.paint = function( g, diy, sheet, boxes, collector ) {
 		var faceIndex = sheet.getSheetIndex();
 		var full = this.isFullPage( diy, faceIndex );
 
@@ -98,6 +98,7 @@ function ( FaceUtils, TextBlocks, TextBlocksFace, markup, strings, ui ) {
 		}
 
 		this.paintText( g, diy, sheet, boxes, top );
+		this.paintCollector( g, diy, sheet, boxes, collector, !full );
 	};
 
 	// Each line of the title above a double rule as wide as the last line.

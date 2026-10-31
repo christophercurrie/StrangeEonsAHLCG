@@ -13,7 +13,7 @@
 // createGeneralPanels( diy, editor, bindings ).
 //
 // Module: returns FaceHandler.
-define( [ 'se/diy', 'se/strings', 'se/ui', 'ui/Bindings' ], function ( diyLibrary, strings, ui, Bindings ) {
+define( [ 'handlers/Collector', 'se/diy', 'se/strings', 'se/ui', 'ui/Bindings' ], function ( Collector, diyLibrary, strings, ui, Bindings ) {
 	const FACE_FRONT = 0;
 	const FACE_BACK = 1;
 	const GeneralHint = 'wrap, pushx, growx';
@@ -24,6 +24,8 @@ define( [ 'se/diy', 'se/strings', 'se/ui', 'ui/Bindings' ], function ( diyLibrar
 
 		this.faces = [ front, back ];
 		this.boxes = [ null, null ];
+		// the kinds of set the faces draw, and a portrait for each custom icon
+		this.portraitKinds = [];
 		this.portraits = [];
 
 		// the open editor: its bindings, General tab panel and tab, and what
@@ -33,6 +35,7 @@ define( [ 'se/diy', 'se/strings', 'se/ui', 'ui/Bindings' ], function ( diyLibrar
 		this.generalPanel = null;
 		this.generalTab = null;
 		this.sideInterfaces = [ null, null ];
+		this.collectorTabs = [];
 	}
 
 	FaceHandler.prototype.setFace = function( faceIndex, face ) {
@@ -60,6 +63,67 @@ define( [ 'se/diy', 'se/strings', 'se/ui', 'ui/Bindings' ], function ( diyLibrar
 	// panels placed first on the General tab
 	FaceHandler.prototype.createGeneralPanels = function( diy, editor, bindings ) {
 		return [];
+	};
+
+	FaceHandler.prototype.usesKind = function( faceIndex, kind ) {
+		return kind === 'Collection' ? this.faces[faceIndex].usesCollection : this.faces[faceIndex].usesEncounter;
+	};
+
+	// the portrait of a kind of set, or null
+	FaceHandler.prototype.findPortrait = function( kind ) {
+		var index = this.portraitKinds.indexOf( kind );
+		return index < 0 ? null : this.portraits[index];
+	};
+
+	FaceHandler.prototype.createPortrait = function( diy, kind ) {
+		var portrait = new arkham.component.DefaultPortrait( diy, 'AHLCG-Face-' + kind, true );
+		portrait.facesToUpdate = [ FACE_FRONT, FACE_BACK ];
+		portrait.backgroundFilled = false;
+		portrait.installDefault();
+		return portrait;
+	};
+
+	// Matches the portraits and set settings to what the faces draw. Portraits
+	// still in use are kept.
+	FaceHandler.prototype.updateCollector = function( diy ) {
+		var kinds = [ 'Collection', 'Encounter' ].filter( function ( kind ) {
+			return this.usesKind( FACE_FRONT, kind ) || this.usesKind( FACE_BACK, kind );
+		}, this );
+		var portraits = kinds.map( function ( kind ) {
+			return this.findPortrait( kind ) || this.createPortrait( diy, kind );
+		}, this );
+
+		this.portraitKinds = kinds;
+		this.portraits = portraits;
+		kinds.forEach( function ( kind, i ) {
+			Collector.setDefaults( diy, kind, portraits[i] );
+		} );
+	};
+
+	// Adds a tab for each kind of set a face draws, after the sides' tabs.
+	FaceHandler.prototype.addCollectorTabs = function( diy ) {
+		var tabPane = this.editor.getTabbedPane();
+		var index = tabPane.indexOfComponent( this.generalTab ) + 1
+			+ this.sideInterfaces[FACE_FRONT].tabs.length + this.sideInterfaces[FACE_BACK].tabs.length;
+
+		this.portraitKinds.forEach( function ( kind, i ) {
+			let faces = [ FACE_FRONT, FACE_BACK ].filter( function ( faceIndex ) {
+				return this.usesKind( faceIndex, kind );
+			}, this );
+			let tab = Collector.createTab( diy, this.bindings, kind, i, this.portraits[i], faces );
+			tab.panel.editorTabScrolling = true;
+			tab.panel.addToEditor( this.editor, tab.title, null, null, index + i );
+			this.collectorTabs.push( { component: tabPane.getComponentAt( index + i ), controls: tab.controls } );
+		}, this );
+	};
+
+	FaceHandler.prototype.removeCollectorTabs = function() {
+		var tabPane = this.editor.getTabbedPane();
+		this.collectorTabs.forEach( function ( tab ) {
+			tab.controls.forEach( function ( control ) { this.bindings.remove( control ); }, this );
+			tabPane.remove( tab.component );
+		}, this );
+		this.collectorTabs = [];
 	};
 
 	FaceHandler.prototype.getPortraitCount = function() {
@@ -95,6 +159,7 @@ define( [ 'se/diy', 'se/strings', 'se/ui', 'ui/Bindings' ], function ( diyLibrar
 		}
 
 		this.setCardDefaults( diy );
+		this.updateCollector( diy );
 	};
 
 	FaceHandler.prototype.createInterface = function( diy, editor ) {
@@ -116,6 +181,7 @@ define( [ 'se/diy', 'se/strings', 'se/ui', 'ui/Bindings' ], function ( diyLibrar
 		for ( let faceIndex = 0; faceIndex < this.faces.length; faceIndex++ ) {
 			this.addFaceInterface( diy, faceIndex );
 		}
+		this.addCollectorTabs( diy );
 
 		this.bindings.bind();
 	};
@@ -168,9 +234,11 @@ define( [ 'se/diy', 'se/strings', 'se/ui', 'ui/Bindings' ], function ( diyLibrar
 	// in place: the side's controls, and new sheets, since templates can differ.
 	FaceHandler.prototype.changeFace = function( diy, faceIndex, change ) {
 		this.bindings.flush();
+		this.removeCollectorTabs();
 		this.removeFaceInterface( diy, faceIndex );
 		change();
 		this.addFaceInterface( diy, faceIndex );
+		this.addCollectorTabs( diy );
 		this.editor.setGameComponent( diy );
 		diy.markChanged( faceIndex );
 	};
@@ -189,7 +257,12 @@ define( [ 'se/diy', 'se/strings', 'se/ui', 'ui/Bindings' ], function ( diyLibrar
 
 	FaceHandler.prototype.paintFace = function( g, diy, sheet ) {
 		var faceIndex = sheet.getSheetIndex();
-		this.faces[faceIndex].paint( g, diy, sheet, this.boxes[faceIndex] );
+		var bothShow = String( diy.settings.get( 'ShowCollectionNumberFront', '1' ) ) === '1' && String( diy.settings.get( 'ShowCollectionNumberBack', '1' ) ) === '1';
+		this.faces[faceIndex].paint( g, diy, sheet, this.boxes[faceIndex], {
+			collection: this.findPortrait( 'Collection' ),
+			encounter: this.findPortrait( 'Encounter' ),
+			suffix: bothShow && this.usesKind( FACE_FRONT, 'Collection' ) && this.usesKind( FACE_BACK, 'Collection' )
+		} );
 	};
 
 	FaceHandler.prototype.paintFront = function( g, diy, sheet ) {
@@ -207,11 +280,23 @@ define( [ 'se/diy', 'se/strings', 'se/ui', 'ui/Bindings' ], function ( diyLibrar
 	FaceHandler.prototype.onRead = function( diy, ois ) {
 		this.upgrade( diy );
 
+		this.updateCollector( diy );
+		this.portraitKinds.forEach( function ( kind, i ) {
+			// a save from before the faces used this set has no portrait
+			try {
+				this.portraits[i] = ois.readObject();
+			} catch ( ex ) {
+				return;
+			}
+			Collector.update( diy, kind, this.portraits[i] );
+		}, this );
+
 		diy.setCornerRadius( 8 );
 		diy.version = this.version;
 	};
 
 	FaceHandler.prototype.onWrite = function( diy, oos ) {
+		this.portraits.forEach( function ( portrait ) { oos.writeObject( portrait ); } );
 	};
 
 	return FaceHandler;
