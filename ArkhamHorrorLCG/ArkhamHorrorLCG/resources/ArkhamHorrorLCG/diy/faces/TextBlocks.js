@@ -42,13 +42,13 @@ function ( FaceUtils, markup, strings, ui ) {
 		return values;
 	}
 
-	// [ { style, text, spacing } ]
-	function read( settings, suffix ) {
+	// [ { style, text, spacing } ]; other styles read as the default
+	function read( settings, suffix, styles ) {
 		var blocks = [];
 		for ( let n = 1; n <= count( settings, suffix ); n++ ) {
 			let style = String( settings.get( key( 'Style', n, suffix ), DefaultStyle ) );
 			blocks.push( {
-				style: Styles.indexOf( style ) >= 0 ? style : DefaultStyle,
+				style: styles.indexOf( style ) >= 0 ? style : DefaultStyle,
 				text: String( settings.get( key( 'Text', n, suffix ), '' ) ),
 				spacing: parseInt( settings.get( key( 'Spacing', n, suffix ), '0' ), 10 ) || 0
 			} );
@@ -86,7 +86,7 @@ function ( FaceUtils, markup, strings, ui ) {
 		var rows = new javax.swing.JPanel( new Packages.net.miginfocom.swing.MigLayout( 'insets 0' ) );
 		var bound = [];
 
-		var items = Styles.map( function ( style ) {
+		var items = face.blockStyles.map( function ( style ) {
 			return new arkham.diy.ListItem( style, strings.string( StyleLabels[style] ) );
 		} );
 
@@ -102,7 +102,7 @@ function ( FaceUtils, markup, strings, ui ) {
 
 		function edit( change ) {
 			bindings.flush();
-			var blocks = read( settings, suffix );
+			var blocks = read( settings, suffix, face.blockStyles );
 			change( blocks );
 			write( settings, suffix, blocks );
 			diy.markChanged( faceIndex );
@@ -213,17 +213,21 @@ function ( FaceUtils, markup, strings, ui ) {
 		return ( block.style === 'header' || block.style === 'story' || block.style === 'rules' ) && block.text.length > 0;
 	}
 
-	// Paints blocks in the face's <Body-region>, story text in <Story-region>,
-	// ending bottomSpace above their bottom. boxes: traits, header, story, body.
-	function paint( g, diy, face, boxes, blocks, scaleModifier, bottomSpace ) {
+	// Paints blocks in the face's Body region and story text in its Story region,
+	// ending above the tracking box. boxes: traits, header, story, body.
+	// layout: trackerHeight, in percent, 0 without a tracking box.
+	function paint( g, diy, sheet, face, boxes, blocks, scaleModifier, layout ) {
 		var settings = diy.settings;
 		var o = FaceUtils.plugin();
+		var faceIndex = sheet.getSheetIndex();
+		// the text ends above the top of the tracking box
+		var bottomSpace = layout.trackerHeight > 0 ? 90 * layout.trackerHeight / 100.0 + 10 : 0;
 		var traitsBox = boxes.traits, headerBox = boxes.header, storyBox = boxes.story, bodyBox = boxes.body;
 
-		var fullRegion = settings.getRegion( face.key( settings, 'Body-region' ) );
-		var fullStoryRegion = settings.getRegion( face.key( settings, 'Story-region' ) );
-		var region = settings.getRegion( face.key( settings, 'Body-region' ) );
-		var storyRegion = settings.getRegion( face.key( settings, 'Story-region' ) );
+		var fullRegion = face.textRegion( diy, faceIndex, 'Body' );
+		var fullStoryRegion = face.textRegion( diy, faceIndex, 'Story' );
+		var region = face.textRegion( diy, faceIndex, 'Body' );
+		var storyRegion = face.textRegion( diy, faceIndex, 'Story' );
 		[ fullRegion, fullStoryRegion, region, storyRegion ].forEach( function ( r ) { r.height -= bottomSpace; } );
 		// traits ignore the body font offset
 		var traitsY = region.y;
@@ -278,8 +282,8 @@ function ( FaceUtils, markup, strings, ui ) {
 			return b.box.measure( g, b.region );
 		}
 
-		var layout = partsOf( blocks );
-		var parts = layout.parts, nonEmpty = layout.nonEmpty;
+		var partition = partsOf( blocks );
+		var parts = partition.parts, nonEmpty = partition.nonEmpty;
 		var partCount = parts.length > 0 ? parts[parts.length - 1] + 1 : 1;
 		var firstPartHasHeader = blocks.some( function ( block, i ) {
 			return parts[i] === 0 && block.style === 'header' && block.text.length > 0;
