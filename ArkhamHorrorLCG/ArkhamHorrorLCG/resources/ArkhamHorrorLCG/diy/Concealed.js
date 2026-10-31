@@ -23,10 +23,11 @@ function create( diy ) {
 	createPortraits( diy, PortraitTypeList );
 
 	diy.setCornerRadius(8);
-	diy.version = 1;
+	diy.version = 18;
 }
 
 function setDefaults() {
+	$Copyright = '';
 	$Template = 'Standard';
 
 	$BackTypeBack = 'Concealed';
@@ -171,6 +172,9 @@ function onRead(diy, oos) {
 		$TemplateReplacement = '';
 		$TemplateReplacementBack = '';
 	}
+	if ( diy.version < 18 ) {
+		if ( $Copyright == null ) $Copyright = '';
+	}
 	if ( diy.version < 16 ) {
 		diy.faceStyle = FaceStyle.TWO_FACES;	// change was in v15, but I forgot to add this
 	}
@@ -178,7 +182,7 @@ function onRead(diy, oos) {
 	updateCollection();
 
 	diy.setCornerRadius(8);
-	diy.version = 17;
+	diy.version = 18;
 }
 
 function onWrite( diy, oos ) {

@@ -26,7 +26,7 @@ function create( diy ) {
 	setDefaultCollection();
 
    	diy.setCornerRadius(8);
-	diy.version = 18;
+	diy.version = 19;
 }
 
 function setDefaults() {
@@ -68,6 +68,7 @@ function setDefaults() {
 
 	$ShowCopyrightFront = '1';
 	$ShowCopyrightBack = '1';
+	$Copyright = '';
 
 	// back
 	$TitleBack = '';
@@ -481,9 +482,12 @@ function onRead(diy, oos) {
 		$TrackerBoxBack = '';
 		$TrackerHeightBack = '100';
 	}
+	if ( diy.version < 19 ) {
+		if ( $Copyright == null ) $Copyright = '';
+	}
 
 	diy.setCornerRadius(8);
-	diy.version = 18;
+	diy.version = 19;
 }
 
 function onWrite( diy, oos ) {
