@@ -2,7 +2,7 @@ import org.strangeeons.gradle.rendertest.BuildStrangeEons
 import org.strangeeons.gradle.rendertest.PackagePluginFolder
 
 plugins {
-    id("org.strangeeons.render-test") version "1.0.0"
+    id("org.strangeeons.render-test") version "1.0.1"
 }
 
 val projects = "${System.getProperty("user.home")}/Projects"
