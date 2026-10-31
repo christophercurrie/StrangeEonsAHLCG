@@ -12,6 +12,7 @@
 // themselves in what is left; see faces/TokenBlocks.js.
 //
 // Module: returns TextBlocks.
+/* global Packages */
 define( [ 'faces/FaceUtils', 'faces/TokenBlocks', 'se/markup', 'se/strings', 'se/ui' ],
 function ( FaceUtils, TokenBlocks, markup, strings, ui ) {
 	const Styles = [ 'traits', 'header', 'story', 'rules', 'victory', 'rule' ];

@@ -2,6 +2,10 @@
 //
 // Module: returns { Bindings, Grid, button, checkBox, comboBox, portraitPanel, spinner,
 // textArea, textField, tipButton }.
+/* global
+  useLibrary, Bindings, Grid, button, checkBox, comboBox, portraitPanel,
+  spinner, textArea, textField, tipButton
+ */
 useLibrary( 'ui' );
 
 define( function () {

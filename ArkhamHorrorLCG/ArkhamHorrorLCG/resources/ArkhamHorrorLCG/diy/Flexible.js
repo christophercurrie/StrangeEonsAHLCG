@@ -1,3 +1,4 @@
+/* global useLibrary, sourcefile, testDIYScript, globalThis */
 useLibrary( 'amd' );
 
 if ( String( sourcefile ) === 'Quickscript' ) {

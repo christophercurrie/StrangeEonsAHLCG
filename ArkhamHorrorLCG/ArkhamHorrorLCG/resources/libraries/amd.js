@@ -20,6 +20,7 @@
 //               globals.
 //
 // Exports: define.
+/* global useLibrary, __dirname, globalThis */
 ( function ( exports ) {
 	const ScriptMonkey = arkham.plugins.ScriptMonkey;
 	const host = useLibrary.__$;

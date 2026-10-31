@@ -1,0 +1,42 @@
+import js from "@eslint/js";
+import { defineConfig, globalIgnores } from "eslint/config";
+
+const resources = "ArkhamHorrorLCG/ArkhamHorrorLCG/resources";
+const diy = `${resources}/ArkhamHorrorLCG/diy`;
+const amd = `${resources}/libraries/amd.js`;
+const renderTest = "src/renderTest";
+
+export default defineConfig([
+  // legacy scripts use SE's $, @ and # notation; only the new modules are linted
+  globalIgnores([
+    "**/*.js",
+    "**/*.mjs",
+    `!${diy}/Flexible.js`,
+    `!${diy}/faces/**/*.js`,
+    `!${diy}/handlers/**/*.js`,
+    `!${diy}/se/**/*.js`,
+    `!${diy}/ui/**/*.js`,
+    `!${amd}`,
+    `!${renderTest}/**/*.js`,
+  ]),
+  {
+    extends: ["js/recommended"],
+    files: [`${diy}/**/*.js`, amd, `${renderTest}/**/*.js`],
+    plugins: { js },
+    languageOptions: {
+      ecmaVersion: 2015,
+      sourceType: "script",
+      globals: {
+        define: "readonly",
+        java: "readonly",
+        javax: "readonly",
+        arkham: "readonly",
+      }
+    },
+    rules: {
+      eqeqeq: ["error", "always", { null: "ignore" }],
+      "no-restricted-syntax": ["error", "ClassDeclaration", "ClassExpression"],
+      "no-unused-vars": ["error", { args: "none", caughtErrors: "none" }]
+    },
+  },
+]);

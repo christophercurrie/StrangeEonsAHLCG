@@ -5,6 +5,7 @@
 // CollectionIcon-region, EncounterIcon-region and ReturnEncounterIcon-region.
 //
 // Module: returns CollectorInfo.
+/* global ca */
 define( [ 'faces/FaceUtils', 'se/imageutils' ], function ( FaceUtils, imageutils ) {
 	const Sides = [ 'Front', 'Back' ];
 	const ENCOUNTER_CLIP_KEY = 'AHLCG-Face-Encounter-portrait-clip-region';
