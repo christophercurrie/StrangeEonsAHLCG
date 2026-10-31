@@ -42,6 +42,7 @@ define([
         this.generalTab = null;
         this.sideInterfaces = [null, null];
         this.collectorTabs = [];
+        this.copyright = null;
     }
 
     FaceHandler.prototype.setFace = function (faceIndex, face) {
@@ -119,10 +120,21 @@ define([
         kinds.forEach(function (kind, i) {
             Collector.setDefaults(diy, kind, portraits[i]);
         });
+        if (this.copyrightFaces().length > 0) {
+            Collector.setCopyrightDefaults(diy, true);
+        }
     };
 
-    // Adds a tab for each kind of set a face draws, after the sides' tabs.
-    FaceHandler.prototype.addCollectorTabs = function (diy) {
+    // the sides that draw the card's copyright
+    FaceHandler.prototype.copyrightFaces = function () {
+        return [FACE_FRONT, FACE_BACK].filter(function (faceIndex) {
+            return this.faces[faceIndex].usesCopyright;
+        }, this);
+    };
+
+    // Adds a tab for each kind of set a face draws, after the sides' tabs, and
+    // the copyright panel, after the sides' panels, if a face draws it.
+    FaceHandler.prototype.addCollectorInterface = function (diy) {
         var tabPane = this.editor.getTabbedPane();
         var index =
             tabPane.indexOfComponent(this.generalTab) +
@@ -155,9 +167,23 @@ define([
                 controls: tab.controls,
             });
         }, this);
+
+        var copyrightFaces = this.copyrightFaces();
+        if (copyrightFaces.length > 0) {
+            let copyright = Collector.createCopyrightPanel(
+                this.bindings,
+                copyrightFaces
+            );
+            let panel = copyright.panel.realize();
+            this.generalPanel['add(java.awt.Component,java.lang.Object)'](
+                panel,
+                GeneralHint
+            );
+            this.copyright = { component: panel, controls: copyright.controls };
+        }
     };
 
-    FaceHandler.prototype.removeCollectorTabs = function () {
+    FaceHandler.prototype.removeCollectorInterface = function () {
         var tabPane = this.editor.getTabbedPane();
         this.collectorTabs.forEach(function (tab) {
             tab.controls.forEach(function (control) {
@@ -166,6 +192,14 @@ define([
             tabPane.remove(tab.component);
         }, this);
         this.collectorTabs = [];
+
+        if (this.copyright != null) {
+            this.copyright.controls.forEach(function (control) {
+                this.bindings.remove(control);
+            }, this);
+            this.generalPanel.remove(this.copyright.component);
+            this.copyright = null;
+        }
     };
 
     FaceHandler.prototype.getPortraitCount = function () {
@@ -201,6 +235,9 @@ define([
         }
 
         this.setCardDefaults(diy);
+        if (this.copyrightFaces().length > 0) {
+            Collector.setCopyrightDefaults(diy, false);
+        }
         this.updateCollector(diy);
     };
 
@@ -226,7 +263,7 @@ define([
         for (let faceIndex = 0; faceIndex < this.faces.length; faceIndex++) {
             this.addFaceInterface(diy, faceIndex);
         }
-        this.addCollectorTabs(diy);
+        this.addCollectorInterface(diy);
 
         this.bindings.bind();
     };
@@ -301,11 +338,11 @@ define([
     // in place: the side's controls, and new sheets, since templates can differ.
     FaceHandler.prototype.changeFace = function (diy, faceIndex, change) {
         this.bindings.flush();
-        this.removeCollectorTabs();
+        this.removeCollectorInterface();
         this.removeFaceInterface(diy, faceIndex);
         change();
         this.addFaceInterface(diy, faceIndex);
-        this.addCollectorTabs(diy);
+        this.addCollectorInterface(diy);
         this.editor.setGameComponent(diy);
         diy.markChanged(faceIndex);
     };

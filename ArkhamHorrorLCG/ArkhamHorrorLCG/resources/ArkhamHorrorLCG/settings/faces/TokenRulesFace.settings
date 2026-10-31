@@ -43,3 +43,5 @@ AHLCG-TokenRulesFace-EncounterIcon-region = 173,59,28,28
 AHLCG-TokenRulesFace-ReturnEncounterIcon-region = 169,54,35,35
 AHLCG-TokenRulesFace-EncounterNumber-region = 276,512,45,10
 AHLCG-TokenRulesFace-EncounterNumber-style = FAMILY: {Eons.namedObjects.AHLCGObject.collectionFamily}; SIZE: {Eons.namedObjects.AHLCGObject.collectionSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.collectionWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.collectionWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.collectionTracking}; FOREGROUND: #FFFFFF
+AHLCG-TokenRulesFace-Copyright-region = 19,512,102,10
+AHLCG-TokenRulesFace-Copyright-style = FAMILY: {Eons.namedObjects.AHLCGObject.collectionFamily}; SIZE: {Eons.namedObjects.AHLCGObject.collectionSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.collectionWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.collectionWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.collectionTracking}; FOREGROUND: #FFFFFF

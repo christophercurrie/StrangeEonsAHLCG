@@ -25,10 +25,11 @@ define(['faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui'], function (
     // template resolution in pixels per inch, or null for the default
     Face.prototype.dpi = null;
 
-    // whether the face draws the card's collection and encounter set; the
-    // editor offers a set only when a face draws it
+    // whether the face draws the card's collection, encounter set and
+    // copyright; the editor offers each only when a face draws it
     Face.prototype.usesCollection = false;
     Face.prototype.usesEncounter = false;
+    Face.prototype.usesCopyright = false;
     // collection icons are dark on art that needs them light
     Face.prototype.invertCollectionIcon = true;
     // the encounter total without space around the slash

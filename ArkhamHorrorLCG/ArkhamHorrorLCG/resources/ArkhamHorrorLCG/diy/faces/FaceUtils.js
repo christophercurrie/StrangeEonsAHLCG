@@ -121,6 +121,15 @@ define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
         }
     }
 
+    function initCopyrightTags(diy, box) {
+        plugin().CopyrightTagList.forEach(function (item) {
+            box.setReplacementForTag(
+                diy.settings.get(item + '-tag'),
+                diy.settings.get(item + '-tag-replacement')
+            );
+        });
+    }
+
     // Game text fields for parts (Traits, Header, Rules or another name),
     // keyed <part><partSuffix> and bound by face, with spacing spinners between
     // them.
@@ -218,5 +227,6 @@ define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
         bleedPixels: bleedPixels,
         translateToTrim: translateToTrim,
         initBodyTags: initBodyTags,
+        initCopyrightTags: initCopyrightTags,
     };
 });

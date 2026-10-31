@@ -29,6 +29,7 @@ define([
     TextBlocksFace.prototype.constructor = TextBlocksFace;
     TextBlocksFace.prototype.usesCollection = true;
     TextBlocksFace.prototype.usesEncounter = true;
+    TextBlocksFace.prototype.usesCopyright = true;
     // the block styles offered in the editor
     TextBlocksFace.prototype.blockStyles = TextBlocks.Styles;
 
@@ -117,12 +118,14 @@ define([
             tracker: this.createBox(diy, sheet, 'TrackerName'),
             collectionNumber: this.createBox(diy, sheet, 'CollectionNumber'),
             encounterNumber: this.createBox(diy, sheet, 'EncounterNumber'),
+            copyright: this.createBox(diy, sheet, 'Copyright'),
         };
         FaceUtils.initBodyTags(diy, boxes.name);
         FaceUtils.initBodyTags(diy, boxes.traits);
         FaceUtils.initBodyTags(diy, boxes.header);
         FaceUtils.initBodyTags(diy, boxes.story);
         FaceUtils.initBodyTags(diy, boxes.body);
+        FaceUtils.initCopyrightTags(diy, boxes.copyright);
         return boxes;
     };
 

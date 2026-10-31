@@ -1,5 +1,5 @@
-// The card's collection and encounter set: settings, the sets offered in the
-// editor, and the tabs that choose them. A set is stored by name with
+// The card's collection, encounter set and copyright: settings, the sets offered
+// in the editor, and the controls that choose them. A set is stored by name with
 //   <kind>      the set; a custom set uses the kind's portrait
 //   <kind>Type  -1 custom, 0 from the plug-in, n the nth user set
 //
@@ -345,7 +345,54 @@ define([
         return { panel: tab, title: title, controls: controls };
     }
 
+    // with keep, only sets keys the component lacks
+    function setCopyrightDefaults(diy, keep) {
+        var values = {
+            Copyright: '',
+            ShowCopyrightFront: '1',
+            ShowCopyrightBack: '1',
+        };
+        for (let key in values) {
+            if (keep && diy.settings.getOverride(key) != null) continue;
+            diy.settings.set(key, values[key]);
+        }
+    }
+
+    // Returns { panel, controls }, the copyright text and a toggle for each side
+    // in showFaces, those that draw it.
+    function createCopyrightPanel(bindings, showFaces) {
+        var panel = new ui.Grid();
+        panel.setTitle(strings.string('AHLCG-CopyrightTitle'));
+        var field = new ui.textField('', 20);
+        var controls = [field];
+        bindings.add('Copyright', field, [0, 1]);
+
+        panel.place(
+            strings.string('AHLCG-Copyright'),
+            'align right',
+            field,
+            'pushx, growx',
+            new ui.tipButton(strings.string('AHLCG-CopyrightTip1')),
+            'aligny top, gaptop 5'
+        );
+        showFaces.forEach(function (faceIndex) {
+            let box = new ui.checkBox(
+                strings.string('AHLCG-' + Sides[faceIndex]),
+                true,
+                null
+            );
+            bindings.add('ShowCopyright' + Sides[faceIndex], box, [0, 1]);
+            controls.push(box);
+            panel.place(box, 'align right');
+        });
+        panel.place('', 'wrap');
+
+        return { panel: panel, controls: controls };
+    }
+
     return {
+        setCopyrightDefaults: setCopyrightDefaults,
+        createCopyrightPanel: createCopyrightPanel,
         setDefaults: setDefaults,
         update: update,
         createTab: createTab,

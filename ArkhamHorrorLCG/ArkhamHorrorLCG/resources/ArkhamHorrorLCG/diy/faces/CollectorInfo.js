@@ -1,7 +1,8 @@
 // The collector line, drawn right to left: collection number and icon, then
-// encounter number; and the encounter icon, in the face's own place.
+// encounter number; the copyright, in its own region; and the encounter icon,
+// in the face's own place.
 //
-// Face settings: CollectionNumber, EncounterNumber (-region, boxes),
+// Face settings: CollectionNumber, EncounterNumber, Copyright (-region, boxes),
 // CollectionIcon-region, EncounterIcon-region and ReturnEncounterIcon-region.
 //
 // Module: returns CollectorInfo.
@@ -88,6 +89,18 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
         box.drawAsSingleLine(g, region);
     }
 
+    function paintCopyright(g, diy, face, box) {
+        var region = diy.settings.getRegion(
+            face.key(diy.settings, 'Copyright-region')
+        );
+        var o = FaceUtils.plugin();
+        region.y += parseInt(o.collectionFontOffset);
+        if (String(o.bodyFamily) === 'Times New Roman') region.y -= 1;
+
+        box.markupText = String(diy.settings.get('Copyright', ''));
+        box.drawAsSingleLine(g, region);
+    }
+
     function paintEncounterIcon(g, diy, sheet, face, portrait) {
         var settings = diy.settings;
         var name = String(settings.get('Encounter', ''));
@@ -157,6 +170,10 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
             String(diy.settings.get('ShowEncounterNumber' + side, '1')) === '1'
         ) {
             paintEncounterNumber(g, diy, face, boxes.encounterNumber, x);
+        }
+
+        if (String(diy.settings.get('ShowCopyright' + side, '1')) === '1') {
+            paintCopyright(g, diy, face, boxes.copyright);
         }
     }
 
