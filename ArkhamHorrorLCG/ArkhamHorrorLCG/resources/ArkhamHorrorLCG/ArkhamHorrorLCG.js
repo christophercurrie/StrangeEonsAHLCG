@@ -1130,13 +1130,13 @@ function gameObject( masterSettings ) {
 	updateUsedCollections( this );
 
 	this.TagList = new Array (
-		'Fast', 'Name', 'HorizontalSpacer', 'LargeVerticalSpacer', 'VerticalSpacer',
+		'Fast', 'HorizontalSpacer', 'LargeVerticalSpacer', 'VerticalSpacer',
 		'SmallVerticalSpacer', 'Action', 'Reaction', 'Fast',
 		'Guardian', 'Seeker', 'Rogue', 'Mystic', 'Survivor',
 		'Willpower', 'Intellect', 'Combat', 'Agility', 'Wild',
 		'Skull', 'Cultist', 'Artifact', 'Monster', 'Bless', 'Curse', 'Frost', 'ElderSign', 'Tentacle',
 		'Unique', 'PerInvestigator', 'Prey', 'Spawn', 'Revelation', 'Forced',
-		'Objective', 'Haunted', 'Patrol', 'Shift', 'Bullet', 'Resolution', 'EndResolution', 'GuideBullet', 'Square',
+		'Objective', 'Haunted', 'Shift', 'Bullet', 'Resolution', 'EndResolution', 'GuideBullet', 'Square',
 		'Seal1', 'Seal2', 'Seal3', 'Seal4', 'Seal5', 'Asterisk', 'Dash', 'CheckBox', 'Damage', 'Horror', 'Resource', 'Codex'
 	);
 
