@@ -112,12 +112,15 @@ define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
 
         for (let i = 0; i < o.locationIcons.length; i++) {
             let item = o.locationIcons[i];
-            box.setReplacementForTag(
-                settings.get('Loc' + item + '-tag'),
-                '<image res://ArkhamHorrorLCG/icons/AHLCG-Loc' +
-                    item +
-                    '.png 0.14in center>'
-            );
+            let tag = settings.get('Loc' + item + '-tag');
+            if (tag != null) {
+                box.setReplacementForTag(
+                    tag,
+                    '<image res://ArkhamHorrorLCG/icons/AHLCG-Loc' +
+                        item +
+                        '.png 0.14in center>'
+                );
+            }
         }
     }
 
