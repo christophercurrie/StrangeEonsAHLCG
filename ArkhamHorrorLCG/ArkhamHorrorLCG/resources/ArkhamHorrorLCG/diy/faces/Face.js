@@ -3,12 +3,13 @@
 // Settings keys take the face's binding suffix ('' or 'Back').
 //
 // Module: returns Face.
-define(['faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui'], function (
-    FaceUtils,
-    markup,
-    strings,
-    ui
-) {
+define([
+    'faces/FaceUtils',
+    'se/common',
+    'se/markup',
+    'se/strings',
+    'se/ui',
+], function (FaceUtils, common, markup, strings, ui) {
     const Suffixes = ['', 'Back'];
 
     function Face() {
@@ -34,6 +35,8 @@ define(['faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui'], function (
     Face.prototype.invertCollectionIcon = true;
     // the encounter total without space around the slash
     Face.prototype.compactEncounterTotal = false;
+    // whether the editor offers an image to replace the template
+    Face.prototype.usesTemplateReplacement = false;
 
     Face.prototype.suffix = function (faceIndex) {
         return Suffixes[faceIndex];
@@ -186,14 +189,45 @@ define(['faces/FaceUtils', 'se/markup', 'se/strings', 'se/ui'], function (
     // sheet reuses its image and templates can be partly transparent. When
     // rendering for export or printing, the image set by
     // <template>-template-hires is used instead, if available; it is provided
-    // by a separate plug-in.
+    // by a separate plug-in. Paints the replacement image instead if there is
+    // one and it can be read; returns whether it did.
     Face.prototype.paintTemplate = function (g, sheet) {
         var composite = g.getComposite();
         g.setComposite(java.awt.AlphaComposite.Clear);
         g.fillRect(0, 0, sheet.getTemplateWidth(), sheet.getTemplateHeight());
         g.setComposite(composite);
 
+        if (this.paintReplacement(g, sheet)) return true;
         sheet.paintImage(g, this.template + '-template', 0, 0);
+        return false;
+    };
+
+    // The replacement is a file path or a resource identifier, as for a
+    // portrait. It covers the trim area unless it includes the bleed.
+    Face.prototype.paintReplacement = function (g, sheet) {
+        if (!this.usesTemplateReplacement) return false;
+
+        var settings = sheet.getGameComponent().getSettings();
+        var suffix = this.suffix(sheet.getSheetIndex());
+        var file = String(settings.get('TemplateReplacement' + suffix, ''));
+        if (file.length === 0) return false;
+
+        if (!common.StrangeImage.exists(file)) return false;
+        var image = common.StrangeImage.getAsBufferedImage(file);
+
+        var width = sheet.getTemplateWidth();
+        var height = sheet.getTemplateHeight();
+        var bleed = FaceUtils.bleedPixels(sheet);
+        var region = new common.Region(
+            bleed,
+            bleed,
+            width - 2 * bleed,
+            height - 2 * bleed
+        );
+        if (String(settings.get('TemplateReplacementBleed', '0')) === '1')
+            region = new common.Region(0, 0, width, height);
+        sheet.paintImage(g, image, region);
+        return true;
     };
 
     return Face;

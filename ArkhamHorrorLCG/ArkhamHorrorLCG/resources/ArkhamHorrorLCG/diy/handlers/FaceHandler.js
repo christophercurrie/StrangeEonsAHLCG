@@ -15,11 +15,19 @@
 // Module: returns FaceHandler.
 define([
     'handlers/Collector',
+    'handlers/TemplateReplacement',
     'se/diy',
     'se/strings',
     'se/ui',
     'ui/Bindings',
-], function (Collector, diyLibrary, strings, ui, Bindings) {
+], function (
+    Collector,
+    TemplateReplacement,
+    diyLibrary,
+    strings,
+    ui,
+    Bindings
+) {
     const FACE_FRONT = 0;
     const FACE_BACK = 1;
     const GeneralHint = 'wrap, pushx, growx';
@@ -43,6 +51,7 @@ define([
         this.sideInterfaces = [null, null];
         this.collectorTabs = [];
         this.copyright = null;
+        this.templatePanel = null;
     }
 
     FaceHandler.prototype.setFace = function (faceIndex, face) {
@@ -123,6 +132,16 @@ define([
         if (this.copyrightFaces().length > 0) {
             Collector.setCopyrightDefaults(diy, true);
         }
+        if (this.templateReplacementFaces().length > 0) {
+            TemplateReplacement.setDefaults(diy, true);
+        }
+    };
+
+    // the sides that offer an image to replace the template
+    FaceHandler.prototype.templateReplacementFaces = function () {
+        return [FACE_FRONT, FACE_BACK].filter(function (faceIndex) {
+            return this.faces[faceIndex].usesTemplateReplacement;
+        }, this);
     };
 
     // the sides that draw the card's copyright
@@ -133,7 +152,8 @@ define([
     };
 
     // Adds a tab for each kind of set a face draws, after the sides' tabs, and
-    // the copyright panel, after the sides' panels, if a face draws it.
+    // the copyright and template replacement panels, after the sides' panels,
+    // if a face uses them.
     FaceHandler.prototype.addCollectorInterface = function (diy) {
         var tabPane = this.editor.getTabbedPane();
         var index =
@@ -181,6 +201,23 @@ define([
             );
             this.copyright = { component: panel, controls: copyright.controls };
         }
+
+        var templateFaces = this.templateReplacementFaces();
+        if (templateFaces.length > 0) {
+            let template = TemplateReplacement.createPanel(
+                this.bindings,
+                templateFaces
+            );
+            let panel = template.panel.realize();
+            this.generalPanel['add(java.awt.Component,java.lang.Object)'](
+                panel,
+                GeneralHint
+            );
+            this.templatePanel = {
+                component: panel,
+                controls: template.controls,
+            };
+        }
     };
 
     FaceHandler.prototype.removeCollectorInterface = function () {
@@ -193,13 +230,15 @@ define([
         }, this);
         this.collectorTabs = [];
 
-        if (this.copyright != null) {
-            this.copyright.controls.forEach(function (control) {
+        [this.copyright, this.templatePanel].forEach(function (panel) {
+            if (panel == null) return;
+            panel.controls.forEach(function (control) {
                 this.bindings.remove(control);
             }, this);
-            this.generalPanel.remove(this.copyright.component);
-            this.copyright = null;
-        }
+            this.generalPanel.remove(panel.component);
+        }, this);
+        this.copyright = null;
+        this.templatePanel = null;
     };
 
     FaceHandler.prototype.getPortraitCount = function () {
@@ -237,6 +276,9 @@ define([
         this.setCardDefaults(diy);
         if (this.copyrightFaces().length > 0) {
             Collector.setCopyrightDefaults(diy, false);
+        }
+        if (this.templateReplacementFaces().length > 0) {
+            TemplateReplacement.setDefaults(diy, false);
         }
         this.updateCollector(diy);
     };

@@ -23,6 +23,7 @@ define([
     TokenRulesFace.prototype = Object.create(TextBlocksFace.prototype);
     TokenRulesFace.prototype.constructor = TokenRulesFace;
     TokenRulesFace.prototype.template = 'AHLCG-TokenRulesFace';
+    TokenRulesFace.prototype.usesTemplateReplacement = true;
     TokenRulesFace.prototype.blockStyles = TextBlocks.Styles.concat([
         'intro',
         'token',
@@ -34,6 +35,7 @@ define([
             BlockTokens1: '',
             ChaosFull: '0',
             Difficulty: 'None',
+            TemplateReplacement: '',
         });
     };
 
@@ -148,8 +150,9 @@ define([
         var faceIndex = sheet.getSheetIndex();
         var full = this.isFullPage(diy, faceIndex);
 
-        this.paintTemplate(g, sheet);
-        if (!full) sheet.paintImage(g, this.template + '-EncounterFrame');
+        var replaced = this.paintTemplate(g, sheet);
+        if (!full && !replaced)
+            sheet.paintImage(g, this.template + '-EncounterFrame');
         FaceUtils.translateToTrim(g, sheet);
 
         var top;
