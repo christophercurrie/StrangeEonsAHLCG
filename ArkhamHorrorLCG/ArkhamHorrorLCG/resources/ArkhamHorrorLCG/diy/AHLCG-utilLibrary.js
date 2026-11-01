@@ -877,7 +877,11 @@ function initBodyTags( diy, textBox ) {
 	for( let index = 0; index < AHLCGObject.locationIcons.length; index++ ){
 		let item = AHLCGObject.locationIcons[index];
 
-		textBox.setReplacementForTag( $('Loc'+item+'-tag'), '<image res://ArkhamHorrorLCG/icons/AHLCG-Loc' + item + '.png 0.14in center>' );
+		let tag = $('Loc'+item+'-tag');
+
+		if ( tag != null ) {
+			textBox.setReplacementForTag( tag, '<image res://ArkhamHorrorLCG/icons/AHLCG-Loc' + item + '.png 0.14in center>' );
+		}
 	}
 }
 
