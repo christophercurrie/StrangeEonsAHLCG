@@ -28,8 +28,17 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
         return region;
     }
 
+    // Light collector text would vanish on ink saver's white sheet. The sheet
+    // can switch modes after its boxes are made, so this is set for each paint.
+    function setText(box, sheet, text) {
+        box.markupText = sheet.isPrototypeRenderingModeEnabled()
+            ? '<color #000000>' + text + '</color>'
+            : text;
+    }
+
     // returns the left edge of the number
-    function paintCollectionNumber(g, diy, face, box, suffix, faceIndex, x) {
+    function paintCollectionNumber(g, diy, sheet, face, box, suffix, x) {
+        var faceIndex = sheet.getSheetIndex();
         var number = String(diy.settings.get('CollectionNumber', ''));
         if (number === '') return x;
 
@@ -42,7 +51,7 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
             let flip = String(diy.settings.get('flipSuffix', '0')) === '1';
             number += (faceIndex === 0) !== flip ? 'a' : 'b';
         }
-        box.markupText = number;
+        setText(box, sheet, number);
 
         return region.x + region.width - box.drawAsSingleLine(g, region);
     }
@@ -69,7 +78,7 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
         return region.x;
     }
 
-    function paintEncounterNumber(g, diy, face, box, x) {
+    function paintEncounterNumber(g, diy, sheet, face, box, x) {
         var number = String(diy.settings.get('EncounterNumber', ''));
         var total = String(diy.settings.get('EncounterTotal', ''));
         if (number === '' && total === '') return;
@@ -85,11 +94,11 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
         var separator = ' / ';
         if (face.compactEncounterTotal) separator = '/';
         else if (FaceUtils.plugin().OS === 'Mac') separator = '\u200a/\u200a';
-        box.markupText = number + separator + total;
+        setText(box, sheet, number + separator + total);
         box.drawAsSingleLine(g, region);
     }
 
-    function paintCopyright(g, diy, face, box) {
+    function paintCopyright(g, diy, sheet, face, box) {
         var region = diy.settings.getRegion(
             face.key(diy.settings, 'Copyright-region')
         );
@@ -97,7 +106,7 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
         region.y += parseInt(o.collectionFontOffset);
         if (String(o.bodyFamily) === 'Times New Roman') region.y -= 1;
 
-        box.markupText = String(diy.settings.get('Copyright', ''));
+        setText(box, sheet, String(diy.settings.get('Copyright', '')));
         box.drawAsSingleLine(g, region);
     }
 
@@ -146,10 +155,10 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
                 paintCollectionNumber(
                     g,
                     diy,
+                    sheet,
                     face,
                     boxes.collectionNumber,
                     collector.suffix,
-                    faceIndex,
                     x
                 ) - 3;
             x =
@@ -169,11 +178,11 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
         if (
             String(diy.settings.get('ShowEncounterNumber' + side, '1')) === '1'
         ) {
-            paintEncounterNumber(g, diy, face, boxes.encounterNumber, x);
+            paintEncounterNumber(g, diy, sheet, face, boxes.encounterNumber, x);
         }
 
         if (String(diy.settings.get('ShowCopyright' + side, '1')) === '1') {
-            paintCopyright(g, diy, face, boxes.copyright);
+            paintCopyright(g, diy, sheet, face, boxes.copyright);
         }
     }
 

@@ -186,16 +186,24 @@ define([
     };
 
     // Paints the template image over the whole sheet, cleared first since a
-    // sheet reuses its image and templates can be partly transparent. When
+    // sheet reuses its image and templates can be partly transparent; ink saver
+    // keeps the white background it provides. When
     // rendering for export or printing, the image set by
     // <template>-template-hires is used instead, if available; it is provided
     // by a separate plug-in. Paints the replacement image instead if there is
     // one and it can be read; returns whether it did.
     Face.prototype.paintTemplate = function (g, sheet) {
-        var composite = g.getComposite();
-        g.setComposite(java.awt.AlphaComposite.Clear);
-        g.fillRect(0, 0, sheet.getTemplateWidth(), sheet.getTemplateHeight());
-        g.setComposite(composite);
+        if (!sheet.isPrototypeRenderingModeEnabled()) {
+            let composite = g.getComposite();
+            g.setComposite(java.awt.AlphaComposite.Clear);
+            g.fillRect(
+                0,
+                0,
+                sheet.getTemplateWidth(),
+                sheet.getTemplateHeight()
+            );
+            g.setComposite(composite);
+        }
 
         if (this.paintReplacement(g, sheet)) return true;
         sheet.paintImage(g, this.template + '-template', 0, 0);

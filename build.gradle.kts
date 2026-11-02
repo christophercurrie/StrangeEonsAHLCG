@@ -152,6 +152,50 @@ val updateFlexibleRenderMasters by tasks.registering(UpdateRenderMasters::class)
     javaRuntimeVersion = strangeEonsRenderTest.launcher.map { it.metadata.javaRuntimeVersion }
 }
 
+// Ink saver draws no images, so it shows what a face paints over the white sheet.
+val renderFlexibleInkSaver by tasks.registering(RenderComponents::class) {
+    group = "render test"
+    description = "Renders the fronts of the flexible card fixtures in ink saver mode."
+    val defaults = tasks.named<RenderComponents>("renderComponents").get()
+    applicationClasspath.from(defaults.applicationClasspath)
+    bundles.from(defaults.bundles)
+    components = renderFlexible.flatMap { it.components }
+    resolution = strangeEonsRenderTest.resolution
+    gameLanguage = strangeEonsRenderTest.gameLanguage
+    uiLanguage = strangeEonsRenderTest.uiLanguage
+    jvmArgs = strangeEonsRenderTest.jvmArgs
+    userSettings = strangeEonsRenderTest.userSettings
+    userSettings.put("render-as-prototype", "yes")
+    renderBacks = false
+    launcher = strangeEonsRenderTest.launcher
+    outputDir = layout.buildDirectory.dir("render-test/flexible-ink-saver/actual")
+    workDir = layout.buildDirectory.dir("render-test/flexible-ink-saver/work")
+}
+
+val inkSaverPlatformMasters = layout.projectDirectory.dir(flexiblePlatform.map { "src/renderTest/flexible-ink-saver-masters/$it" })
+
+val verifyFlexibleInkSaver by tasks.registering(VerifyRenders::class) {
+    group = "render test"
+    description = "Fails if any ink saver render differs from this platform's masters."
+    actual = renderFlexibleInkSaver.flatMap { it.outputDir }
+    mastersRoot = file("src/renderTest/flexible-ink-saver-masters")
+    platformMasters = inkSaverPlatformMasters
+    platform = flexiblePlatform
+    javaVendor = strangeEonsRenderTest.launcher.map { it.metadata.vendor }
+    javaRuntimeVersion = strangeEonsRenderTest.launcher.map { it.metadata.javaRuntimeVersion }
+    diffs = layout.buildDirectory.dir("render-test/flexible-ink-saver/diffs")
+}
+
+val updateFlexibleInkSaverMasters by tasks.registering(UpdateRenderMasters::class) {
+    group = "render test"
+    description = "Replaces this platform's ink saver masters with the current renders."
+    actual = renderFlexibleInkSaver.flatMap { it.outputDir }
+    platformMasters = inkSaverPlatformMasters
+    platform = flexiblePlatform
+    javaVendor = strangeEonsRenderTest.launcher.map { it.metadata.vendor }
+    javaRuntimeVersion = strangeEonsRenderTest.launcher.map { it.metadata.javaRuntimeVersion }
+}
+
 val defaultsDump = layout.buildDirectory.dir("render-test/defaults/actual")
 val defaultsExpected = file("src/renderTest/defaults")
 
@@ -209,4 +253,4 @@ val updateDefaults by tasks.registering(Copy::class) {
     into(defaultsExpected)
 }
 
-tasks.named("check") { dependsOn(verifyDefaults, verifyFlexibleRenders) }
+tasks.named("check") { dependsOn(verifyDefaults, verifyFlexibleRenders, verifyFlexibleInkSaver) }
