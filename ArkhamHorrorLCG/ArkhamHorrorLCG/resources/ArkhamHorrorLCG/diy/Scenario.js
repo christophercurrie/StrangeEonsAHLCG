@@ -297,17 +297,17 @@ function paintBack( g, diy, sheet ) {
 	if ( drawCollectionInfo ) {
 		var collectionSuffix = false;
 
-		var showCollectionNumberBack = ( $ShowCollectionNumberBack == '1' );
+		var showCollectionNumberFront = ( $ShowCollectionNumberFront == '1' );
 		if ( $Template == 'Portrait' || $Template == 'Resolution' || $Template == 'Title' ) showCollectionNumberFront = false;
 
-		if ( $ShowCollectionNumberFront == '1' && showCollectionNumberBack == '1' ) collectionSuffix = true;
+		if ( showCollectionNumberFront && $ShowCollectionNumberBack == '1' ) collectionSuffix = true;
 		var encounterIcon = ($TemplateBack == 'ChaosFull') ? false : true;
 
 		var collectionBox = $ShowCollectionNumberBack == '1' ? BackCollection_box : null;
 		var encounterBox = $ShowEncounterNumberBack == '1' ? BackEncounter_box :  null;
 		var copyrightBox = $ShowCopyrightBack == '1' ? BackCopyright_box : null;
 
-		drawCollectorInfo( g, diy, sheet, collectionBox, collectionSuffix, $ShowCollectionNumberFront == '1', encounterBox, encounterIcon, copyrightBox, null );
+		drawCollectorInfo( g, diy, sheet, collectionBox, collectionSuffix, $ShowCollectionNumberBack == '1', encounterBox, encounterIcon, copyrightBox, null );
 	}
 
 	if ( $TemplateBack == 'Portrait' && $ArtistBack != '' ) drawArtist( g, diy, sheet, BackArtist_box, false );
