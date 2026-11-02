@@ -1,2 +1,4 @@
 *.seext
+.StrangeEons
 .DS_Store
+node_modules/
