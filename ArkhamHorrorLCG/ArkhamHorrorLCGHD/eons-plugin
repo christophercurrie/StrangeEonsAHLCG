@@ -6,6 +6,13 @@ id = CATALOGUEID{0ec872c5-d29e-488b-a34d-ca60c1065b23:2026-9-19-4-19-42-608}
 
 priority = LOW
 
+catalog-name = Arkham Horror: The Card Game - High Resolution
+catalog-credit = Strange Eons
+catalog-homepage = \
+    http://github.com/strange-eons/strange-eons-arkham-horror-lcg-plugin
+catalog-description = <p>\nThis plugin adds high resolution templates for Arkham \
+    Horror: The Card Game.\nStrange Eons 3.5.2 or later and the base plugin are \
+    required.\n</p>
 catalog-game = AHLCG
 catalog-minver = 5350
 catalog-requires = \
