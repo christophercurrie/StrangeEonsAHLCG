@@ -26,12 +26,13 @@ function create( diy ) {
 	setDefaultCollection();
 
 	diy.setCornerRadius(8);
-	diy.version = 18;
+	diy.version = 19;
 }
 
 function setDefaults() {
 	// front
 	$Template = 'Story';
+	$StoryClass = 'Default';
 
 	$TraitsA = '';
 	$HeaderA = '';
@@ -426,12 +427,15 @@ function onRead(diy, oos) {
 		$TrackerBox = '';
 		$TrackerHeight = '100';
 	}
+	if ( diy.version < 19 ) {
+		$StoryClass = 'Default';
+	}
 
 	updateCollection();
 	updateEncounter();
 
 	diy.setCornerRadius(8);
-	diy.version = 18;
+	diy.version = 19;
 }
 
 function onWrite( diy, oos ) {

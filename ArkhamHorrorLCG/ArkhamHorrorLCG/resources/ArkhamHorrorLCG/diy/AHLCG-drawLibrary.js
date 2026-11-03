@@ -27,6 +27,9 @@ function drawTemplate( g, sheet, className ) {
 	else if ( hasEncounterFrame ) {
 		name = 'StoryChaosFull';
 	}
+	else if ( CardTypes[faceIndex] == 'Story' ) {
+		name = getStoryTemplateName( faceIndex );
+	}
 	else if ( 'Concealed' ) {
 		if ( $Template == 'Decoy' ) name = CardTypes[faceIndex] + 'Decoy';
 		else if ( $Template == 'NamedDecoy' ) name = CardTypes[faceIndex] + 'NamedDecoy';
@@ -46,6 +49,15 @@ function drawTemplate( g, sheet, className ) {
 		let region = sheet.getGameComponent().getSettings().getRegion( 'AHLCG-Chaos-EncounterFrame' );
 		sheet.paintImage( g, 'AHLCG-Chaos-EncounterFrame', region.x - bleed, region.y - bleed, region.width, region.height );
 	}
+}
+
+// the story template for the face's StoryClass; older cards and Default use the original
+function getStoryTemplateName( faceIndex ) {
+	var storyClass = $( 'StoryClass' + BindingSuffixes[faceIndex] );
+
+	if ( storyClass == null || storyClass == '' || storyClass == 'Default' ) return 'Story';
+
+	return 'Story-' + storyClass;
 }
 
 // backType is the selected back for cards that offer Player and Encounter backs

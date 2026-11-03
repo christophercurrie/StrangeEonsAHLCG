@@ -652,6 +652,15 @@ function gameObject( masterSettings ) {
 		ListItem( 'Chaos', @AHLCG-StoryTemplate-Token ),
 		ListItem( 'ChaosFull', @AHLCG-StoryTemplate-TokenFull ) );
 
+	this.comboStoryClass = new Array(
+		ListItem( 'Default', @AHLCG-Class-Default ),
+		ListItem( 'Neutral', @AHLCG-Class-Neutral ),
+		ListItem( 'Guardian', @AHLCG-Class-Guardian ),
+		ListItem( 'Seeker', @AHLCG-Class-Seeker ),
+		ListItem( 'Rogue', @AHLCG-Class-Rogue ),
+		ListItem( 'Mystic', @AHLCG-Class-Mystic ),
+		ListItem( 'Survivor', @AHLCG-Class-Survivor ) );
+
 	this.comboStoryBackTemplate = new Array(
 		ListItem( 'Story', @AHLCG-StoryTemplate-Story ),
 		ListItem( 'Chaos', @AHLCG-StoryTemplate-Token ),
