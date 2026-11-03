@@ -943,6 +943,20 @@ function layoutChaosStats( bindings, faceIndex ) {
 	return StatsPanel;
 }
 
+// Class dropdown for a story page; other page types have no class templates.
+function createStoryClassList( bindings, faceIndex, templateList ) {
+	var classList = new comboBox( Eons.namedObjects.AHLCGObject.comboStoryClass, null );
+	bindings.add( 'StoryClass' + BindingSuffixes[faceIndex], classList, [faceIndex] );
+
+	var updateEnabled = function updateEnabled() {
+		classList.setEnabled( String( templateList.getSelectedItem() ) == 'Story' );
+	};
+	templateList.addActionListener( updateEnabled );
+	updateEnabled();
+
+	return classList;
+}
+
 function layoutStoryChaosStats( diy, bindings, faceIndex ) {
 	var StatPanel = new Grid();
 	StatPanel.setTitle( @AHLCG-BasicData );
@@ -964,6 +978,8 @@ function layoutStoryChaosStats( diy, bindings, faceIndex ) {
 */
 	});
 
+	var classList = createStoryClassList( bindings, faceIndex, TemplateList );
+
 	var trackerField = new textField( '', 30 );
 	bindings.add( 'TrackerBox' + BindingSuffixes[faceIndex], trackerField, [faceIndex] );
 
@@ -972,6 +988,7 @@ function layoutStoryChaosStats( diy, bindings, faceIndex ) {
 
 	StatPanel.place(
 		@AHLCG-Template, 'align right', TemplateList, 'wrap, width 40%',
+		@AHLCG-Class, 'align right', classList, 'wrap, width 40%',
 		@AHLCG-TrackerBox, 'align right', trackerField, 'wrap',
 		@AHLCG-Height, 'align right', heightSpinner, 'align left, split', '%', 'pushx, growx, align left'
 		);
@@ -1003,6 +1020,8 @@ function layoutStoryStats( diy, bindings, faceIndex ) {
  */
 	});
 
+	var classList = createStoryClassList( bindings, faceIndex, TemplateList );
+
 	var trackerField = new textField( '', 30 );
 	bindings.add( 'TrackerBox' + BindingSuffixes[faceIndex], trackerField, [faceIndex] );
 
@@ -1011,6 +1030,7 @@ function layoutStoryStats( diy, bindings, faceIndex ) {
 
 	StatPanel.place(
 		@AHLCG-Template, 'align right', TemplateList, 'wrap, width 40%',
+		@AHLCG-Class, 'align right', classList, 'wrap, width 40%',
 		@AHLCG-TrackerBox, 'align right', trackerField, 'wrap, pushx, growx',
 		@AHLCG-Height, 'align right', heightSpinner, 'align left, split', '%', 'pushx, growx, align left'
 		);
@@ -1057,6 +1077,8 @@ function layoutStoryBackStats( diy, bindings, faceIndex, selectBack ) {
 		}
 	});
 
+	var classList = createStoryClassList( bindings, faceIndex, BackList );
+
 	var trackerField = new textField( '', 30 );
 	bindings.add( 'TrackerBox' + BindingSuffixes[faceIndex], trackerField, [faceIndex] );
 
@@ -1065,6 +1087,7 @@ function layoutStoryBackStats( diy, bindings, faceIndex, selectBack ) {
 
 	StatPanel.place(
 		@AHLCG-Template, 'align right', BackList, 'wrap, width 40%',
+		@AHLCG-Class, 'align right', classList, 'wrap, width 40%',
 		@AHLCG-TrackerBox, 'align right', trackerField, 'wrap, pushx, growx',
 		@AHLCG-Height, 'align right', heightSpinner, 'align left, split', '%', 'pushx, growx, align left'
 		);

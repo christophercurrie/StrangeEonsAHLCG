@@ -26,13 +26,15 @@ function create( diy ) {
 	setDefaultCollection();
 
    	diy.setCornerRadius(8);
-	diy.version = 19;
+	diy.version = 20;
 }
 
 function setDefaults() {
 	// front
 	$Template = 'Story';
 	$TemplateBack = 'Story';
+	$StoryClass = 'Default';
+	$StoryClassBack = 'Default';
 
 	$TraitsA = '';
 	$HeaderA = '';
@@ -485,9 +487,13 @@ function onRead(diy, oos) {
 	if ( diy.version < 19 ) {
 		if ( $Copyright == null ) $Copyright = '';
 	}
+	if ( diy.version < 20 ) {
+		$StoryClass = 'Default';
+		$StoryClassBack = 'Default';
+	}
 
 	diy.setCornerRadius(8);
-	diy.version = 19;
+	diy.version = 20;
 }
 
 function onWrite( diy, oos ) {
