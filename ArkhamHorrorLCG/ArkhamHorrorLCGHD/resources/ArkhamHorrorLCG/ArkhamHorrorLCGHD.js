@@ -6,7 +6,7 @@ function getDescription() {
 	return 'HD templates for the Arkham Horror LCG plugin';
 }
 function getVersion() {
-	return 1.0;
+	return 9.96;
 }
 
 function initialize() {
