@@ -12,7 +12,24 @@ function getVersion() {
 function initialize() {
     var game = Game.get('AHLCG');
     if (game == null) {
-        Eons.log.warning("Arkham Horror LCG HD cannot find the base plugin");
+        alert("[Arkham Horror LCG HD] Cannot find registered game, Arkham Horror LCG plugin is mising", true);
+        return false;
+    }
+
+    let found = false;
+    for (let ext of arkham.plugins.BundleInstaller.getInstalledExtensions()) {
+        if (ext.getCatalogID().getUUID().toString().equals("0b899f3c-78ae-40b8-bcfc-b06479b1f136")) {
+            if (ext.getPlugin().getPluginVersion() < getVersion()) {
+                alert("[Arkham Horror LCG HD] Arkham Horror LCG plugin version must be " + getVersion() + " or later", true);
+                return false;
+            }
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        alert("[Arkham Horror LCG HD] Arkham Horror LCG plugin is mising", true);
         return false;
     }
 
