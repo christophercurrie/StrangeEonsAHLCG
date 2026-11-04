@@ -115,7 +115,8 @@ define([
             );
         }
         var scale = new ui.spinner(50, 150, 1, 100);
-        this.bind(bindings, faceIndex, 'ScaleModifier', scale);
+        // one for the card, as legacy cards save it
+        this.bindKey(bindings, faceIndex, 'ScaleModifier', scale);
         tab.place(
             strings.string('AHLCG-TextScale'),
             'align left, split',
