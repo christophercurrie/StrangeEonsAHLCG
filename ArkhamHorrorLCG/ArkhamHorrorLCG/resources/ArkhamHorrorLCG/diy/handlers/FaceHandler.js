@@ -432,6 +432,24 @@ define([
 
     // A side's art portraits, a mirror button for each, and the face's
     // $Artist<suffix>.
+    // whether the back's art can be the front's: both sides have art of a
+    // name
+    FaceHandler.prototype.canShareArt = function () {
+        var back = this.faces[FACE_BACK].portraits;
+        return this.faces[FACE_FRONT].portraits.some(function (name) {
+            return back.indexOf(name) >= 0;
+        });
+    };
+
+    // $PortraitShare: the back shows the front's art, and its artist unless
+    // it names its own
+    FaceHandler.prototype.sharesArt = function (diy) {
+        return (
+            this.canShareArt() &&
+            String(diy.settings.get('PortraitShare', '0')) === '1'
+        );
+    };
+
     FaceHandler.prototype.createArtTab = function (diy, faceIndex) {
         var face = this.faces[faceIndex];
         var first = faceIndex === FACE_FRONT ? 0 : this.art[FACE_FRONT].length;
@@ -439,6 +457,16 @@ define([
         var options = new ui.Grid();
         options.setTitle(strings.string('AHLCG-Options'));
 
+        if (faceIndex === FACE_BACK && this.canShareArt()) {
+            let share = new ui.checkBox(
+                strings.string('AHLCG-SharePortrait'),
+                false,
+                null
+            );
+            this.bindings.add('PortraitShare', share, [FACE_FRONT, FACE_BACK]);
+            face.boundControls.push(share);
+            options.place(share, 'wrap, span 2');
+        }
         var artistField = new ui.textField('', 30);
         face.bind(this.bindings, faceIndex, 'Artist', artistField);
         options.place(
@@ -530,6 +558,11 @@ define([
         face.portraits.forEach(function (name, j) {
             art[name] = this.art[faceIndex][j];
         }, this);
+        if (faceIndex === FACE_BACK && this.sharesArt(diy)) {
+            this.faces[FACE_FRONT].portraits.forEach(function (name, j) {
+                if (name in art) art[name] = this.art[FACE_FRONT][j];
+            }, this);
+        }
         face.paint(
             g,
             diy,

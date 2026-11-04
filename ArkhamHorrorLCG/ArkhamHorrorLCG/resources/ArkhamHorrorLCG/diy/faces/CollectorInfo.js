@@ -197,6 +197,13 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
     function paintArtist(g, diy, sheet, face, box) {
         var suffix = face.suffix(sheet.getSheetIndex());
         var artist = String(diy.settings.get('Artist' + suffix, ''));
+        // a back showing the front's art credits the front's artist
+        if (
+            artist.length === 0 &&
+            suffix !== '' &&
+            String(diy.settings.get('PortraitShare', '0')) === '1'
+        )
+            artist = String(diy.settings.get('Artist', ''));
         if (artist.length === 0) return;
 
         var region = diy.settings.getRegion(
