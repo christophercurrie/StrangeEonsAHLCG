@@ -10,6 +10,8 @@
 //   defaults  [ front, back ] ids of the faces of a new card; the first
 //             choice if left out
 //   title     string key of the General panel that offers the choices
+//   upgradeChoices
+//             in place of overriding it
 //
 // Module: returns FaceChoiceHandler.
 define(['handlers/FaceHandler', 'se/strings', 'se/ui'], function (
@@ -173,7 +175,9 @@ define(['handlers/FaceHandler', 'se/strings', 'se/ui'], function (
 
     // Subclasses may override upgradeChoices( diy ) to set the face settings
     // of an older save.
-    FaceChoiceHandler.prototype.upgradeChoices = function (diy) {};
+    FaceChoiceHandler.prototype.upgradeChoices = function (diy) {
+        if (this.config.upgradeChoices) this.config.upgradeChoices(diy);
+    };
 
     // the entry points below first apply face settings changed outside the
     // editor

@@ -8,6 +8,8 @@
 //   templateKeys  [ front, back ] template keys of the component; each face's
 //                 template settings are copied to them, since the component's
 //                 template keys can't change after create
+//   legacyPortraits, upgrade
+//                 for a legacy card type, in place of overriding them
 //
 // Subclasses may override setCardDefaults( diy ) for extra card-level
 // defaults, upgrade( diy ) for version steps when reading older saves, before
@@ -42,6 +44,7 @@ define([
     function FaceHandler(config, front, back) {
         this.version = CardVersion;
         this.templateKeys = config.templateKeys;
+        this.config = config;
 
         this.faces = [front, back];
         this.boxes = [null, null];
@@ -70,7 +73,10 @@ define([
 
     FaceHandler.prototype.setCardDefaults = function (diy) {};
 
-    FaceHandler.prototype.upgrade = function (diy) {};
+    FaceHandler.prototype.upgrade = function (diy) {
+        if (this.config.upgrade && diy.version < this.version)
+            this.config.upgrade(diy);
+    };
 
     FaceHandler.prototype.setFaceTemplates = function (diy) {
         for (let i = 0; i < this.faces.length; i++) {
@@ -581,7 +587,7 @@ define([
     // [ faceIndex, name ] for art and null for one that is dropped. Called
     // after the upgrade, while diy.version is the saved version.
     FaceHandler.prototype.legacyPortraits = function (diy) {
-        return null;
+        return this.config.legacyPortraits || null;
     };
 
     // Reads the portraits listed by legacyPortraits into the faces' art and

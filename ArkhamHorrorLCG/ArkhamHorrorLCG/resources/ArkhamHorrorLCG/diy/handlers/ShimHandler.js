@@ -17,9 +17,7 @@ define(['handlers/FaceHandler'], function (FaceHandler) {
             new config.faces[0](),
             new config.faces[1]()
         );
-        this.legacyList = config.legacyPortraits;
         this.cardDefaults = config.cardDefaults || {};
-        this.legacyUpgrade = config.upgrade || null;
     }
 
     ShimHandler.prototype = Object.create(FaceHandler.prototype);
@@ -29,15 +27,6 @@ define(['handlers/FaceHandler'], function (FaceHandler) {
         for (let key in this.cardDefaults) {
             diy.settings.set(key, this.cardDefaults[key]);
         }
-    };
-
-    ShimHandler.prototype.legacyPortraits = function (diy) {
-        return this.legacyList;
-    };
-
-    ShimHandler.prototype.upgrade = function (diy) {
-        if (diy.version < this.version && this.legacyUpgrade != null)
-            this.legacyUpgrade(diy);
     };
 
     return ShimHandler;
