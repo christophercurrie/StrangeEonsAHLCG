@@ -126,6 +126,16 @@ val verifyCardVersions by tasks.registering {
 
 tasks.named("check") { dependsOn(verifyCardVersions) }
 
+// Script errors that Strange Eons reports and recovers from while rendering
+// fail the render.
+tasks.withType<RenderComponents>().configureEach {
+    doLast {
+        val log = workDir.get().asFile.resolve("strange-eons.log")
+        val uncaught = if (log.exists()) log.readLines().count { it.startsWith("Uncaught ") } else 0
+        if (uncaught > 0) throw GradleException("$uncaught uncaught script error(s). See $log")
+    }
+}
+
 // Writes .eon fixtures with the current plug-in. Existing fixtures are kept
 // unless -PoverwriteFixtures is set, since they also guard save compatibility.
 // -PfixturesDir writes them elsewhere, as components/ and flexible/.
