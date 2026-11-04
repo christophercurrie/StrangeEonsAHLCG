@@ -230,6 +230,14 @@ function recoverHighResCard( diy ) {
 	if ( change.n != null ) diy.settings.set( 'HighResNote', change.n );
 
 	diy.version = card.from;
+
+	// DIYEditor marks the component saved after onRead finishes. Defer this
+	// mark so it runs after the editor has completed initialization.
+	java.awt.EventQueue.invokeLater( new java.lang.Runnable( {
+		run: function() {
+			diy.markUnsavedChanges();
+		}
+	} ) );
 }
 
 function divideSizeTags( text, factor ) {
