@@ -69,15 +69,14 @@ def main():
             if not key.startswith(head):
                 continue
             name = key[len(head):]
-            if name.startswith('Default-') or name.startswith('Default'):
-                if name.replace('Default', '', 1) in SET_REGIONS:
-                    continue
-                if name in ('Default-template', 'Default-bleed-margin'):
-                    continue
-            if name == 'template':
+            if name in ('Default-template', 'Default-bleed-margin', 'template'):
+                continue
+            # legacy drawing prefers the Default... icon regions
+            if name.startswith('Default') and name[7:] in SET_REGIONS:
+                out[SET_REGIONS[name[7:]]] = value
                 continue
             if name in SET_REGIONS:
-                out[SET_REGIONS[name]] = value
+                out.setdefault(SET_REGIONS[name], value)
             elif re.match(r'(Collection|Encounter|DefaultCollection|DefaultEncounter'
                           r'|ReturnEncounter|DefaultReturnEncounter)(Portrait)?-portrait', name):
                 continue
