@@ -113,93 +113,153 @@ val generateFixtures by tasks.registering(Exec::class) {
     )
 }
 
-// Flexible card fixtures render fronts only, one face each, against their
-// own masters.
+// Flexible card fixtures have one face on both sides and render both. A back
+// is checked against its front's master, with the collector line's side
+// suffix masked; a filled back, against its own master, so the back's
+// collector line is checked too.
 val flexiblePlatform = tasks.named<VerifyRenders>("verifyRenders").flatMap { it.platform }
-val flexiblePlatformMasters = layout.projectDirectory.dir(flexiblePlatform.map { "src/renderTest/flexible-masters/$it" })
 
-val renderFlexible by tasks.registering(RenderComponents::class) {
-    group = "render test"
-    description = "Renders the fronts of the flexible card fixtures."
-    val defaults = tasks.named<RenderComponents>("renderComponents").get()
-    applicationClasspath.from(defaults.applicationClasspath)
-    bundles.from(defaults.bundles)
-    components = file(providers.gradleProperty("flexibleDir").getOrElse("src/renderTest/flexible"))
-    resolution = strangeEonsRenderTest.resolution
-    gameLanguage = strangeEonsRenderTest.gameLanguage
-    uiLanguage = strangeEonsRenderTest.uiLanguage
-    jvmArgs = strangeEonsRenderTest.jvmArgs
-    userSettings = strangeEonsRenderTest.userSettings
-    renderBacks = false
-    launcher = strangeEonsRenderTest.launcher
-    outputDir = layout.buildDirectory.dir("render-test/flexible/actual")
-    workDir = layout.buildDirectory.dir("render-test/flexible/work")
+// The collection number's a/b suffix, and the icon it moves, in pixels of
+// each face's renders; faces without a collector line have none.
+val flexibleSuffixMasks = mapOf(
+    "enemy" to java.awt.Rectangle(670, 1018, 50, 26),
+    "story" to java.awt.Rectangle(570, 974, 46, 26),
+    "tokenRules" to java.awt.Rectangle(670, 1018, 50, 26),
+)
+
+object FlexibleBacks {
+    fun isBack(path: String) = path.endsWith("-1.png")
+    fun hasMaster(path: String) = path.endsWith("/filled-1.png")
 }
 
-val verifyFlexibleRenders by tasks.registering(VerifyRenders::class) {
-    group = "render test"
-    description = "Fails if any flexible card render differs from this platform's masters."
-    actual = renderFlexible.flatMap { it.outputDir }
-    mastersRoot = file("src/renderTest/flexible-masters")
-    platformMasters = flexiblePlatformMasters
-    platform = flexiblePlatform
-    javaVendor = strangeEonsRenderTest.launcher.map { it.metadata.vendor }
-    javaRuntimeVersion = strangeEonsRenderTest.launcher.map { it.metadata.javaRuntimeVersion }
-    diffs = layout.buildDirectory.dir("render-test/flexible/diffs")
+// Copies renders and masters for VerifyRenders: each back without a master of
+// its own, and its front's master in its place, with the suffix masked.
+abstract class StageFlexibleRenders : DefaultTask() {
+    @get:InputDirectory abstract val actual: DirectoryProperty
+    @get:InputFiles abstract val platformMasters: DirectoryProperty
+    @get:Input abstract val masks: MapProperty<String, java.awt.Rectangle>
+    @get:OutputDirectory abstract val stagedActual: DirectoryProperty
+    @get:OutputDirectory abstract val stagedMasters: DirectoryProperty
+
+    private fun masked(source: File, target: File, mask: java.awt.Rectangle?) {
+        target.parentFile.mkdirs()
+        if (mask == null) {
+            source.copyTo(target, overwrite = true)
+            return
+        }
+        val image = javax.imageio.ImageIO.read(source)
+        val g = image.createGraphics()
+        g.color = java.awt.Color.MAGENTA
+        g.fill(mask)
+        g.dispose()
+        javax.imageio.ImageIO.write(image, "png", target)
+    }
+
+    @TaskAction
+    fun stage() {
+        val actualDir = actual.get().asFile
+        val mastersDir = platformMasters.get().asFile
+        val outActual = stagedActual.get().asFile.apply { deleteRecursively(); mkdirs() }
+        val outMasters = stagedMasters.get().asFile.apply { deleteRecursively(); mkdirs() }
+
+        if (mastersDir.isDirectory) mastersDir.copyRecursively(outMasters)
+        actualDir.walk().filter { it.isFile && it.name.endsWith(".png") }.forEach { render ->
+            val path = render.relativeTo(actualDir).invariantSeparatorsPath
+            val target = outActual.resolve(path)
+            if (!FlexibleBacks.isBack(path) || FlexibleBacks.hasMaster(path)) {
+                render.copyTo(target, overwrite = true)
+                return@forEach
+            }
+            val mask = masks.get()[path.substringAfter("components/").substringBefore('/')]
+            masked(render, target, mask)
+            val front = mastersDir.resolve(path.removeSuffix("-1.png") + "-0.png")
+            if (front.isFile) masked(front, outMasters.resolve(path), mask)
+        }
+    }
 }
 
-val updateFlexibleRenderMasters by tasks.registering(UpdateRenderMasters::class) {
-    group = "render test"
-    description = "Replaces this platform's flexible card masters with the current renders."
-    actual = renderFlexible.flatMap { it.outputDir }
-    platformMasters = flexiblePlatformMasters
-    platform = flexiblePlatform
-    javaVendor = strangeEonsRenderTest.launcher.map { it.metadata.vendor }
-    javaRuntimeVersion = strangeEonsRenderTest.launcher.map { it.metadata.javaRuntimeVersion }
+// The renders that are recorded as masters: fronts and filled backs.
+fun Sync.flexibleMastersFrom(renders: Provider<Directory>) {
+    from(renders) {
+        include("**/*.png")
+        exclude { FlexibleBacks.isBack(it.relativePath.pathString) && !FlexibleBacks.hasMaster(it.relativePath.pathString) }
+    }
 }
 
+// Registers render, verify and update tasks for one set of flexible card
+// renders; configure adjusts the renderer.
+fun registerFlexibleRenders(
+    name: String,
+    title: String,
+    mode: String,
+    mastersDir: String,
+    verifyTask: String,
+    updateTask: String,
+    configure: RenderComponents.() -> Unit,
+) {
+    val outDir = "render-test/flexible$name"
+    val render = tasks.register<RenderComponents>("renderFlexible$title") {
+        group = "render test"
+        description = "Renders both sides of the flexible card fixtures$mode."
+        val defaults = tasks.named<RenderComponents>("renderComponents").get()
+        applicationClasspath.from(defaults.applicationClasspath)
+        bundles.from(defaults.bundles)
+        components = file(providers.gradleProperty("flexibleDir").getOrElse("src/renderTest/flexible"))
+        resolution = strangeEonsRenderTest.resolution
+        gameLanguage = strangeEonsRenderTest.gameLanguage
+        uiLanguage = strangeEonsRenderTest.uiLanguage
+        jvmArgs = strangeEonsRenderTest.jvmArgs
+        userSettings = strangeEonsRenderTest.userSettings
+        renderBacks = true
+        launcher = strangeEonsRenderTest.launcher
+        outputDir = layout.buildDirectory.dir("$outDir/actual")
+        workDir = layout.buildDirectory.dir("$outDir/work")
+        configure()
+    }
+    val platformMasters = layout.projectDirectory.dir(flexiblePlatform.map { "$mastersDir/$it" })
+    val stage = tasks.register<StageFlexibleRenders>("stageFlexible${title}Renders") {
+        actual = render.flatMap { it.outputDir }
+        this.platformMasters = platformMasters
+        masks = flexibleSuffixMasks
+        stagedActual = layout.buildDirectory.dir("$outDir/staged/actual")
+        stagedMasters = layout.buildDirectory.dir("$outDir/staged/masters")
+    }
+    tasks.register<VerifyRenders>(verifyTask) {
+        group = "render test"
+        description = "Fails if any flexible card render$mode differs from this platform's masters."
+        actual = stage.flatMap { it.stagedActual }
+        mastersRoot = file(mastersDir)
+        this.platformMasters = stage.flatMap { it.stagedMasters }
+        platform = flexiblePlatform
+        javaVendor = strangeEonsRenderTest.launcher.map { it.metadata.vendor }
+        javaRuntimeVersion = strangeEonsRenderTest.launcher.map { it.metadata.javaRuntimeVersion }
+        diffs = layout.buildDirectory.dir("$outDir/diffs")
+    }
+    val recorded = tasks.register<Sync>("selectFlexible${title}Masters") {
+        flexibleMastersFrom(render.flatMap { it.outputDir })
+        into(layout.buildDirectory.dir("$outDir/recorded"))
+    }
+    tasks.register<UpdateRenderMasters>(updateTask) {
+        group = "render test"
+        description = "Replaces this platform's flexible card masters$mode with the fronts and filled backs."
+        dependsOn(recorded)
+        actual = layout.buildDirectory.dir("$outDir/recorded")
+        this.platformMasters = platformMasters
+        platform = flexiblePlatform
+        javaVendor = strangeEonsRenderTest.launcher.map { it.metadata.vendor }
+        javaRuntimeVersion = strangeEonsRenderTest.launcher.map { it.metadata.javaRuntimeVersion }
+    }
+}
+
+registerFlexibleRenders(
+    "", "", "", "src/renderTest/flexible-masters", "verifyFlexibleRenders", "updateFlexibleRenderMasters",
+) {}
 // Ink saver draws no images, so it shows what a face paints over the white sheet.
-val renderFlexibleInkSaver by tasks.registering(RenderComponents::class) {
-    group = "render test"
-    description = "Renders the fronts of the flexible card fixtures in ink saver mode."
-    val defaults = tasks.named<RenderComponents>("renderComponents").get()
-    applicationClasspath.from(defaults.applicationClasspath)
-    bundles.from(defaults.bundles)
-    components = renderFlexible.flatMap { it.components }
-    resolution = strangeEonsRenderTest.resolution
-    gameLanguage = strangeEonsRenderTest.gameLanguage
-    uiLanguage = strangeEonsRenderTest.uiLanguage
-    jvmArgs = strangeEonsRenderTest.jvmArgs
-    userSettings = strangeEonsRenderTest.userSettings
+registerFlexibleRenders(
+    "-ink-saver", "InkSaver", " in ink saver mode", "src/renderTest/flexible-ink-saver-masters",
+    "verifyFlexibleInkSaver", "updateFlexibleInkSaverMasters",
+) {
     userSettings.put("render-as-prototype", "yes")
-    renderBacks = false
-    launcher = strangeEonsRenderTest.launcher
-    outputDir = layout.buildDirectory.dir("render-test/flexible-ink-saver/actual")
-    workDir = layout.buildDirectory.dir("render-test/flexible-ink-saver/work")
-}
-
-val inkSaverPlatformMasters = layout.projectDirectory.dir(flexiblePlatform.map { "src/renderTest/flexible-ink-saver-masters/$it" })
-
-val verifyFlexibleInkSaver by tasks.registering(VerifyRenders::class) {
-    group = "render test"
-    description = "Fails if any ink saver render differs from this platform's masters."
-    actual = renderFlexibleInkSaver.flatMap { it.outputDir }
-    mastersRoot = file("src/renderTest/flexible-ink-saver-masters")
-    platformMasters = inkSaverPlatformMasters
-    platform = flexiblePlatform
-    javaVendor = strangeEonsRenderTest.launcher.map { it.metadata.vendor }
-    javaRuntimeVersion = strangeEonsRenderTest.launcher.map { it.metadata.javaRuntimeVersion }
-    diffs = layout.buildDirectory.dir("render-test/flexible-ink-saver/diffs")
-}
-
-val updateFlexibleInkSaverMasters by tasks.registering(UpdateRenderMasters::class) {
-    group = "render test"
-    description = "Replaces this platform's ink saver masters with the current renders."
-    actual = renderFlexibleInkSaver.flatMap { it.outputDir }
-    platformMasters = inkSaverPlatformMasters
-    platform = flexiblePlatform
-    javaVendor = strangeEonsRenderTest.launcher.map { it.metadata.vendor }
-    javaRuntimeVersion = strangeEonsRenderTest.launcher.map { it.metadata.javaRuntimeVersion }
 }
 
 val defaultsDump = layout.buildDirectory.dir("render-test/defaults/actual")
@@ -259,4 +319,4 @@ val updateDefaults by tasks.registering(Copy::class) {
     into(defaultsExpected)
 }
 
-tasks.named("check") { dependsOn(verifyDefaults, verifyFlexibleRenders, verifyFlexibleInkSaver) }
+tasks.named("check") { dependsOn(verifyDefaults, "verifyFlexibleRenders", "verifyFlexibleInkSaver") }
