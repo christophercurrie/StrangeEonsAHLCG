@@ -17,6 +17,7 @@ export default defineConfig([
     `!${diy}/Asset.js`,
     `!${diy}/Event.js`,
     `!${diy}/Skill.js`,
+    `!${diy}/Key.js`,
     `!${diy}/Location.js`,
     `!${diy}/LocationLocation.js`,
     `!${diy}/Chaos.js`,
