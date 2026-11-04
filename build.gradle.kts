@@ -177,6 +177,7 @@ val flexibleSuffixMasks = mapOf(
     "act/reversedReturnTo" to java.awt.Rectangle(988, 718, 45, 22),
     "agenda" to java.awt.Rectangle(982, 718, 45, 22),
     "agendaFrontPortrait" to java.awt.Rectangle(982, 708, 45, 22),
+    "agendaPortrait" to java.awt.Rectangle(982, 718, 45, 22),
     "agenda/reversed" to java.awt.Rectangle(564, 718, 45, 22),
     "agenda/reversedReturnTo" to java.awt.Rectangle(564, 718, 45, 22),
     "agenda/reversedPerInvestigator" to java.awt.Rectangle(564, 718, 45, 22),
