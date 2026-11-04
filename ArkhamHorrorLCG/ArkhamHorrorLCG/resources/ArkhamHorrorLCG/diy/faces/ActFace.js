@@ -46,6 +46,7 @@ define([
     ActFace.prototype.parts = ['ActStory', 'Rules'];
     // how far a reversed card moves its collector line
     ActFace.prototype.reversedCollectorShift = 209;
+    // the body's outline, or null for none
     ActFace.prototype.outlineX = OutlineX;
     ActFace.prototype.outlineY = OutlineY;
 
@@ -66,6 +67,9 @@ define([
         });
     };
 
+    // whether the face can be reversed, and shows its index
+    ActFace.prototype.hasOrientation = true;
+    ActFace.prototype.showsIndex = true;
     // the stat beside the index, and its label
     ActFace.prototype.statKey = 'Clues';
     ActFace.prototype.indexLabel = 'AHLCG-ActNumber';
@@ -137,15 +141,18 @@ define([
                     null
                 )
             ),
-            cell,
-            strings.string('AHLCG-Orientation'),
-            'align right, gapx 10',
-            side(
-                'Orientation',
-                new ui.comboBox(o.comboTemplateOrientation, null)
-            ),
-            'pushx, growx, span 3'
+            cell
         );
+        if (this.hasOrientation)
+            panel.place(
+                strings.string('AHLCG-Orientation'),
+                'align right, gapx 10',
+                side(
+                    'Orientation',
+                    new ui.comboBox(o.comboTemplateOrientation, null)
+                ),
+                'pushx, growx, span 3'
+            );
         return [{ panel: panel, title: strings.string('AHLCG-BasicData') }];
     };
 
@@ -156,6 +163,7 @@ define([
             sheet,
             faceIndex
         );
+        if (!this.showsIndex) return boxes;
         boxes.index = this.createBox(diy, sheet, 'ScenarioIndex');
         ActAgenda.initSuffixTags(diy, boxes.index);
         return boxes;
@@ -198,7 +206,8 @@ define([
 
     ActFace.prototype.paint = function (g, diy, sheet, boxes, collector, art) {
         var faceIndex = sheet.getSheetIndex();
-        this.reversed = ActAgenda.isReversed(this, diy, faceIndex);
+        this.reversed =
+            this.hasOrientation && ActAgenda.isReversed(this, diy, faceIndex);
 
         this.clearSheet(g, sheet);
         var transform = g.getTransform();
@@ -236,15 +245,16 @@ define([
 
         ActAgenda.paintName(this, g, diy, sheet, boxes.name, reversed);
 
-        var region = diy.settings.getRegion(
-            this.key(diy.settings, 'Body-region')
-        );
-        if (reversed) ActAgenda.reverse(region);
-        boxes.body.pageShape = FaceUtils.polygonShape(
-            region,
-            reversed ? ActAgenda.reversePoints(this.outlineX) : this.outlineX,
-            this.outlineY
-        );
+        if (this.outlineX != null) {
+            let region = this.bodyRegion(diy, 'Body');
+            boxes.body.pageShape = FaceUtils.polygonShape(
+                region,
+                reversed
+                    ? ActAgenda.reversePoints(this.outlineX)
+                    : this.outlineX,
+                this.outlineY
+            );
+        }
         this.paintBody(g, diy, boxes.body, suffix);
 
         this.paintStat(
@@ -255,15 +265,16 @@ define([
             reversed ? ActAgenda.reverse : null
         );
         this.paintCollector(g, diy, sheet, boxes, collector, true, true);
-        ActAgenda.paintIndexFront(
-            this,
-            g,
-            diy,
-            sheet,
-            boxes.index,
-            String(strings.gstring(this.labelKey)),
-            reversed
-        );
+        if (this.showsIndex)
+            ActAgenda.paintIndexFront(
+                this,
+                g,
+                diy,
+                sheet,
+                boxes.index,
+                String(strings.gstring(this.labelKey)),
+                reversed
+            );
     };
 
     return ActFace;
