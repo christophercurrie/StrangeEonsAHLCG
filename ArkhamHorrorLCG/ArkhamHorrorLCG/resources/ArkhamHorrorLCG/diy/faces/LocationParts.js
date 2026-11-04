@@ -61,6 +61,14 @@ define([
         );
     }
 
+    // whether name<suffix> shows an icon, a copied one when the front has one
+    function hasIcon(diy, name, suffix) {
+        var icon = String(diy.settings.get(name + suffix, 'None'));
+        if (icon === 'Copy front')
+            icon = String(diy.settings.get(name, 'None'));
+        return icon !== 'None' && icon !== 'Copy front';
+    }
+
     // shroud, light on dark; a per investigator one is followed by its symbol
     function paintShroud(face, g, diy, sheet, suffix) {
         var o = FaceUtils.plugin();
@@ -169,6 +177,7 @@ define([
     }
 
     return {
+        hasIcon: hasIcon,
         paintIcon: paintIcon,
         paintShroud: paintShroud,
         paintClues: paintClues,

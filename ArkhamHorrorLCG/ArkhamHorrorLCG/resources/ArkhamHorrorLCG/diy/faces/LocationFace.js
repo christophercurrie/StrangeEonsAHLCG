@@ -30,13 +30,21 @@ define([
         'Rules',
         'Flavor',
     ];
-    // the icon list of a connection, and the default for one
+    // the icon list of a connection, and the default for one; a back's
+    // icons copy the front's
     LocationFace.prototype.connectionChoices = 'comboConnections';
     LocationFace.prototype.noConnection = 'None';
 
+    LocationFace.prototype.iconChoices = function (faceIndex) {
+        return faceIndex === 0
+            ? this.connectionChoices
+            : 'comboConnectionsBack';
+    };
+
     LocationFace.prototype.defaultValues = function (diy, faceIndex) {
+        var back = faceIndex !== 0;
         var values = {
-            LocationIcon: 'Circle',
+            LocationIcon: back ? 'Copy front' : 'Circle',
             Shroud: '1',
             Clues: '1',
             PerInvestigator: '1',
@@ -44,7 +52,9 @@ define([
             ShowEncounterIcon: '1',
         };
         for (let i = 1; i <= Connections; i++)
-            values['Connection' + i + 'Icon'] = this.noConnection;
+            values['Connection' + i + 'Icon'] = back
+                ? 'Copy front'
+                : this.noConnection;
         return values;
     };
 
@@ -86,7 +96,7 @@ define([
         var o = FaceUtils.plugin();
         var face = this;
         var panel = new ui.Grid();
-        var items = o[this.connectionChoices];
+        var items = o[this.iconChoices(faceIndex)];
         function list(name) {
             var control = new ui.comboBox(items, null);
             face.bind(bindings, faceIndex, name, control);
@@ -207,9 +217,7 @@ define([
             this.paintSubtitle(g, diy, boxes.subtitle, subtitle);
         this.paintBody(g, diy, boxes.body, suffix);
         this.paintVictory(g, diy, boxes.victory, suffix);
-        if (
-            String(diy.settings.get('LocationIcon' + suffix, 'None')) !== 'None'
-        )
+        if (LocationParts.hasIcon(diy, 'LocationIcon', suffix))
             LocationParts.paintIcon(
                 this,
                 g,
