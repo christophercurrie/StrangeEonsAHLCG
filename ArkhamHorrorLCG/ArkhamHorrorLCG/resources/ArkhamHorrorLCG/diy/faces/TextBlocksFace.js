@@ -30,6 +30,8 @@ define([
     TextBlocksFace.prototype.usesCollection = true;
     TextBlocksFace.prototype.usesEncounter = true;
     TextBlocksFace.prototype.usesCopyright = true;
+    // whether the face offers a tracking box
+    TextBlocksFace.prototype.hasTracker = true;
     // the block styles offered in the editor
     TextBlocksFace.prototype.blockStyles = TextBlocks.Styles;
 
@@ -37,8 +39,10 @@ define([
         var suffix = this.suffix(faceIndex);
         var values = TextBlocks.defaults(suffix);
         values['ScaleModifier' + suffix] = '100';
-        values['TrackerBox' + suffix] = '';
-        values['TrackerHeight' + suffix] = '100';
+        if (this.hasTracker) {
+            values['TrackerBox' + suffix] = '';
+            values['TrackerHeight' + suffix] = '100';
+        }
         // the front's title is the component name
         if (faceIndex !== 0) values['Title' + suffix] = '';
 
@@ -61,9 +65,11 @@ define([
         var trackerPanel = new ui.Grid();
         trackerPanel.setTitle(strings.string('AHLCG-TrackerBox'));
         var trackerField = new ui.textField('', 30);
-        this.bind(bindings, faceIndex, 'TrackerBox', trackerField);
         var heightSpinner = new ui.spinner(50, 200, 1, 100);
-        this.bind(bindings, faceIndex, 'TrackerHeight', heightSpinner);
+        if (this.hasTracker) {
+            this.bind(bindings, faceIndex, 'TrackerBox', trackerField);
+            this.bind(bindings, faceIndex, 'TrackerHeight', heightSpinner);
+        }
         trackerPanel.place(
             strings.string('AHLCG-TrackerBox'),
             'align right',
@@ -84,7 +90,7 @@ define([
             TextBlocks.createPanel(diy, this, bindings, faceIndex),
             'wrap, pushx, growx'
         );
-        textTab.place(trackerPanel, 'wrap, pushx, growx');
+        if (this.hasTracker) textTab.place(trackerPanel, 'wrap, pushx, growx');
 
         var scaleSpinner = new ui.spinner(50, 150, 1, 100);
         this.bind(bindings, faceIndex, 'ScaleModifier', scaleSpinner);
@@ -115,7 +121,9 @@ define([
             header: this.createBox(diy, sheet, 'Header'),
             story: this.createBox(diy, sheet, 'Story'),
             body: this.createBox(diy, sheet, 'Body'),
-            tracker: this.createBox(diy, sheet, 'TrackerName'),
+            tracker: this.hasTracker
+                ? this.createBox(diy, sheet, 'TrackerName')
+                : null,
             collectionNumber: this.createBox(diy, sheet, 'CollectionNumber'),
             encounterNumber: this.createBox(diy, sheet, 'EncounterNumber'),
             copyright: this.createBox(diy, sheet, 'Copyright'),
