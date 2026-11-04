@@ -62,6 +62,10 @@ define([
         });
     };
 
+    StoryStoryHandler.prototype.legacyPortraits = function (diy) {
+        return ['Collection', 'Encounter'];
+    };
+
     StoryStoryHandler.prototype.upgrade = function (diy) {
         if (diy.version >= CardVersion) return;
         Suffixes.forEach(function (suffix) {

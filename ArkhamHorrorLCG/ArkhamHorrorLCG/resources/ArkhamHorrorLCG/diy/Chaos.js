@@ -92,6 +92,10 @@ define([
         diy.settings.set('DifficultyBack', 'Back');
     };
 
+    ChaosHandler.prototype.legacyPortraits = function (diy) {
+        return ['Collection', 'Encounter'];
+    };
+
     ChaosHandler.prototype.upgrade = function (diy) {
         if (diy.version >= CardVersion) return;
         var settings = diy.settings;

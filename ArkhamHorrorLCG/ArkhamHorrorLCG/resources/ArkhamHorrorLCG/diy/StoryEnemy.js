@@ -48,6 +48,10 @@ define([
         StoryPages.upgrade(diy.settings, 'Template', '');
     };
 
+    StoryEnemyHandler.prototype.legacyPortraits = function (diy) {
+        return [[1, 'Portrait'], 'Collection', 'Encounter'];
+    };
+
     StoryEnemyHandler.prototype.upgrade = function (diy) {
         if (diy.version >= CardVersion) return;
         LegacyStoryText.upgrade(diy.settings, '');

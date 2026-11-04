@@ -11,7 +11,8 @@
 //
 // Subclasses may override setCardDefaults( diy ) for extra card-level
 // defaults, upgrade( diy ) for version steps when reading older saves, before
-// the portraits are read and while diy.version is the saved version, and
+// the portraits are read and while diy.version is the saved version,
+// legacyPortraits( diy ) for the portraits a legacy save holds, and
 // createGeneralPanels( diy, editor, bindings ).
 //
 // Module: returns FaceHandler.
@@ -575,11 +576,45 @@ define([
         return adopted;
     };
 
-    FaceHandler.prototype.onRead = function (diy, ois) {
-        this.upgrade(diy);
+    // The portraits a save from before this version holds, in order, or null
+    // if it holds those of the faces: 'Collection' or 'Encounter' for a set,
+    // [ faceIndex, name ] for art and null for one that is dropped. Called
+    // after the upgrade, while diy.version is the saved version.
+    FaceHandler.prototype.legacyPortraits = function (diy) {
+        return null;
+    };
 
-        this.updateCollector(diy);
-        // the art, then the sets, each kept as created if the save ends first
+    // Reads the portraits listed by legacyPortraits into the faces' art and
+    // sets; those the faces don't use are dropped.
+    FaceHandler.prototype.readLegacyPortraits = function (diy, ois, list) {
+        for (let i = 0; i < list.length; i++) {
+            let portrait;
+            try {
+                portrait = ois.readObject();
+            } catch (ex) {
+                return;
+            }
+            let entry = list[i];
+            if (entry == null) continue;
+            if (typeof entry === 'string') {
+                let k = this.portraitKinds.indexOf(entry);
+                if (k < 0) continue;
+                this.portraits[k] = this.adoptPortrait(entry, portrait);
+                Collector.update(diy, entry, this.portraits[k]);
+                continue;
+            }
+            let j = this.faces[entry[0]].portraits.indexOf(entry[1]);
+            if (j < 0) continue;
+            this.art[entry[0]][j] = this.adoptArt(
+                portrait,
+                this.art[entry[0]][j]
+            );
+        }
+    };
+
+    // Reads the faces' art, then their sets, each kept as created if the
+    // save ends first.
+    FaceHandler.prototype.readPortraits = function (diy, ois) {
         this.art.forEach(function (portraits) {
             for (let j = 0; j < portraits.length; j++) {
                 try {
@@ -601,6 +636,16 @@ define([
             }
             Collector.update(diy, kind, this.portraits[i]);
         }, this);
+    };
+
+    FaceHandler.prototype.onRead = function (diy, ois) {
+        this.upgrade(diy);
+
+        this.updateCollector(diy);
+        var legacy =
+            diy.version < this.version ? this.legacyPortraits(diy) : null;
+        if (legacy != null) this.readLegacyPortraits(diy, ois, legacy);
+        else this.readPortraits(diy, ois);
 
         diy.setCornerRadius(8);
         diy.version = this.version;
