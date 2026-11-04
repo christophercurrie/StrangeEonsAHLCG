@@ -53,7 +53,6 @@ define([
         FaceHandler.call(
             this,
             {
-                version: 1,
                 templateKeys: [
                     'AHLCG-FlexibleHandler-Front',
                     'AHLCG-FlexibleHandler-Back',

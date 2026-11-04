@@ -2,8 +2,9 @@
 // Subclasses pass their configuration and faces to the constructor and export
 // an instance with handlers/exportHandler.
 //
+// diy.version is handlers/CardVersion, written on create and read.
+//
 // config:
-//   version       diy.version written on create and read
 //   templateKeys  [ front, back ] template keys of the component; each face's
 //                 template settings are copied to them, since the component's
 //                 template keys can't change after create
@@ -14,6 +15,7 @@
 //
 // Module: returns FaceHandler.
 define([
+    'handlers/CardVersion',
     'handlers/Collector',
     'handlers/TemplateReplacement',
     'se/diy',
@@ -21,6 +23,7 @@ define([
     'se/ui',
     'ui/Bindings',
 ], function (
+    CardVersion,
     Collector,
     TemplateReplacement,
     diyLibrary,
@@ -33,7 +36,7 @@ define([
     const GeneralHint = 'wrap, pushx, growx';
 
     function FaceHandler(config, front, back) {
-        this.version = config.version;
+        this.version = CardVersion;
         this.templateKeys = config.templateKeys;
 
         this.faces = [front, back];

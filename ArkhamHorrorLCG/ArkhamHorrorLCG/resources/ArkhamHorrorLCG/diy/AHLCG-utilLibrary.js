@@ -143,7 +143,7 @@ function readPortraits( diy, oos, typeList, readEncounter ) {
 
 // Version of every card handler; to add an upgrade, raise it and guard the
 // upgrade with the new value in onRead.
-const CARD_VERSION = 30;
+const CARD_VERSION = 31;
 
 function writePortraits( oos, typeList ) {
 	for ( let index = 0; index < typeList.length; index++) {

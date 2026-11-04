@@ -69,7 +69,7 @@ fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolea
 // Card handlers share CARD_VERSION.
 val verifyCardVersions by tasks.registering {
     group = "verification"
-    description = "Checks that card handlers use CARD_VERSION."
+    description = "Checks that card handlers share CARD_VERSION."
     val diy = file("ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy")
     inputs.dir(diy)
     doLast {
@@ -77,10 +77,16 @@ val verifyCardVersions by tasks.registering {
         val current = Regex("""const CARD_VERSION = (\d+);""").find(util)?.groupValues?.get(1)?.toInt()
             ?: throw GradleException("CARD_VERSION not found")
         val problems = mutableListOf<String>()
+        // face handlers (AMD modules) take the version from handlers/CardVersion
+        val module = diy.resolve("handlers/CardVersion.js").readText()
+        val moduleVersion = Regex("""return (\d+);""").find(module)?.groupValues?.get(1)?.toInt()
+        if (moduleVersion != current) problems += "handlers/CardVersion.js returns $moduleVersion, not CARD_VERSION $current"
         diy.listFiles { f -> f.name.endsWith(".js") && !f.name.startsWith("AHLCG") }!!.sorted().forEach { f ->
             val text = f.readText()
             if (Regex("""diy\.version\s*=\s*\d""").containsMatchIn(text)) problems += "${f.name} sets a literal version"
-            if (Regex("""diy\.version\s*=\s*CARD_VERSION""").findAll(text).count() != 2) {
+            if (text.contains("useLibrary('amd')")) {
+                if (Regex("""\bversion\s*[:=]""").containsMatchIn(text)) problems += "${f.name} sets its own version"
+            } else if (Regex("""diy\.version\s*=\s*CARD_VERSION""").findAll(text).count() != 2) {
                 problems += "${f.name} does not set CARD_VERSION in create and onRead"
             }
         }
