@@ -23,7 +23,29 @@ strangeEonsRenderTest {
 val fixtureScript = file("src/renderTest/generate-fixtures.js")
 val amdScript = file("src/renderTest/amd-loader.js")
 
-// Runs the fixture script in Strange Eons with the packaged plug-in.
+// Copies output to the console and to a log.
+class TeeOutputStream(private val console: java.io.OutputStream, private val log: java.io.OutputStream) :
+    java.io.OutputStream() {
+    override fun write(b: Int) {
+        console.write(b)
+        log.write(b)
+    }
+
+    override fun write(b: ByteArray, off: Int, len: Int) {
+        console.write(b, off, len)
+        log.write(b, off, len)
+    }
+
+    override fun flush() {
+        console.flush()
+        log.flush()
+    }
+
+    override fun close() = log.close()
+}
+
+// Runs the fixture script in Strange Eons with the packaged plug-in. Script
+// errors that Strange Eons reports and recovers from fail the task.
 fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolean = false, flexibleOut: File = out) {
     val buildSe = tasks.named<BuildStrangeEons>("buildStrangeEons")
     val pack = tasks.named<PackagePluginFolder>("packagePluginFolder")
@@ -37,6 +59,9 @@ fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolea
         val lib = buildSe.get().installDir.get().asFile.resolve("lib")
         val cp = lib.listFiles { f -> f.name.endsWith(".jar") }!!.sorted().joinToString(File.pathSeparator)
         environment("STRANGE_EONS_USER_DIR", user.absolutePath)
+        val log = java.io.FileOutputStream(work.resolve("output.txt"))
+        standardOutput = TeeOutputStream(System.out, log)
+        errorOutput = TeeOutputStream(System.err, log)
         commandLine(
             launcher.get().executablePath.asFile.absolutePath,
             "--add-opens=java.desktop/javax.swing.table=ALL-UNNAMED",
@@ -56,6 +81,7 @@ fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolea
         )
     }
     doLast {
+        standardOutput.close()
         val results = work.resolve("results.txt")
         if (!results.exists() || results.readLines().lastOrNull() != "DONE") {
             throw GradleException("Fixture script stopped early. See $results")
@@ -63,6 +89,9 @@ fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolea
         val failed = results.readLines().filter { it.startsWith("FAIL") }
         failed.forEach { logger.error(it) }
         if (failed.isNotEmpty()) throw GradleException("${failed.size} handler(s) failed. See $results")
+        val output = work.resolve("output.txt")
+        val uncaught = output.readLines().count { it.startsWith("Uncaught ") }
+        if (uncaught > 0) throw GradleException("$uncaught uncaught script error(s). See $output")
     }
 }
 
