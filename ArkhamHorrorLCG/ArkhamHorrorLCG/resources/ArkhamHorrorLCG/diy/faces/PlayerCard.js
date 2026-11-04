@@ -50,6 +50,16 @@ define([
         return Initials[className] || '';
     }
 
+    // the initial of the art for a class: event and skill art draws story
+    // cards as neutral and story weaknesses as weaknesses
+    function artInitial(className, storyArt) {
+        var i = initial(className);
+        if (storyArt) return i;
+        if (i === 'S') return 'N';
+        if (i === 'SW') return 'W';
+        return i;
+    }
+
     function image(path) {
         return imageutils.ImageUtils.get('ArkhamHorrorLCG/' + path);
     }
@@ -202,16 +212,26 @@ define([
             );
     }
 
-    // className: the art's class, for the boxes; a weakness has its own icons
-    function paintSkillIcons(face, g, diy, sheet, suffix, className, count) {
-        var artInitial = initial(className);
+    // className: the art's class, for the boxes; a weakness has its own
+    // icons. eventArt: as event and skill art draws the class.
+    function paintSkillIcons(
+        face,
+        g,
+        diy,
+        sheet,
+        suffix,
+        className,
+        count,
+        eventArt
+    ) {
+        var boxInitial = eventArt ? artInitial(className) : initial(className);
         var weakness = isWeakness(className);
         for (let i = 1; i <= count; i++) {
             let skill = String(diy.settings.get('Skill' + i + suffix, 'None'));
             if (skill === 'None') continue;
             sheet.paintImage(
                 g,
-                image('overlays/AHLCG-SkillBox-' + artInitial + '.png'),
+                image('overlays/AHLCG-SkillBox-' + boxInitial + '.png'),
                 region(face, diy, 'Skill' + i)
             );
             sheet.paintImage(
@@ -325,6 +345,7 @@ define([
 
     return {
         initial: initial,
+        artInitial: artInitial,
         classes: classes,
         artClass: artClass,
         isWeakness: isWeakness,

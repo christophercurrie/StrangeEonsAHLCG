@@ -295,8 +295,8 @@ define([
     };
 
     // The title, after the unique symbol if unique; each line of a two line
-    // title a little lower.
-    CardFace.prototype.paintName = function (g, diy, sheet, box) {
+    // title a little lower. lift raises it, in points.
+    CardFace.prototype.paintName = function (g, diy, sheet, box, lift) {
         var faceIndex = sheet.getSheetIndex();
         var title = this.getTitle(diy, faceIndex);
         if (title.length === 0) return;
@@ -307,7 +307,7 @@ define([
         var region = diy.settings.getRegion(
             this.key(diy.settings, 'Name-region')
         );
-        region.y += parseInt(FaceUtils.plugin().titleFontOffset);
+        region.y += parseInt(FaceUtils.plugin().titleFontOffset) - (lift || 0);
 
         title.split('\n').forEach(function (line) {
             box.markupText = line;
@@ -336,11 +336,14 @@ define([
         box.draw(g, region);
     };
 
-    CardFace.prototype.paintBody = function (g, diy, box, suffix) {
+    // regionName: Body unless the side's text has a region of its own
+    CardFace.prototype.paintBody = function (g, diy, box, suffix, regionName) {
         var settings = diy.settings;
         var o = FaceUtils.plugin();
 
-        var region = settings.getRegion(this.key(settings, 'Body-region'));
+        var region = settings.getRegion(
+            this.key(settings, (regionName || 'Body') + '-region')
+        );
         region.y += parseInt(o.bodyFontOffset);
 
         box.setReplacementForTag('fullnameb', settings.get('TitleBack'));
@@ -391,12 +394,22 @@ define([
     };
 
     // a plug-in image, such as overlays/AHLCG-BasicWeakness.png, in the
-    // face's <region>-region
-    CardFace.prototype.paintImage = function (g, diy, sheet, image, region) {
+    // face's <region>-region, or in area
+    CardFace.prototype.paintImage = function (
+        g,
+        diy,
+        sheet,
+        image,
+        region,
+        area
+    ) {
         sheet.paintImage(
             g,
             imageutils.ImageUtils.get('ArkhamHorrorLCG/' + image),
-            diy.settings.getRegion(this.key(diy.settings, region + '-region'))
+            area ||
+                diy.settings.getRegion(
+                    this.key(diy.settings, region + '-region')
+                )
         );
     };
 
