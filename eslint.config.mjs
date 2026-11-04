@@ -15,6 +15,7 @@ export default defineConfig([
     `!${diy}/Flexible.js`,
     // legacy card types moved to faces
     `!${diy}/Asset.js`,
+    `!${diy}/Event.js`,
     `!${diy}/Chaos.js`,
     `!${diy}/Enemy.js`,
     `!${diy}/StoryEnemy.js`,
