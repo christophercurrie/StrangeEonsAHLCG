@@ -23,6 +23,8 @@ export default defineConfig([
     `!${diy}/Act.js`,
     `!${diy}/Agenda.js`,
     `!${diy}/AgendaFrontPortrait.js`,
+    `!${diy}/ActPortrait.js`,
+    `!${diy}/AgendaPortrait.js`,
     `!${diy}/Location.js`,
     `!${diy}/LocationLocation.js`,
     `!${diy}/Chaos.js`,
