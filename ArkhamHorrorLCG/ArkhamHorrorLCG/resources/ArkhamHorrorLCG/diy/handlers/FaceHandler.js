@@ -563,6 +563,18 @@ define([
         return adopted;
     };
 
+    // An art portrait saved under another key, moved to the key of the one
+    // created in its place, with that one's settings.
+    FaceHandler.prototype.adoptArt = function (portrait, created) {
+        var key = String(created.getBaseKey());
+        if (String(portrait.getBaseKey()) === key) return portrait;
+
+        var adopted = new arkham.component.DefaultPortrait(key, portrait);
+        adopted.facesToUpdate = created.facesToUpdate;
+        adopted.backgroundFilled = created.backgroundFilled;
+        return adopted;
+    };
+
     FaceHandler.prototype.onRead = function (diy, ois) {
         this.upgrade(diy);
 
@@ -571,12 +583,15 @@ define([
         this.art.forEach(function (portraits) {
             for (let j = 0; j < portraits.length; j++) {
                 try {
-                    portraits[j] = ois.readObject();
+                    portraits[j] = this.adoptArt(
+                        ois.readObject(),
+                        portraits[j]
+                    );
                 } catch (ex) {
                     return;
                 }
             }
-        });
+        }, this);
         this.portraitKinds.forEach(function (kind, i) {
             // a save from before the faces used this set has no portrait
             try {
