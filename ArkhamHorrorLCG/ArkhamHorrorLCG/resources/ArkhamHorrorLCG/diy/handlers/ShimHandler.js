@@ -4,7 +4,6 @@
 //   faces            [ front, back ] face constructors
 //   legacyPortraits  the portraits its legacy saves hold; see
 //                    FaceHandler.legacyPortraits
-//   cardDefaults     settings a new card starts with, over the faces' own
 //   upgrade          function( diy ) for older saves, before the faces' missing
 //                    settings are set; diy.version is the saved version
 //
@@ -17,17 +16,10 @@ define(['handlers/FaceHandler'], function (FaceHandler) {
             new config.faces[0](),
             new config.faces[1]()
         );
-        this.cardDefaults = config.cardDefaults || {};
     }
 
     ShimHandler.prototype = Object.create(FaceHandler.prototype);
     ShimHandler.prototype.constructor = ShimHandler;
-
-    ShimHandler.prototype.setCardDefaults = function (diy) {
-        for (let key in this.cardDefaults) {
-            diy.settings.set(key, this.cardDefaults[key]);
-        }
-    };
 
     return ShimHandler;
 });

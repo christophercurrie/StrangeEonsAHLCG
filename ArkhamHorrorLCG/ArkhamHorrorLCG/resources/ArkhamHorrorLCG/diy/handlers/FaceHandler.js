@@ -8,6 +8,7 @@
 //   templateKeys  [ front, back ] template keys of the component; each face's
 //                 template settings are copied to them, since the component's
 //                 template keys can't change after create
+//   cardDefaults  settings a new card starts with, over the faces' own
 //   legacyPortraits, upgrade
 //                 for a legacy card type, in place of overriding them
 //
@@ -76,7 +77,10 @@ define([
         this.boxes[faceIndex] = null;
     };
 
-    FaceHandler.prototype.setCardDefaults = function (diy) {};
+    FaceHandler.prototype.setCardDefaults = function (diy) {
+        var values = this.config.cardDefaults || {};
+        for (let key in values) diy.settings.set(key, values[key]);
+    };
 
     FaceHandler.prototype.upgrade = function (diy) {
         if (this.config.upgrade && diy.version < this.version)
