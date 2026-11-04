@@ -19,6 +19,7 @@ define([
     'faces/StoryFace',
     'faces/TokenRulesFace',
     'faces/TreacheryFace',
+    'faces/AssetFace',
 ], function (
     exportHandler,
     FaceChoiceHandler,
@@ -28,7 +29,8 @@ define([
     ScenarioRulesFace,
     StoryFace,
     TokenRulesFace,
-    TreacheryFace
+    TreacheryFace,
+    AssetFace
 ) {
     // face ids, in menu order, and their faces
     const Faces = {
@@ -39,6 +41,7 @@ define([
         story: StoryFace,
         tokenRules: TokenRulesFace,
         treachery: TreacheryFace,
+        asset: AssetFace,
     };
 
     const Choices = Object.keys(Faces).map(function (id) {

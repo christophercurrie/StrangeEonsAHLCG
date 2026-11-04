@@ -2,6 +2,7 @@
 """Prints starting settings for a face from a legacy card type.
 
     scripts/face-settings.py <CardType> <FacePrefix> [--parent <CardType>]
+        [--with <regex>]
 
 e.g. scripts/face-settings.py Asset AHLCG-AssetFace
 
@@ -10,7 +11,8 @@ the parent type as getExpandedKey does. Templates named AHLCG-<CardType>...
 -template become <FacePrefix>-...-template. Custom icon portrait regions become
 the CollectorInfo regions; other set portrait keys are left out, since faces
 share the AHLCG-Face set portraits. Shared AHLCG-<name> values a legacy card
-falls back to are added where Face.settings has no matching AHLCG-Face-<name>.
+falls back to are added where Face.settings has no matching AHLCG-Face-<name>;
+--with adds the shared names it matches, such as 'Cost|Level|Skill'.
 """
 import argparse
 import pathlib
@@ -53,6 +55,7 @@ def main():
     parser.add_argument('type')
     parser.add_argument('prefix')
     parser.add_argument('--parent')
+    parser.add_argument('--with', dest='extra')
     args = parser.parse_args()
 
     legacy = read(sorted(SETTINGS.glob('*.settings')))
@@ -96,7 +99,13 @@ def main():
             rest = '-' + rest
         templates[args.prefix + rest + '-template'] = value
 
-    for name in SHARED:
+    shared_names = list(SHARED)
+    if args.extra:
+        for key in legacy:
+            m = re.match(r'AHLCG-([A-Za-z0-9]+-(?:region|style|alignment|tint|tightness))$', key)
+            if m and re.match(args.extra, m.group(1)) and m.group(1) not in shared_names:
+                shared_names.append(m.group(1))
+    for name in shared_names:
         if name in out:
             continue
         shared = legacy.get('AHLCG-' + name)

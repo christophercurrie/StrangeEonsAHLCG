@@ -237,7 +237,8 @@ define([
             copyright: this.createBox(diy, sheet, 'Copyright'),
         };
         this.readSubtype(diy, faceIndex);
-        if (this.subtypes != null)
+        // a face with a subtype line has its style
+        if (diy.settings.get(this.key(diy.settings, 'Subtype-style')) != null)
             boxes.subtype = this.createBox(diy, sheet, 'Subtype');
         FaceUtils.initBodyTags(diy, boxes.name);
         var shape = this.bodyShape(

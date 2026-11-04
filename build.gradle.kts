@@ -126,6 +126,7 @@ val flexibleSuffixMasks = mapOf(
     "story" to java.awt.Rectangle(570, 974, 46, 26),
     "tokenRules" to java.awt.Rectangle(670, 1018, 50, 26),
     "treachery" to java.awt.Rectangle(670, 1018, 50, 26),
+    "asset" to java.awt.Rectangle(670, 1018, 50, 26),
 )
 
 object FlexibleBacks {
