@@ -48,9 +48,7 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
         var number = String(diy.settings.get('CollectionNumber', ''));
         if (number === '') return x;
 
-        var region = diy.settings.getRegion(
-            face.key(diy.settings, 'CollectionNumber-region')
-        );
+        var region = face.collectorRegion(diy, 'CollectionNumber');
         region.y += parseInt(FaceUtils.plugin().collectionFontOffset);
 
         if (suffix) {
@@ -64,12 +62,7 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
 
     // returns the left edge of the icon
     function paintCollectionIcon(diy, g, sheet, face, portrait, x) {
-        var region = endAt(
-            diy.settings.getRegion(
-                face.key(diy.settings, 'CollectionIcon-region')
-            ),
-            x
-        );
+        var region = endAt(face.collectorRegion(diy, 'CollectionIcon'), x);
         var icon =
             String(diy.settings.get('CollectionType', '0')) === '0'
                 ? imageutils.ImageUtils.get(
@@ -89,12 +82,7 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
         var total = String(diy.settings.get('EncounterTotal', ''));
         if (number === '' && total === '') return;
 
-        var region = endAt(
-            diy.settings.getRegion(
-                face.key(diy.settings, 'EncounterNumber-region')
-            ),
-            x
-        );
+        var region = endAt(face.collectorRegion(diy, 'EncounterNumber'), x);
         region.y += parseInt(FaceUtils.plugin().collectionFontOffset);
 
         var separator = ' / ';
@@ -105,9 +93,7 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
     }
 
     function paintCopyright(g, diy, sheet, face, box) {
-        var region = diy.settings.getRegion(
-            face.key(diy.settings, 'Copyright-region')
-        );
+        var region = face.collectorRegion(diy, 'Copyright');
         var o = FaceUtils.plugin();
         region.y += parseInt(o.collectionFontOffset);
         if (String(o.bodyFamily) === 'Times New Roman') region.y -= 1;
@@ -159,9 +145,7 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
             sheet.paintImage(
                 g,
                 returnToImage(icon),
-                settings.getRegion(
-                    face.key(settings, 'ReturnEncounterIcon-region')
-                )
+                face.collectorRegion(diy, 'ReturnEncounterIcon')
             );
             return;
         }
@@ -170,16 +154,12 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
             sheet.paintImage(
                 g,
                 imageutils.ImageUtils.get(iconPath(name)),
-                settings.getRegion(
-                    face.key(settings, 'ReturnEncounterIcon-region')
-                )
+                face.collectorRegion(diy, 'ReturnEncounterIcon')
             );
             return;
         }
 
-        var region = settings.getRegion(
-            face.key(settings, 'EncounterIcon-region')
-        );
+        var region = face.collectorRegion(diy, 'EncounterIcon');
         if (!custom) {
             sheet.paintImage(
                 g,
@@ -206,9 +186,7 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
             artist = String(diy.settings.get('Artist', ''));
         if (artist.length === 0) return;
 
-        var region = diy.settings.getRegion(
-            face.key(diy.settings, 'Artist-region')
-        );
+        var region = face.collectorRegion(diy, 'Artist');
         region.y += parseInt(FaceUtils.plugin().collectionFontOffset);
 
         setText(

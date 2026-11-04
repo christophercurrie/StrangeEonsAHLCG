@@ -374,6 +374,13 @@ define([
         box.draw(g, region);
     };
 
+    // the body's <regionName>-region
+    CardFace.prototype.bodyRegion = function (diy, regionName) {
+        return diy.settings.getRegion(
+            this.key(diy.settings, regionName + '-region')
+        );
+    };
+
     // formats of parts other than the standard ones, for partsMarkup
     CardFace.prototype.partFormats = function (diy, suffix) {
         return null;
@@ -384,9 +391,7 @@ define([
         var settings = diy.settings;
         var o = FaceUtils.plugin();
 
-        var region = settings.getRegion(
-            this.key(settings, (regionName || 'Body') + '-region')
-        );
+        var region = this.bodyRegion(diy, regionName || 'Body');
         region.y += parseInt(o.bodyFontOffset);
 
         box.setReplacementForTag('fullnameb', settings.get('TitleBack'));

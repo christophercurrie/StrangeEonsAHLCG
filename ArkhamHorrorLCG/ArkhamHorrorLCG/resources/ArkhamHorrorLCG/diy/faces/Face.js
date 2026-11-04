@@ -124,6 +124,11 @@ define([
     // faces/CollectorInfo.js; art: the face's portraits by name
     Face.prototype.paint = function (g, diy, sheet, boxes, collector, art) {};
 
+    // the collector line's <name>-region, where a reversed face moves it
+    Face.prototype.collectorRegion = function (diy, name) {
+        return diy.settings.getRegion(this.key(diy.settings, name + '-region'));
+    };
+
     // <template>-<name> if set, else the shared AHLCG-Face-<name>
     Face.prototype.key = function (settings, name) {
         var key = this.template + '-' + name;

@@ -159,7 +159,8 @@ val generateFixtures by tasks.registering(Exec::class) {
 val flexiblePlatform = tasks.named<VerifyRenders>("verifyRenders").flatMap { it.platform }
 
 // The collection number's a/b suffix, and the icon it moves, in pixels of
-// each face's renders; faces without a collector line have none.
+// each face's renders, or of a face/variant's where it moves; faces without a
+// collector line have none.
 val flexibleSuffixMasks = mapOf(
     "enemy" to java.awt.Rectangle(670, 1018, 50, 26),
     "story" to java.awt.Rectangle(570, 974, 46, 26),
@@ -171,6 +172,9 @@ val flexibleSuffixMasks = mapOf(
     "location" to java.awt.Rectangle(670, 1018, 50, 26),
     "key" to java.awt.Rectangle(670, 1026, 50, 26),
     "investigator" to java.awt.Rectangle(995, 715, 45, 22),
+    "act" to java.awt.Rectangle(570, 718, 45, 22),
+    "act/reversed" to java.awt.Rectangle(988, 718, 45, 22),
+    "act/reversedReturnTo" to java.awt.Rectangle(988, 718, 45, 22),
 )
 
 // A back has its own master when filled, or when its face draws backs
@@ -222,7 +226,9 @@ abstract class StageFlexibleRenders : DefaultTask() {
                 render.copyTo(target, overwrite = true)
                 return@forEach
             }
-            val mask = masks.get()[path.substringAfter("components/").substringBefore('/')]
+            val face = path.substringAfter("components/").substringBefore('/')
+            val variant = path.substringAfterLast('/').removeSuffix("-1.png")
+            val mask = masks.get()["$face/$variant"] ?: masks.get()[face]
             masked(render, target, mask)
             val front = mastersDir.resolve(path.removeSuffix("-1.png") + "-0.png")
             if (front.isFile) masked(front, outMasters.resolve(path), mask)
