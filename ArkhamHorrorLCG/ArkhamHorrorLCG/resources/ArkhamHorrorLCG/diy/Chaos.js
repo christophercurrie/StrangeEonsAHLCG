@@ -116,7 +116,6 @@ define([
                 settings.get('TrackerHeight', '100')
             );
         }
-
     };
 
     exportHandler(globalThis, new ChaosHandler());

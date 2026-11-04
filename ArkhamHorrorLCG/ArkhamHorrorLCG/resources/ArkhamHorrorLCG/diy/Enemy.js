@@ -18,7 +18,12 @@ define([
         FaceHandler.call(
             this,
             // the legacy template keys, which saved cards keep
-            { templateKeys: ['AHLCG-Enemy-Default', 'AHLCG-EnemyBack-Default'] },
+            {
+                templateKeys: [
+                    'AHLCG-Enemy-Default',
+                    'AHLCG-EnemyBack-Default',
+                ],
+            },
             new EnemyFace(),
             new EncounterBackFace()
         );

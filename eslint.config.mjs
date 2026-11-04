@@ -13,6 +13,11 @@ export default defineConfig([
     "**/*.js",
     "**/*.mjs",
     `!${diy}/Flexible.js`,
+    // legacy card types moved to faces
+    `!${diy}/Chaos.js`,
+    `!${diy}/Enemy.js`,
+    `!${diy}/StoryEnemy.js`,
+    `!${diy}/StoryStory.js`,
     `!${diy}/faces/**/*.js`,
     `!${diy}/handlers/**/*.js`,
     `!${diy}/se/**/*.js`,
