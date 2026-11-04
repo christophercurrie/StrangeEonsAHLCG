@@ -25,6 +25,7 @@ define([
     InvestigatorFace.prototype.template = 'AHLCG-InvestigatorFace';
     InvestigatorFace.prototype.portraits = ['TransparentPortrait'];
     InvestigatorFace.prototype.hasSubtitle = true;
+    InvestigatorFace.prototype.hasSkills = true;
     InvestigatorFace.prototype.parts = [
         'Traits',
         'Keywords',
@@ -134,6 +135,7 @@ define([
         boxes.parallelName = parallel('Name');
         FaceUtils.initBodyTags(diy, boxes.parallelName);
         boxes.parallelSubtitle = parallel('Subtitle');
+        if (!this.hasSkills) return boxes;
         boxes.skills = Skills.map(function () {
             return face.createBox(diy, sheet, 'Skill');
         });

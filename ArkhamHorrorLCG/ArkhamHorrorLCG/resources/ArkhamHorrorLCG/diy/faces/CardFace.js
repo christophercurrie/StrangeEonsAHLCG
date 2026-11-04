@@ -64,6 +64,8 @@ define([
     CardFace.prototype.weaknessOverlays = {};
     // the subtitle's region, <name>-region
     CardFace.prototype.subtitleRegion = 'Subtitle';
+    // the parts with spacing after them, if not all but the last
+    CardFace.prototype.spacedParts = null;
     // the parts drawn in the body, if not all of them
     CardFace.prototype.bodyParts = null;
     CardFace.prototype.parts = [
@@ -86,7 +88,7 @@ define([
         if (this.hasSubtitle) values.Subtitle = '';
         values.Artist = '';
         this.parts.forEach(function (part) {
-            values[part] = '';
+            if (!(part in values)) values[part] = '';
         });
         // the front's title is the component name
         if (faceIndex !== 0) values.Title = '';
@@ -95,7 +97,7 @@ define([
         // keyed <part><suffix>Spacing, as legacy cards save them
         var suffix = this.suffix(faceIndex);
         var spacing = {};
-        this.parts.slice(0, -1).forEach(function (part) {
+        (this.spacedParts || this.parts.slice(0, -1)).forEach(function (part) {
             spacing[part + suffix + 'Spacing'] = '0';
         });
         this.setSettings(diy, keep, spacing);
@@ -372,6 +374,11 @@ define([
         box.draw(g, region);
     };
 
+    // formats of parts other than the standard ones, for partsMarkup
+    CardFace.prototype.partFormats = function (diy, suffix) {
+        return null;
+    };
+
     // regionName: Body unless the side's text has a region of its own
     CardFace.prototype.paintBody = function (g, diy, box, suffix, regionName) {
         var settings = diy.settings;
@@ -391,7 +398,8 @@ define([
         box.markupText = FaceUtils.partsMarkup(
             settings,
             this.bodyParts || this.parts,
-            suffix
+            suffix,
+            this.partFormats(diy, suffix)
         );
         markup.updateNameTags(box, diy);
         box.draw(g, region);

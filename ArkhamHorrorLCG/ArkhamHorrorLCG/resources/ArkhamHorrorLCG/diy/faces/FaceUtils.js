@@ -272,16 +272,20 @@ define(['se/common', 'se/java', 'se/strings', 'se/ui'], function (
 
     // Markup for the parts with text, keyed <part><suffix>, each on its own
     // line and followed by its <part><suffix>Spacing in points, if it has
-    // one. An empty Traits part leaves a little space.
-    function partsMarkup(settings, parts, suffix) {
+    // one. An empty Traits part leaves a little space. formats gives
+    // [ alignment, start, end ] for parts other than the standard ones.
+    function partsMarkup(settings, parts, suffix, formats) {
         var text = '';
-        if (String(settings.get('Traits' + suffix, '')) === '')
+        if (
+            parts.indexOf('Traits') >= 0 &&
+            String(settings.get('Traits' + suffix, '')) === ''
+        )
             text = spacer(6);
 
         parts.forEach(function (part) {
             let entry = String(settings.get(part + suffix, ''));
             if (entry !== '') {
-                let format = PartFormats[part];
+                let format = (formats && formats[part]) || PartFormats[part];
                 if (text !== '') text += '\n';
                 text += format[0] + format[1] + entry + format[2];
             }
