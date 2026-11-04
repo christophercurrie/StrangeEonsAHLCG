@@ -23,7 +23,7 @@ function create( diy ) {
 	createPortraits( diy, PortraitTypeList );
 
 	diy.setCornerRadius(8);
-	diy.version = 8;
+	diy.version = CARD_VERSION;
 }
 
 function setDefaults() {
@@ -95,7 +95,7 @@ function onRead(diy, oos) {
 	readPortraits( diy, oos, PortraitTypeList, true );
 
 	diy.setCornerRadius(8);
-	diy.version = 8;
+	diy.version = CARD_VERSION;
 }
 
 function onWrite( diy, oos ) {

@@ -62,3 +62,33 @@ val generateFixtures by tasks.registering(Exec::class) {
         if (failed.isNotEmpty()) throw GradleException("${failed.size} fixture(s) failed")
     }
 }
+
+// Card handlers share CARD_VERSION, which must stay above every version the
+// 9.95 high-res releases saved, or new cards would be corrected as 9.95 cards.
+val verifyCardVersions by tasks.registering {
+    group = "verification"
+    description = "Checks that card handlers use CARD_VERSION and that it is above the 9.95 versions."
+    val diy = file("ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy")
+    inputs.dir(diy)
+    doLast {
+        val util = diy.resolve("AHLCG-utilLibrary.js").readText()
+        val current = Regex("""const CARD_VERSION = (\d+);""").find(util)?.groupValues?.get(1)?.toInt()
+            ?: throw GradleException("CARD_VERSION not found")
+        val table = util.substringAfter("const HighResCards = {").substringBefore("\n};")
+        val highRes = Regex("""'(\d+)': \{""").findAll(table).map { it.groupValues[1].toInt() }.toList()
+        if (highRes.isEmpty()) throw GradleException("HighResCards not found")
+        val problems = mutableListOf<String>()
+        if (current <= highRes.max()) problems += "CARD_VERSION $current is not above ${highRes.max()}"
+        diy.listFiles { f -> f.name.endsWith(".js") && !f.name.startsWith("AHLCG") }!!.sorted().forEach { f ->
+            val text = f.readText()
+            if (Regex("""diy\.version\s*=\s*\d""").containsMatchIn(text)) problems += "${f.name} sets a literal version"
+            if (Regex("""diy\.version\s*=\s*CARD_VERSION""").findAll(text).count() != 2) {
+                problems += "${f.name} does not set CARD_VERSION in create and onRead"
+            }
+        }
+        if (problems.isNotEmpty()) throw GradleException(problems.joinToString("\n"))
+        logger.lifecycle("CARD_VERSION $current, above 9.95 versions up to ${highRes.max()}")
+    }
+}
+
+tasks.named("check") { dependsOn(verifyCardVersions) }

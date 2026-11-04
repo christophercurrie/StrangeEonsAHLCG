@@ -143,6 +143,10 @@ function readPortraits( diy, oos, typeList, readEncounter ) {
 	recoverHighResCard( diy );
 }
 
+// Version of every card handler. Kept above every version in HighResCards;
+// to add an upgrade, raise it and guard the upgrade with the new value in onRead.
+const CARD_VERSION = 30;
+
 // Cards saved by AHLCG 9.95b2 through 9.95, whose high resolution templates
 // multiplied portrait scales and <size> tags by 4 and raised the card version.
 // Per handler: the version before those releases (from); for each version
