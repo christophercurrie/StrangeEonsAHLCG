@@ -33,6 +33,7 @@ export default defineConfig([
     `!${diy}/AgendaLocation.js`,
     `!${diy}/AgendaTreachery.js`,
     `!${diy}/EnemyEnemy.js`,
+    `!${diy}/AssetAsset.js`,
     `!${diy}/Location.js`,
     `!${diy}/LocationLocation.js`,
     `!${diy}/Chaos.js`,
