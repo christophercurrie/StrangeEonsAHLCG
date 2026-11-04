@@ -1,13 +1,9 @@
 // Key: art, title with a unique symbol and subtitle, game text in the key's
-// outline, and the collector line. A back has the back template, and without
-// a title of its own shows the component name and its unique symbol.
+// outline, and the collector line. A back has the back template, and copies
+// the front's title (see CardFace).
 //
 // Module: returns KeyFace.
-define(['faces/CardFace', 'faces/Face', 'faces/FaceUtils'], function (
-    CardFace,
-    Face,
-    FaceUtils
-) {
+define(['faces/CardFace', 'faces/FaceUtils'], function (CardFace, FaceUtils) {
     function KeyFace() {
         CardFace.call(this);
         // whether the side being painted is a back
@@ -20,6 +16,7 @@ define(['faces/CardFace', 'faces/Face', 'faces/FaceUtils'], function (
     KeyFace.prototype.labelKey = 'AHLCG-Label-Key';
     KeyFace.prototype.hasSubtitle = true;
     KeyFace.prototype.subtitleRegion = 'SubtitleText';
+    KeyFace.prototype.copiesFrontTitle = true;
 
     KeyFace.prototype.templateKey = function (diy, faceIndex) {
         return faceIndex === 0 ? null : this.template + '-Back-template';
@@ -29,20 +26,6 @@ define(['faces/CardFace', 'faces/Face', 'faces/FaceUtils'], function (
         var key = this.template + '-Back-' + name;
         if (this.back && settings.get(key) != null) return key;
         return CardFace.prototype.key.call(this, settings, name);
-    };
-
-    KeyFace.prototype.ownTitle = function (diy, faceIndex) {
-        return Face.prototype.getTitle.call(this, diy, faceIndex);
-    };
-
-    KeyFace.prototype.getTitle = function (diy, faceIndex) {
-        var title = this.ownTitle(diy, faceIndex);
-        return title.length > 0 ? title : String(diy.name);
-    };
-
-    KeyFace.prototype.isUnique = function (diy, faceIndex) {
-        var own = faceIndex === 0 || this.ownTitle(diy, faceIndex).length > 0;
-        return CardFace.prototype.isUnique.call(this, diy, own ? faceIndex : 0);
     };
 
     // the plug-in's key outline, which it doesn't cache
@@ -70,7 +53,7 @@ define(['faces/CardFace', 'faces/Face', 'faces/FaceUtils'], function (
             g,
             diy,
             boxes.subtitle,
-            String(diy.settings.get('Subtitle' + suffix, ''))
+            this.getSubtitle(diy, faceIndex)
         );
         this.paintBody(g, diy, boxes.body, suffix);
         this.paintCollector(g, diy, sheet, boxes, collector, true, true);

@@ -298,10 +298,37 @@ define([
         box.drawAsSingleLine(g, region);
     };
 
-    CardFace.prototype.isUnique = function (diy, faceIndex) {
+    // whether a back without a title of its own shows the component name,
+    // the front's unique symbol and, without a subtitle, the front's
+    CardFace.prototype.copiesFrontTitle = false;
+
+    // whether the side shows the front's title
+    CardFace.prototype.titleFromFront = function (diy, faceIndex) {
         return (
-            String(diy.settings.get('Unique' + this.suffix(faceIndex))) === '1'
+            this.copiesFrontTitle &&
+            faceIndex !== 0 &&
+            Face.prototype.getTitle.call(this, diy, faceIndex).length === 0
         );
+    };
+
+    CardFace.prototype.getTitle = function (diy, faceIndex) {
+        return this.titleFromFront(diy, faceIndex)
+            ? String(diy.name)
+            : Face.prototype.getTitle.call(this, diy, faceIndex);
+    };
+
+    CardFace.prototype.isUnique = function (diy, faceIndex) {
+        var side = this.titleFromFront(diy, faceIndex) ? 0 : faceIndex;
+        return String(diy.settings.get('Unique' + this.suffix(side))) === '1';
+    };
+
+    CardFace.prototype.getSubtitle = function (diy, faceIndex) {
+        var subtitle = String(
+            diy.settings.get('Subtitle' + this.suffix(faceIndex), '')
+        );
+        if (subtitle.length === 0 && this.copiesFrontTitle && faceIndex !== 0)
+            subtitle = String(diy.settings.get('Subtitle', ''));
+        return subtitle;
     };
 
     // The title, after the unique symbol if unique; each line of a two line
