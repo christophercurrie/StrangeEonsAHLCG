@@ -298,6 +298,12 @@ define([
         box.drawAsSingleLine(g, region);
     };
 
+    CardFace.prototype.isUnique = function (diy, faceIndex) {
+        return (
+            String(diy.settings.get('Unique' + this.suffix(faceIndex))) === '1'
+        );
+    };
+
     // The title, after the unique symbol if unique; each line of a two line
     // title a little lower. lift raises it, in points.
     CardFace.prototype.paintName = function (g, diy, sheet, box, lift) {
@@ -305,8 +311,7 @@ define([
         var title = this.getTitle(diy, faceIndex);
         if (title.length === 0) return;
 
-        if (String(diy.settings.get('Unique' + this.suffix(faceIndex))) === '1')
-            title = '<uni>' + title;
+        if (this.isUnique(diy, faceIndex)) title = '<uni>' + title;
 
         var region = diy.settings.getRegion(
             this.key(diy.settings, 'Name-region')

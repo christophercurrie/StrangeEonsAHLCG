@@ -162,9 +162,15 @@ val flexibleSuffixMasks = mapOf(
     "key" to java.awt.Rectangle(670, 1026, 50, 26),
 )
 
+// A back has its own master when filled, or when its face draws backs
+// differently.
 object FlexibleBacks {
+    private val distinctBacks = setOf("key")
+
     fun isBack(path: String) = path.endsWith("-1.png")
-    fun hasMaster(path: String) = path.endsWith("/filled-1.png")
+
+    fun hasMaster(path: String) =
+        path.endsWith("/filled-1.png") || path.split('/').dropLast(1).lastOrNull() in distinctBacks
 }
 
 // Copies renders and masters for VerifyRenders: each back without a master of
