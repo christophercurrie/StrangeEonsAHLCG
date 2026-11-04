@@ -268,5 +268,16 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
         }
     }
 
-    return { paint: paint, paintArtist: paintArtist };
+    // the copyright alone, for a face without the rest of the collector line
+    function paintCopyrightOnly(g, diy, sheet, face, box) {
+        var side = Sides[sheet.getSheetIndex()];
+        if (String(diy.settings.get('ShowCopyright' + side, '1')) === '1')
+            paintCopyright(g, diy, sheet, face, box);
+    }
+
+    return {
+        paint: paint,
+        paintArtist: paintArtist,
+        paintCopyright: paintCopyrightOnly,
+    };
 });

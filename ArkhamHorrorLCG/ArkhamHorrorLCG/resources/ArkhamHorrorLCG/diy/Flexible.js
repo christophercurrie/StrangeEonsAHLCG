@@ -22,6 +22,7 @@ define([
     'faces/AssetFace',
     'faces/EventFace',
     'faces/SkillFace',
+    'faces/CustomizableFace',
 ], function (
     exportHandler,
     FaceChoiceHandler,
@@ -34,7 +35,8 @@ define([
     TreacheryFace,
     AssetFace,
     EventFace,
-    SkillFace
+    SkillFace,
+    CustomizableFace
 ) {
     // face ids, in menu order, and their faces
     const Faces = {
@@ -48,6 +50,7 @@ define([
         asset: AssetFace,
         event: EventFace,
         skill: SkillFace,
+        customizable: CustomizableFace,
     };
 
     const Choices = Object.keys(Faces).map(function (id) {
