@@ -173,9 +173,16 @@ define([
         }
     }
 
-    // the unleveled circle of weakness art
-    function paintWeaknessLevel(face, g, diy, sheet) {
-        paintLevelCircle(face, g, diy, sheet, 'W', 'None');
+    // the unleveled circle of weakness art; skill art's shared one
+    function paintWeaknessLevel(face, g, diy, sheet, skillCircle) {
+        paintLevelCircle(
+            face,
+            g,
+            diy,
+            sheet,
+            skillCircle ? 'Skill' : 'W',
+            'None'
+        );
     }
 
     // a dash image tinted by the face's Dash-tint

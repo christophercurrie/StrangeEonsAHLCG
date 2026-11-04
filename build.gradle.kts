@@ -128,6 +128,7 @@ val flexibleSuffixMasks = mapOf(
     "treachery" to java.awt.Rectangle(670, 1018, 50, 26),
     "asset" to java.awt.Rectangle(670, 1018, 50, 26),
     "event" to java.awt.Rectangle(630, 1012, 90, 34),
+    "skill" to java.awt.Rectangle(670, 1018, 50, 26),
 )
 
 object FlexibleBacks {
