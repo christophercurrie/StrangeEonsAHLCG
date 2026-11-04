@@ -25,6 +25,8 @@ export default defineConfig([
     `!${diy}/AgendaFrontPortrait.js`,
     `!${diy}/ActPortrait.js`,
     `!${diy}/AgendaPortrait.js`,
+    `!${diy}/EnemyPortrait.js`,
+    `!${diy}/TreacheryPortrait.js`,
     `!${diy}/Location.js`,
     `!${diy}/LocationLocation.js`,
     `!${diy}/Chaos.js`,
