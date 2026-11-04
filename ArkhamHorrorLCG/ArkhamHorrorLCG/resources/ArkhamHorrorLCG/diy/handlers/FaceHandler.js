@@ -10,7 +10,8 @@
 //                 template keys can't change after create
 //
 // Subclasses may override setCardDefaults( diy ) for extra card-level
-// defaults, upgrade( diy ) for version steps when reading older saves and
+// defaults, upgrade( diy ) for version steps when reading older saves, before
+// the portraits are read and while diy.version is the saved version, and
 // createGeneralPanels( diy, editor, bindings ).
 //
 // Module: returns FaceHandler.
@@ -436,6 +437,18 @@ define([
         this.setDefaults(diy);
     };
 
+    // A portrait saved by a legacy handler, under its own key, moved to the
+    // face key; its image, pan and scale are kept.
+    FaceHandler.prototype.adoptPortrait = function (kind, portrait) {
+        var key = 'AHLCG-Face-' + kind;
+        if (String(portrait.getBaseKey()) === key) return portrait;
+
+        var adopted = new arkham.component.DefaultPortrait(key, portrait);
+        adopted.facesToUpdate = [FACE_FRONT, FACE_BACK];
+        adopted.backgroundFilled = false;
+        return adopted;
+    };
+
     FaceHandler.prototype.onRead = function (diy, ois) {
         this.upgrade(diy);
 
@@ -443,7 +456,7 @@ define([
         this.portraitKinds.forEach(function (kind, i) {
             // a save from before the faces used this set has no portrait
             try {
-                this.portraits[i] = ois.readObject();
+                this.portraits[i] = this.adoptPortrait(kind, ois.readObject());
             } catch (ex) {
                 return;
             }

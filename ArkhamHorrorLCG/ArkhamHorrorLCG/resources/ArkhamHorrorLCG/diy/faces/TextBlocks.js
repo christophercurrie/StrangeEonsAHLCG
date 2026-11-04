@@ -734,6 +734,7 @@ define([
         Styles: Styles,
         defaults: defaults,
         read: read,
+        write: write,
         createPanel: createPanel,
         paint: paint,
     };

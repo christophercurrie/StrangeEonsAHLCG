@@ -1,287 +1,130 @@
-useLibrary( 'diy' );
-useLibrary( 'ui' );
-useLibrary( 'markup' );
-useLibrary( 'imageutils' );
-useLibrary( 'fontutils' );
+/* global useLibrary, sourcefile, testDIYScript, globalThis */
+useLibrary('amd');
 
-importClass( arkham.component.DefaultPortrait );
-
-const CardTypes = [ 'Chaos', 'Chaos' ];
-const BindingSuffixes = [ '', 'Back' ];
-
-const PortraitTypeList = [ 'Collection-Both', 'Encounter-Both' ];
-
-function create( diy ) {
-	diy.frontTemplateKey = getExpandedKey( FACE_FRONT, 'Default', '-template' );	// not used, set card size
-	diy.backTemplateKey = getExpandedKey( FACE_BACK, 'Default', '-template' );
-
-	diy.faceStyle = FaceStyle.TWO_FACES;
-
-	diy.name = '';
-
-	setDefaults();
-	createPortraits( diy, PortraitTypeList );
-	setDefaultEncounter();
-	setDefaultCollection();
-
-	diy.setCornerRadius(8);
-	diy.version = CARD_VERSION;
+if (String(sourcefile) === 'Quickscript') {
+    define.config({
+        baseUrl: 'project:ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy',
+    });
 }
 
-function setDefaults() {
-	$Skull = '';
-	$SkullSpacing = '0';
-	$Cultist = '';
-	$CultistSpacing = '0';
-	$Tablet = '';
-	$TabletSpacing = '0';
-	$ElderThing = '';
+// Chaos token effects: the token rules face on both sides, for the easy and
+// standard difficulties on the front and hard and expert on the back.
+//
+// Cards saved before version 31 have a fixed layout: text for each token,
+// <token><suffix>, joined to another token's group by Merge<token><suffix>,
+// and a tracking box on the front that both sides show.
+define([
+    'handlers/CardVersion',
+    'handlers/exportHandler',
+    'handlers/FaceHandler',
+    'faces/TextBlocks',
+    'faces/TokenRulesFace',
+], function (
+    CardVersion,
+    exportHandler,
+    FaceHandler,
+    TextBlocks,
+    TokenRulesFace
+) {
+    const Tokens = ['Skull', 'Cultist', 'Tablet', 'ElderThing'];
+    const Suffixes = ['', 'Back'];
+    // the legacy template key, which saved cards keep
+    const TemplateKey = 'AHLCG-Chaos-Default';
 
-	$SkullBack = '';
-	$SkullBackSpacing = '0';
-	$CultistBack = '';
-	$CultistBackSpacing = '0';
-	$TabletBack = '';
-	$TabletBackSpacing = '0';
-	$ElderThingBack = '';
+    // Token blocks for a side of a legacy card, grouped as the legacy layout
+    // grouped them: a token without text is left out unless merged, and a
+    // group shows the text of its first token that has some.
+    function legacyBlocks(settings, suffix) {
+        var text = Tokens.map(function (token) {
+            return String(settings.get(token + suffix, ''));
+        });
+        var group = text.map(function (t, i) {
+            return t.length > 0 ? i : Tokens.length;
+        });
+        Tokens.forEach(function (token, i) {
+            var j = Tokens.indexOf(
+                String(settings.get('Merge' + token + suffix, 'None'))
+            );
+            if (j < 0) return;
+            group[i] = group[j] = Math.min(group[i], group[j]);
+        });
 
-	$Copyright = '';
+        var blocks = [];
+        for (let g = 0; g < Tokens.length; g++) {
+            let members = Tokens.filter(function (token, i) {
+                return group[i] === g;
+            });
+            if (members.length === 0) continue;
+            blocks.push({
+                style: 'token',
+                text: text.filter(function (t, i) {
+                    return group[i] === g && t.length > 0;
+                })[0],
+                spacing: 0,
+                tokens: members,
+            });
+        }
+        return blocks;
+    }
 
-	$MergeSkull = 'None';
-	$MergeCultist = 'None';
-	$MergeTablet = 'None';
-	$MergeSkullBack = 'None';
-	$MergeCultistBack = 'None';
-	$MergeTabletBack = 'None';
+    function clearLegacyKeys(settings, suffix) {
+        Tokens.forEach(function (token) {
+            settings.reset(token + suffix);
+            settings.reset(token + suffix + 'Spacing');
+            settings.reset('Merge' + token + suffix);
+        });
+    }
 
-	$TrackerBox = '';
-	$TrackerHeight = '100';
+    function ChaosHandler() {
+        FaceHandler.call(
+            this,
+            { templateKeys: [TemplateKey, TemplateKey] },
+            new TokenRulesFace(),
+            new TokenRulesFace()
+        );
+    }
 
-	$TemplateReplacement = '';
-	$TemplateReplacementBack = '';
-}
+    ChaosHandler.prototype = Object.create(FaceHandler.prototype);
+    ChaosHandler.prototype.constructor = ChaosHandler;
 
-function createInterface( diy, editor ) {
-	var AHLCGObject = Eons.namedObjects.AHLCGObject;
+    ChaosHandler.prototype.setCardDefaults = function (diy) {
+        diy.settings.set('Difficulty', 'Front');
+        diy.settings.set('DifficultyBack', 'Back');
+    };
 
-	var bindings = new Bindings( editor, diy );
+    ChaosHandler.prototype.upgrade = function (diy) {
+        if (diy.version >= CardVersion) return;
+        var settings = diy.settings;
 
-	var TitlePanel = layoutTitle2( diy, bindings, [0, 1], FACE_FRONT );
-	var StatPanel = layoutChaosStats( bindings, FACE_FRONT );
-	var CopyrightPanel = layoutCopyright( bindings, false, [0, 1], FACE_FRONT );
+        Suffixes.forEach(function (suffix) {
+            var blocks = legacyBlocks(settings, suffix);
+            if (blocks.length > 0) TextBlocks.write(settings, suffix, blocks);
+            clearLegacyKeys(settings, suffix);
+        });
 
-	var StatisticsTab = new Grid();
-	StatisticsTab.editorTabScrolling = true;
-	StatisticsTab.place(TitlePanel, 'wrap, pushx, growx', StatPanel, 'wrap, pushx, growx', CopyrightPanel, 'wrap, pushx, growx' );
-	StatisticsTab.addToEditor( editor , @AHLCG-General );
+        settings.set('Difficulty', 'Front');
+        settings.set('DifficultyBack', 'Back');
+        settings.set('TitleBack', diy.name);
+        if (String(settings.get('TrackerBoxBack', '')).length === 0) {
+            settings.set('TrackerBoxBack', settings.get('TrackerBox', ''));
+            settings.set(
+                'TrackerHeightBack',
+                settings.get('TrackerHeight', '100')
+            );
+        }
 
-	var TextTab = layoutChaosText( bindings, FACE_FRONT, false );
-	TextTab.editorTabScrolling = true;
-	TextTab.addToEditor( editor, @AHLCG-Rules + ': ' + @AHLCG-Front );
+        for (let i = 0; i < this.faces.length; i++) {
+            this.faces[i].setDefaults(diy, i, true);
+        }
+        this.setFaceTemplates(diy);
+    };
 
-	var BackTextTab = layoutChaosText( bindings, FACE_BACK, false );
-	BackTextTab.editorTabScrolling = true;
-	BackTextTab.addToEditor( editor, @AHLCG-Rules + ': ' + @AHLCG-Back );
+    exportHandler(globalThis, new ChaosHandler());
+});
 
-	var CollectionImagePanel = new portraitPanel( diy, getPortraitIndex( 'Collection' ), @AHLCG-CustomCollection );
-	var CollectionPanel = layoutCollection( bindings, CollectionImagePanel, false, false, [0, 1], FACE_FRONT );
-
-	var CollectionTab = new Grid();
-	CollectionTab.editorTabScrolling = true;
-	CollectionTab.place( CollectionPanel, 'wrap, pushx, growx', CollectionImagePanel, 'wrap, pushx, growx' );
-	CollectionTab.addToEditor(editor, @AHLCG-Collection);
-
-	var EncounterImagePanel = new portraitPanel( diy, getPortraitIndex( 'Encounter' ), @AHLCG-CustomEncounterSet );
-	var EncounterPanel = layoutEncounter( bindings, EncounterImagePanel, false, [0, 1], [0, 1], FACE_FRONT );
-
-	var EncounterTab = new Grid();
-	EncounterTab.editorTabScrolling = true;
-	EncounterTab.place( EncounterPanel, 'wrap, pushx, growx', EncounterImagePanel, 'wrap, pushx, growx' );
-	EncounterTab.addToEditor(editor, @AHLCG-EncounterSet);
-
-	PortraitTab = layoutPortraits( diy, bindings, null, null, true, false, false );
-	PortraitTab.addToEditor(editor, @AHLCG-Portraits);
-
-	bindings.bind();
-}
-
-function createFrontPainter( diy, sheet ) {
-	Name_box = markupBox(sheet);
-	Name_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_FRONT, 'Name-style'), null);
-	Name_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_FRONT, 'Name-alignment'));
-	Name_box.setTextFitting(FIT_NONE);
-	Name_box.setLineTightness( $(getExpandedKey(FACE_FRONT, 'Name', '-tightness') + '-tightness') );	// this doesn't seem to matter, sadly...
-	initBodyTags( diy, Name_box );
-
-	Difficulty_box = markupBox(sheet);
-	Difficulty_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_FRONT, 'Difficulty-style'), null);
-	Difficulty_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_FRONT, 'Difficulty-alignment'));
-
-	Body_boxes = [];
-	for ( let i = 0; i < 4; i++ ) {
-		Body_boxes[i] = markupBox(sheet);
-		Body_boxes[i].defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_FRONT, 'Body-style'), null);
-		Body_boxes[i].alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_FRONT, 'Body-alignment'));
-		Body_boxes[i].setLineTightness( $(getExpandedKey(FACE_FRONT, 'Body', '-tightness') + '-tightness') * Eons.namedObjects.AHLCGObject.bodyFontTightness );
-		Body_boxes[i].setTextFitting( FIT_SCALE_TEXT );
-
-		initBodyTags( diy, Body_boxes[i] );
-	}
-
-	Tracker_box = markupBox(sheet);
-	Tracker_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_FRONT, 'TrackerName-style'), null);
-	Tracker_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_FRONT, 'TrackerName-alignment'));
-
-	Copyright_box = markupBox(sheet);
-	Copyright_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_FRONT, 'Copyright-style'), null);
-	Copyright_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_FRONT, 'Copyright-alignment'));
-
-	initCopyrightTags( diy, Copyright_box );
-
-	Collection_box = markupBox(sheet);
-	Collection_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_FRONT, 'CollectionNumber-style'), null);
-	Collection_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_FRONT, 'CollectionNumber-alignment'));
-
-	Encounter_box = markupBox(sheet);
-	Encounter_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_FRONT, 'EncounterNumber-style'), null);
-	Encounter_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_FRONT, 'EncounterNumber-alignment'));
-}
-
-function createBackPainter( diy, sheet ) {
-	BackName_box = markupBox(sheet);
-	BackName_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_BACK, 'Name-style'), null);
-	BackName_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_BACK, 'Name-alignment'));
-	BackName_box.setTextFitting(FIT_NONE);
-	BackName_box.setLineTightness( $(getExpandedKey(FACE_BACK, 'Name', '-tightness') + '-tightness') );
-	initBodyTags( diy, BackName_box );
-
-	BackDifficulty_box  = markupBox(sheet);
-	BackDifficulty_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_BACK, 'Difficulty-style'), null);
-	BackDifficulty_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_BACK, 'Difficulty-alignment'));
-
-	BackBody_boxes = [];
-	for ( let i = 0; i < 4; i++ ) {
-		BackBody_boxes[i] = markupBox(sheet);
-		BackBody_boxes[i].defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_BACK, 'Body-style'), null);
-		BackBody_boxes[i].alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_BACK, 'Body-alignment'));
-		BackBody_boxes[i].setLineTightness( $(getExpandedKey(FACE_BACK, 'Body', '-tightness') + '-tightness') * Eons.namedObjects.AHLCGObject.bodyFontTightness );
-		BackBody_boxes[i].setTextFitting( FIT_SCALE_TEXT );
-
-		initBodyTags( diy, BackBody_boxes[i] );
-	}
-
-	BackTracker_box = markupBox(sheet);
-	BackTracker_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_BACK, 'TrackerName-style'), null);
-	BackTracker_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_BACK, 'TrackerName-alignment'));
-
-	BackCopyright_box = markupBox(sheet);
-	BackCopyright_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_BACK, 'Copyright-style'), null);
-	BackCopyright_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_BACK, 'Copyright-alignment'));
-
-	initCopyrightTags( diy, BackCopyright_box );
-
-	BackCollection_box = markupBox(sheet);
-	BackCollection_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_BACK, 'CollectionNumber-style'), null);
-	BackCollection_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_BACK, 'CollectionNumber-alignment'));
-
-	BackEncounter_box = markupBox(sheet);
-	BackEncounter_box.defaultStyle = diy.settings.getTextStyle(getExpandedKey(FACE_BACK, 'EncounterNumber-style'), null);
-	BackEncounter_box.alignment = diy.settings.getTextAlignment(getExpandedKey(FACE_BACK, 'EncounterNumber-alignment'));
-}
-
-function paintFront( g, diy, sheet ) {
-	clearImage( g, sheet );
-
-	drawTemplate( g, sheet, '' );
-
-	var y = 127;
-
-	if ( diy.name != '' ) y = drawChaosName( g, diy, sheet, Name_box );
-	y = drawDifficulty( g, diy, sheet, Difficulty_box, #AHLCG-Difficulty-Front, y );
-
-	if ( $TrackerBox.length > 0 ) drawTrackerBox( g, diy, sheet, Tracker_box );
-
-	drawChaosBody( g, diy, sheet, Body_boxes, null, y );
-
-//	drawCollectorInfo( g, diy, sheet, true, true, true, true, false );
-	drawCollectorInfo( g, diy, sheet, Collection_box, true, true, Encounter_box, true, Copyright_box, null );
-}
-
-function paintBack( g, diy, sheet ) {
-	clearImage( g, sheet );
-
-	drawTemplate( g, sheet, '' );
-
-	var y = 127;
-
-	if ( diy.name != '' ) y = drawChaosName( g, diy, sheet, BackName_box );
-	y = drawDifficulty( g, diy, sheet, BackDifficulty_box, #AHLCG-Difficulty-Back, y );
-
-	if ( $TrackerBox.length > 0 ) drawTrackerBox( g, diy, sheet, Tracker_box );
-
-	drawChaosBody( g, diy, sheet, BackBody_boxes, null, y );
-
-//	drawCollectorInfo( g, diy, sheet, true, true, true, true, false );
-	drawCollectorInfo( g, diy, sheet, BackCollection_box, true, true, BackEncounter_box, true, BackCopyright_box, false );
-}
-
-function onClear() {
-	setDefaults();
-}
-
-// These can be used to perform special processing during open/save.
-// For example, you can seamlessly upgrade from a previous version
-// of the script.
-function onRead(diy, oos) {
-	readPortraits( diy, oos, PortraitTypeList, true );
-
-	updateCollection();
-	updateEncounter();
-
-	if ( diy.version < 6 ) {
-		$MergeSkull = 'None';
-		$MergeCultist = 'None';
-		$MergeTablet = 'None';
-		$MergeSkullBack = 'None';
-		$MergeCultistBack = 'None';
-		$MergeTabletBack = 'None';
-	}
-
-	if ( diy.version < 10 ) {
-		$TrackerBox = '';
-	}
-	if ( diy.version < 15 ) {
-		$TemplateReplacement = '';
-		$TemplateReplacementBack = '';
-	}
-	if ( diy.version < 18 ) {
-		$TrackerHeight = '100';
-	}
-
-	diy.setCornerRadius(8);
-	diy.version = CARD_VERSION;
-}
-
-function onWrite( diy, oos ) {
-	writePortraits( oos, PortraitTypeList );
-}
-
-// This is part of the diy library; calling it from within a
-// script that defines the needed functions for a DIY component
-// will create the DIY from the script and add it as a new editor;
-// however, saving and loading the new component won't work correctly.
-// This means you can test your script directly by running it without
-// having to create a plug-in (except to make any required resources
-// available).
-if( sourcefile == 'Quickscript' ) {
-	useLibrary('project:ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/AHLCG-utilLibrary.js');
-	useLibrary('project:ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/AHLCG-layoutLibrary.js');
-	useLibrary('project:ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/AHLCG-drawLibrary.js');
-
-	testDIYScript();
-}
-else {
-	useLibrary('res://ArkhamHorrorLCG/diy/AHLCG-utilLibrary.js');
-	useLibrary('res://ArkhamHorrorLCG/diy/AHLCG-layoutLibrary.js');
-	useLibrary('res://ArkhamHorrorLCG/diy/AHLCG-drawLibrary.js');
+// Running this script directly (Quickscript) creates a test editor for the
+// component; saving and loading it won't work correctly.
+if (String(sourcefile) === 'Quickscript') {
+    useLibrary('diy');
+    testDIYScript();
 }
