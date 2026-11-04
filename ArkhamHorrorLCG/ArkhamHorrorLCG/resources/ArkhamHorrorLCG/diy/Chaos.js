@@ -117,10 +117,6 @@ define([
             );
         }
 
-        for (let i = 0; i < this.faces.length; i++) {
-            this.faces[i].setDefaults(diy, i, true);
-        }
-        this.setFaceTemplates(diy);
     };
 
     exportHandler(globalThis, new ChaosHandler());

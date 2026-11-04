@@ -640,6 +640,13 @@ define([
 
     FaceHandler.prototype.onRead = function (diy, ois) {
         this.upgrade(diy);
+        // an older save lacks the settings the faces added since
+        if (diy.version < this.version) {
+            for (let i = 0; i < this.faces.length; i++) {
+                this.faces[i].setDefaults(diy, i, true);
+            }
+            this.setFaceTemplates(diy);
+        }
 
         this.updateCollector(diy);
         var legacy =
