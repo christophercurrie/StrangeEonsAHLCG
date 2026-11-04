@@ -71,6 +71,8 @@ def main():
                     continue
                 if name in ('Default-template', 'Default-bleed-margin'):
                     continue
+            if name == 'template':
+                continue
             if name in SET_REGIONS:
                 out[SET_REGIONS[name]] = value
             elif re.match(r'(Collection|Encounter|DefaultCollection|DefaultEncounter'

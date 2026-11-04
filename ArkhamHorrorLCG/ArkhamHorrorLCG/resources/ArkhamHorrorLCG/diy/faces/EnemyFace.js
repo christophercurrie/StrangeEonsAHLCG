@@ -3,46 +3,26 @@
 //
 // Module: returns EnemyFace.
 define([
-    'faces/CollectorInfo',
+    'faces/CardFace',
     'faces/Face',
     'faces/FaceUtils',
-    'faces/PortraitArt',
     'se/imageutils',
-    'se/markup',
     'se/strings',
     'se/ui',
-], function (
-    CollectorInfo,
-    Face,
-    FaceUtils,
-    PortraitArt,
-    imageutils,
-    markup,
-    strings,
-    ui
-) {
-    const Parts = ['Traits', 'Keywords', 'Rules', 'Flavor', 'Victory'];
-    const White = java.awt.Color.WHITE;
-    const Black = java.awt.Color.BLACK;
-
+], function (CardFace, Face, FaceUtils, imageutils, strings, ui) {
     function EnemyFace() {
-        Face.call(this);
+        CardFace.call(this);
     }
 
-    EnemyFace.prototype = Object.create(Face.prototype);
+    EnemyFace.prototype = Object.create(CardFace.prototype);
     EnemyFace.prototype.constructor = EnemyFace;
     EnemyFace.prototype.template = 'AHLCG-EnemyFace';
-    EnemyFace.prototype.portraits = ['Portrait'];
-    EnemyFace.prototype.usesCollection = true;
-    EnemyFace.prototype.usesEncounter = true;
-    EnemyFace.prototype.usesCopyright = true;
-    EnemyFace.prototype.usesTemplateReplacement = true;
+    EnemyFace.prototype.labelKey = 'AHLCG-Label-Enemy';
+    EnemyFace.prototype.hasSubtitle = true;
     EnemyFace.prototype.fillReturnEncounterIcon = true;
 
-    EnemyFace.prototype.setDefaults = function (diy, faceIndex, keep) {
-        var values = {
-            Unique: '0',
-            Subtitle: '',
+    EnemyFace.prototype.defaultValues = function (diy, faceIndex) {
+        return {
             Health: '2',
             PerInvestigator: '0',
             Attack: '2',
@@ -51,92 +31,16 @@ define([
             PerInvestigatorEvade: '0',
             Damage: '0',
             Horror: '0',
-            Artist: '',
-        };
-        Parts.forEach(function (part) {
-            values[part] = '';
-        });
-        // the front's title is the component name
-        if (faceIndex !== 0) values.Title = '';
-        this.setValues(diy, faceIndex, keep, values);
-
-        // keyed <part><suffix>Spacing, as legacy cards save them
-        var suffix = this.suffix(faceIndex);
-        var spacing = {};
-        Parts.slice(0, -1).forEach(function (part) {
-            spacing[part + suffix + 'Spacing'] = '0';
-        });
-        this.setSettings(diy, keep, spacing);
-    };
-
-    EnemyFace.prototype.createInterface = function (diy, bindings, faceIndex) {
-        return {
-            general: [
-                {
-                    panel: this.createTitlePanel(diy, bindings, faceIndex),
-                    title: strings.string('AHLCG-Title'),
-                },
-                {
-                    panel: this.createStatPanel(bindings, faceIndex),
-                    title: strings.string('AHLCG-BasicData'),
-                },
-            ],
-            tabs: [
-                {
-                    panel: FaceUtils.createTextPanel(
-                        this,
-                        bindings,
-                        faceIndex,
-                        Parts,
-                        '',
-                        6
-                    ),
-                    title: strings.string('AHLCG-Rules'),
-                },
-            ],
         };
     };
 
-    function iconButton(name) {
-        var ImageUtils = imageutils.ImageUtils;
-        return new ui.toggleButton(
-            '',
-            ImageUtils.createIcon(
-                ImageUtils.get('ArkhamHorrorLCG/icons/AHLCG-' + name + '.png'),
-                12,
-                12
-            ),
-            false
-        );
-    }
-
-    // title with a unique toggle, and subtitle
-    EnemyFace.prototype.createTitlePanel = function (diy, bindings, faceIndex) {
-        var panel = new ui.Grid();
-        var titleField = new ui.textField('', 30);
-        if (faceIndex === 0) {
-            diy.setNameField(titleField);
-            titleField.setText(diy.getName());
-        } else this.bind(bindings, faceIndex, 'Title', titleField);
-
-        var uniqueButton = iconButton('Unique');
-        this.bind(bindings, faceIndex, 'Unique', uniqueButton);
-        var subtitleField = new ui.textField('', 30);
-        this.bind(bindings, faceIndex, 'Subtitle', subtitleField);
-
-        panel.place(
-            strings.string('AHLCG-Title'),
-            'align right',
-            uniqueButton,
-            'split, wmax 35, hmin 25, hmax 25',
-            titleField,
-            'wrap, pushx, growx',
-            strings.string('AHLCG-Subtitle'),
-            'align right',
-            subtitleField,
-            'wrap, pushx, growx'
-        );
-        return panel;
+    EnemyFace.prototype.createPanels = function (diy, bindings, faceIndex) {
+        return [
+            {
+                panel: this.createStatPanel(bindings, faceIndex),
+                title: strings.string('AHLCG-BasicData'),
+            },
+        ];
     };
 
     // stats, each with a per investigator toggle, and damage and horror
@@ -151,7 +55,7 @@ define([
             return control;
         }
         function perInvestigator(name) {
-            var control = iconButton('PerInvestigator');
+            var control = CardFace.iconButton('PerInvestigator');
             face.bind(bindings, faceIndex, name, control);
             return control;
         }
@@ -188,50 +92,35 @@ define([
         return panel;
     };
 
-    EnemyFace.prototype.createPainter = function (diy, sheet, faceIndex) {
-        var boxes = {
-            label: this.createBox(diy, sheet, 'Label'),
-            name: this.createBox(diy, sheet, 'Name'),
-            subtitle: this.createBox(diy, sheet, 'Subtitle'),
-            body: this.createBox(diy, sheet, 'Body'),
-            artist: this.createBox(diy, sheet, 'Artist'),
-            collectionNumber: this.createBox(diy, sheet, 'CollectionNumber'),
-            encounterNumber: this.createBox(diy, sheet, 'EncounterNumber'),
-            copyright: this.createBox(diy, sheet, 'Copyright'),
-        };
-        FaceUtils.initBodyTags(diy, boxes.name);
-        boxes.body.pageShape = FaceUtils.plugin().getEnemyTextShape(
-            diy.settings.getRegion(this.key(diy.settings, 'Body-region'))
-        );
-        FaceUtils.initBodyTags(diy, boxes.body);
-        FaceUtils.initCopyrightTags(diy, boxes.copyright);
-        return boxes;
+    // the text follows the outline of the art window
+    EnemyFace.prototype.bodyShape = function (region) {
+        return FaceUtils.plugin().getEnemyTextShape(region);
     };
 
-    EnemyFace.prototype.paint = function (
+    EnemyFace.prototype.templateKey = function (diy, faceIndex) {
+        var subtitle = String(
+            diy.settings.get('Subtitle' + this.suffix(faceIndex), '')
+        );
+        return subtitle.length > 0
+            ? this.template + '-Subtitled-template'
+            : null;
+    };
+
+    // a back without a title of its own shows the component name
+    EnemyFace.prototype.getTitle = function (diy, faceIndex) {
+        var title = Face.prototype.getTitle.call(this, diy, faceIndex);
+        return title.length > 0 ? title : String(diy.name);
+    };
+
+    EnemyFace.prototype.paintContent = function (
         g,
         diy,
         sheet,
         boxes,
-        collector,
-        art
+        collector
     ) {
-        var settings = diy.settings;
         var suffix = this.suffix(sheet.getSheetIndex());
-        var subtitle = String(settings.get('Subtitle' + suffix, ''));
-
-        // the art shows through the template
-        this.clearSheet(g, sheet);
-        var transform = g.getTransform();
-        FaceUtils.translateToTrim(g, sheet);
-        PortraitArt.paint(g, diy, sheet, art.Portrait);
-        g.setTransform(transform);
-        this.paintTemplateImage(
-            g,
-            sheet,
-            subtitle.length > 0 ? this.template + '-Subtitled-template' : null
-        );
-        FaceUtils.translateToTrim(g, sheet);
+        var subtitle = String(diy.settings.get('Subtitle' + suffix, ''));
 
         this.paintLabel(g, diy, boxes.label);
         this.paintName(g, diy, sheet, boxes.name);
@@ -246,73 +135,8 @@ define([
         this.paintTokens(g, diy, sheet, 'Damage', suffix);
         this.paintTokens(g, diy, sheet, 'Horror', suffix);
 
-        CollectorInfo.paint(g, diy, sheet, this, boxes, collector, true);
-        CollectorInfo.paintArtist(g, diy, sheet, this, boxes.artist);
+        this.paintCollector(g, diy, sheet, boxes, collector, true);
     };
-
-    EnemyFace.prototype.paintLabel = function (g, diy, box) {
-        var region = diy.settings.getRegion(
-            this.key(diy.settings, 'Label-region')
-        );
-        region.y += parseInt(FaceUtils.plugin().typeFontOffset);
-        box.markupText = String(
-            strings.gstring('AHLCG-Label-Enemy')
-        ).toUpperCase();
-        box.drawAsSingleLine(g, region);
-    };
-
-    // a back without a title of its own shows the component name
-    EnemyFace.prototype.getTitle = function (diy, faceIndex) {
-        var title = Face.prototype.getTitle.call(this, diy, faceIndex);
-        return title.length > 0 ? title : String(diy.name);
-    };
-
-    // The title, after the unique symbol if unique; each line of a two line
-    // title a little lower.
-    EnemyFace.prototype.paintName = function (g, diy, sheet, box) {
-        var faceIndex = sheet.getSheetIndex();
-        var title = this.getTitle(diy, faceIndex);
-        if (title.length === 0) return;
-
-        if (String(diy.settings.get('Unique' + this.suffix(faceIndex))) === '1')
-            title = '<uni>' + title;
-
-        var region = diy.settings.getRegion(
-            this.key(diy.settings, 'Name-region')
-        );
-        region.y += parseInt(FaceUtils.plugin().titleFontOffset);
-
-        title.split('\n').forEach(function (line) {
-            box.markupText = line;
-            box.drawAsSingleLine(g, region);
-            region.y += 16;
-            region.height -= 16;
-        });
-    };
-
-    EnemyFace.prototype.paintSubtitle = function (g, diy, box, subtitle) {
-        var region = diy.settings.getRegion(
-            this.key(diy.settings, 'Subtitle-region')
-        );
-        region.y += parseInt(FaceUtils.plugin().subtitleFontOffset);
-        box.markupText = subtitle;
-        box.drawAsSingleLine(g, region);
-    };
-
-    function outlined(sheet, g, text, region, font, size) {
-        sheet.drawOutlinedTitle(
-            g,
-            text,
-            region,
-            font,
-            size,
-            0.8,
-            White,
-            Black,
-            0,
-            true
-        );
-    }
 
     // a dash for '-'; a per investigator value is narrower, followed by the
     // per investigator symbol
@@ -327,7 +151,7 @@ define([
         if (value === '-') {
             let dash = region(stat);
             dash.y += 6;
-            outlined(sheet, g, '—', dash, o.costFont, 11.5);
+            CardFace.outlined(sheet, g, '—', dash, o.costFont, 11.5);
         } else if (
             String(settings.get('PerInvestigator' + stat + suffix)) === '1'
         ) {
@@ -343,10 +167,17 @@ define([
                 symbolSize = 5.0;
                 iconRegion.x += 4;
             }
-            outlined(sheet, g, value, valueRegion, o.enemyFont, size);
-            outlined(sheet, g, 'p', iconRegion, o.symbolFont, symbolSize);
+            CardFace.outlined(sheet, g, value, valueRegion, o.enemyFont, size);
+            CardFace.outlined(
+                sheet,
+                g,
+                'p',
+                iconRegion,
+                o.symbolFont,
+                symbolSize
+            );
         } else {
-            outlined(sheet, g, value, region(stat), o.enemyFont, 11.0);
+            CardFace.outlined(sheet, g, value, region(stat), o.enemyFont, 11.0);
         }
     };
 
@@ -362,7 +193,7 @@ define([
             let dash = region('HealthPerInv');
             dash.x += 5;
             dash.y += 6;
-            outlined(sheet, g, '—', dash, o.costFont, 11.5);
+            CardFace.outlined(sheet, g, '—', dash, o.costFont, 11.5);
         } else if (String(settings.get('PerInvestigator' + suffix)) === '1') {
             let valueRegion = region('HealthPerInv');
             let iconRegion = region('HealthPerInvIcon');
@@ -375,29 +206,18 @@ define([
                 size = 13.0;
                 iconRegion.x += 4;
             }
-            outlined(sheet, g, health, valueRegion, o.enemyFont, size);
-            outlined(sheet, g, 'p', iconRegion, o.symbolFont, 6.5);
+            CardFace.outlined(sheet, g, health, valueRegion, o.enemyFont, size);
+            CardFace.outlined(sheet, g, 'p', iconRegion, o.symbolFont, 6.5);
         } else {
-            outlined(sheet, g, health, region('Health'), o.enemyFont, 13.5);
+            CardFace.outlined(
+                sheet,
+                g,
+                health,
+                region('Health'),
+                o.enemyFont,
+                13.5
+            );
         }
-    };
-
-    EnemyFace.prototype.paintBody = function (g, diy, box, suffix) {
-        var settings = diy.settings;
-        var o = FaceUtils.plugin();
-
-        var region = settings.getRegion(this.key(settings, 'Body-region'));
-        region.y += parseInt(o.bodyFontOffset);
-
-        box.setReplacementForTag('fullnameb', settings.get('TitleBack'));
-        box.setLineTightness(
-            Number(settings.get(this.key(settings, 'Body-tightness'))) *
-                o.bodyFontTightness
-        );
-        box.setTextFitting(markup.FIT_SCALE_TEXT);
-        box.markupText = FaceUtils.partsMarkup(settings, Parts, suffix);
-        markup.updateNameTags(box, diy);
-        box.draw(g, region);
     };
 
     // a Damage or Horror token for each point, up to five

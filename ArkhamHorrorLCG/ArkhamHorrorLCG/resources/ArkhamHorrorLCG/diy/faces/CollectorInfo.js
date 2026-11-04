@@ -212,8 +212,18 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings'], function (
     }
 
     // collector: { collection, encounter, suffix }, the card's portraits and
-    // whether the collection number takes a side suffix
-    function paint(g, diy, sheet, face, boxes, collector, encounterIcon) {
+    // whether the collection number takes a side suffix; encounterNumber is
+    // false for a face that leaves out the encounter number
+    function paint(
+        g,
+        diy,
+        sheet,
+        face,
+        boxes,
+        collector,
+        encounterIcon,
+        encounterNumber
+    ) {
         var faceIndex = sheet.getSheetIndex();
         var side = Sides[faceIndex];
         var x = sheet.getTemplateWidth() - 2 * FaceUtils.bleedPixels(sheet);
@@ -246,6 +256,7 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings'], function (
             paintEncounterIcon(g, diy, sheet, face, collector.encounter);
 
         if (
+            encounterNumber !== false &&
             String(diy.settings.get('ShowEncounterNumber' + side, '1')) === '1'
         ) {
             paintEncounterNumber(g, diy, sheet, face, boxes.encounterNumber, x);
