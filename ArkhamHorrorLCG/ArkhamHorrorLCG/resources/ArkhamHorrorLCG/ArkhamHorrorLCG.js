@@ -72,6 +72,7 @@ function initialize() {
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/faces/CustomizableFace.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/faces/CustomizableBackFace.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/faces/LocationFace.settings');
+	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/faces/LocationBackFace.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/AHLCG-Concealed.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/AHLCG-PackCover.settings');
 	ahlcgGame.masterSettings.addSettingsFrom('ArkhamHorrorLCG/settings/AHLCG-BoxCover.settings');

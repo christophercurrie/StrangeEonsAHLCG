@@ -181,4 +181,6 @@ AHLCG-CustomizableFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-Custo
 AHLCG-CustomizableBackFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-CustomizableBack.png
 AHLCG-LocationFace-ST-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-LocationST.png
 AHLCG-LocationFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-Location.png
+AHLCG-LocationBackFace-ST-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-LocationBackST.png
+AHLCG-LocationBackFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-LocationBack.png
 AHLCG-LocationFace-BackST-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-LocationBackST.png
