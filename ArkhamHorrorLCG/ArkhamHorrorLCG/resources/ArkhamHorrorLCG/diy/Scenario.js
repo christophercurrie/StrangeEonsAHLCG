@@ -25,7 +25,7 @@ function create( diy ) {
 	setDefaultCollection();
 
 	diy.setCornerRadius(8);
-	diy.version = 17;
+	diy.version = CARD_VERSION;
 }
 
 function setDefaults() {
@@ -361,7 +361,7 @@ function onRead(diy, oos) {
 
 	diy.setCornerRadius(8);
 	clearBleedMargin( diy );
-	diy.version = 17;
+	diy.version = CARD_VERSION;
 }
 
 function onWrite( diy, oos ) {

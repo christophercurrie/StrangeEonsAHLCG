@@ -20,7 +20,7 @@ function create( diy ) {
 	setDefaults();
 	createPortraits( diy, PortraitTypeList );
 
-	diy.version = 1;
+	diy.version = CARD_VERSION;
 }
 
 function setDefaults() {
@@ -86,7 +86,7 @@ function onClear() {
 // of the script.
 function onRead(diy, oos) {
 	readPortraits( diy, oos, PortraitTypeList, true );
-	diy.version = 1;
+	diy.version = CARD_VERSION;
 }
 
 function onWrite( diy, oos ) {

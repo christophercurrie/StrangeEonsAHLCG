@@ -23,7 +23,7 @@ function create( diy ) {
 	createPortraits( diy, PortraitTypeList );
 	setDefaultEncounter();
 
-	diy.version = 8;
+	diy.version = CARD_VERSION;
 }
 
 function setDefaults() {
@@ -102,7 +102,7 @@ function onRead(diy, oos) {
 
 	updateEncounter();
 
-	diy.version = 8;
+	diy.version = CARD_VERSION;
 }
 
 function onWrite( diy, oos ) {

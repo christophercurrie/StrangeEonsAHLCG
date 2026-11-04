@@ -62,3 +62,28 @@ val generateFixtures by tasks.registering(Exec::class) {
         if (failed.isNotEmpty()) throw GradleException("${failed.size} fixture(s) failed")
     }
 }
+
+// Card handlers share CARD_VERSION.
+val verifyCardVersions by tasks.registering {
+    group = "verification"
+    description = "Checks that card handlers use CARD_VERSION."
+    val diy = file("ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy")
+    inputs.dir(diy)
+    doLast {
+        val util = diy.resolve("AHLCG-utilLibrary.js").readText()
+        val current = Regex("""const CARD_VERSION = (\d+);""").find(util)?.groupValues?.get(1)?.toInt()
+            ?: throw GradleException("CARD_VERSION not found")
+        val problems = mutableListOf<String>()
+        diy.listFiles { f -> f.name.endsWith(".js") && !f.name.startsWith("AHLCG") }!!.sorted().forEach { f ->
+            val text = f.readText()
+            if (Regex("""diy\.version\s*=\s*\d""").containsMatchIn(text)) problems += "${f.name} sets a literal version"
+            if (Regex("""diy\.version\s*=\s*CARD_VERSION""").findAll(text).count() != 2) {
+                problems += "${f.name} does not set CARD_VERSION in create and onRead"
+            }
+        }
+        if (problems.isNotEmpty()) throw GradleException(problems.joinToString("\n"))
+        logger.lifecycle("CARD_VERSION $current")
+    }
+}
+
+tasks.named("check") { dependsOn(verifyCardVersions) }
