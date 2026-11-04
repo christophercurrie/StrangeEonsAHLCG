@@ -8,10 +8,16 @@
 // Module: returns ActAgenda.
 define([
     'faces/FaceUtils',
+    'faces/PlayerCard',
     'se/common',
     'se/imageutils',
+    'se/java',
     'se/markup',
-], function (FaceUtils, common, imageutils, Layout) {
+], function (FaceUtils, PlayerCard, common, imageutils, Java, Layout) {
+    const Color = Java.type('java.awt.Color');
+    const Font = Java.type('java.awt.Font');
+    const Light = new Color(0.996, 0.945, 0.859);
+    const Dark = new Color(0, 0, 0);
     // the width of a landscape card's trim, in template pixels
     const Width = 525;
 
@@ -167,6 +173,88 @@ define([
         }
     }
 
+    // Doom, light on dark: a dash, a per investigator value, or a value with
+    // an asterisk.
+    function paintDoom(face, g, diy, sheet, suffix, reversed) {
+        var o = FaceUtils.plugin();
+        var settings = diy.settings;
+        var doom = String(settings.get('Doom' + suffix, ''));
+        var perInvestigator =
+            String(settings.get('PerInvestigator' + suffix)) === '1';
+        var asterisk = String(settings.get('Asterisk' + suffix)) === '1';
+        function region(name) {
+            var r = settings.getRegion(face.key(settings, name + '-region'));
+            return reversed ? reverse(r) : r;
+        }
+        function title(text, r, font, size) {
+            sheet.drawOutlinedTitle(
+                g,
+                text,
+                r,
+                font,
+                size,
+                0.8,
+                Light,
+                Dark,
+                0,
+                true
+            );
+        }
+        var r = region('Doom');
+
+        if (doom === '-') {
+            PlayerCard.paintDash(face, g, diy, sheet, r, 0, 6);
+        } else if (perInvestigator) {
+            let value = region('DoomPerInv');
+            let icon = region('DoomPerInvIcon');
+            if (reversed) {
+                value.x = r.x + (r.x + r.width - (value.x + value.width));
+                icon.x = r.x + (r.x + r.width - (icon.x + icon.width));
+            }
+            let size = 14.0;
+            let iconSize = 6.5;
+            if (doom.length > 1) {
+                value.x -= 1;
+                icon.x += 1;
+                size = 11.0;
+                iconSize = 6.0;
+            }
+            if (doom === 'Star') {
+                value.x += 1;
+                value.y += 2;
+                icon.x -= 3;
+                title('*', value, o.chaosFont, 12.0);
+            } else title(doom, value, o.enemyFont, size);
+            title('p', icon, o.symbolFont, iconSize);
+        } else if (asterisk) {
+            let size = 14.0;
+            let dx = 7;
+            let dy = 7;
+            if (doom === 'Star') dx = 4;
+            else if (doom.length > 1) {
+                r.x -= 1;
+                size = 13.0;
+            }
+            r.x -= 4;
+            if (doom === 'Star') {
+                r.y += 2;
+                title('*', r, o.chaosFont, 12.0);
+            } else title(doom, r, o.enemyFont, size);
+            let font = new Font(o.bodyFamily, Font.ITALIC, 12.0);
+            r.x += dx;
+            r.y += dy;
+            r.x +=
+                doom === 'Star' ? 6 : g.getFontMetrics(font).stringWidth(doom);
+            title('*', r, font, 12.0);
+        } else if (doom === 'Star') {
+            r.y += 2;
+            title('*', r, o.chaosFont, 12.0);
+        } else {
+            if (reversed) r.x -= 1;
+            title(doom, r, o.enemyFont, 14.0);
+        }
+    }
+
     // the act and agenda index styles, <suf> and <sufb>
     function initSuffixTags(diy, box) {
         FaceUtils.plugin().SuffixTagList.forEach(function (item) {
@@ -185,6 +273,7 @@ define([
         paintName: paintName,
         paintIndexFront: paintIndexFront,
         paintIndexBack: paintIndexBack,
+        paintDoom: paintDoom,
         paintBackName: paintBackName,
         initSuffixTags: initSuffixTags,
     };

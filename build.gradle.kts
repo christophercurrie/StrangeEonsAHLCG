@@ -175,6 +175,10 @@ val flexibleSuffixMasks = mapOf(
     "act" to java.awt.Rectangle(570, 718, 45, 22),
     "act/reversed" to java.awt.Rectangle(988, 718, 45, 22),
     "act/reversedReturnTo" to java.awt.Rectangle(988, 718, 45, 22),
+    "agenda" to java.awt.Rectangle(982, 718, 45, 22),
+    "agenda/reversed" to java.awt.Rectangle(564, 718, 45, 22),
+    "agenda/reversedReturnTo" to java.awt.Rectangle(564, 718, 45, 22),
+    "agenda/reversedPerInvestigator" to java.awt.Rectangle(564, 718, 45, 22),
 )
 
 // A back has its own master when filled, or when its face draws backs
