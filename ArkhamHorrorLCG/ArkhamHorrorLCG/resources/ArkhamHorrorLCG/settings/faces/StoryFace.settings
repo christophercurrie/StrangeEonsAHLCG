@@ -13,6 +13,13 @@ AHLCG-StoryFace-TrackerName-alignment = center, middle
 AHLCG-StoryFace-TrackerName-region = 46,397,280,20
 AHLCG-StoryFace-TrackerName-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE:{Eons.namedObjects.AHLCGObject.titleFontSize*0.836}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.titleFontWidth*1.02}; FOREGROUND: #000000
 AHLCG-StoryFace-template = ArkhamHorrorLCG/templates/AHLCG-Story.jp2
+# templates of the story classes; Default uses the plain one
+AHLCG-StoryFace-Neutral-template = ArkhamHorrorLCG/templates/AHLCG-Story-Neutral.jp2
+AHLCG-StoryFace-Guardian-template = ArkhamHorrorLCG/templates/AHLCG-Story-Guardian.jp2
+AHLCG-StoryFace-Seeker-template = ArkhamHorrorLCG/templates/AHLCG-Story-Seeker.jp2
+AHLCG-StoryFace-Rogue-template = ArkhamHorrorLCG/templates/AHLCG-Story-Rogue.jp2
+AHLCG-StoryFace-Mystic-template = ArkhamHorrorLCG/templates/AHLCG-Story-Mystic.jp2
+AHLCG-StoryFace-Survivor-template = ArkhamHorrorLCG/templates/AHLCG-Story-Survivor.jp2
 AHLCG-StoryFace-CollectionIcon-region = 268,486,13,13
 AHLCG-StoryFace-CollectionNumber-region = 275,490,29,10
 AHLCG-StoryFace-CollectionNumber-style = FAMILY: {Eons.namedObjects.AHLCGObject.collectionFamily}; SIZE: {Eons.namedObjects.AHLCGObject.collectionSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.collectionWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.collectionWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.collectionTracking}; FOREGROUND: #000000
