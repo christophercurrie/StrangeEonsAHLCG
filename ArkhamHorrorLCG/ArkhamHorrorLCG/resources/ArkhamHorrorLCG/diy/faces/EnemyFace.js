@@ -1,5 +1,7 @@
 // Enemy card: art, title and subtitle, fight, health and evade, damage and
-// horror, and game text that follows the outline of the art window.
+// horror, and game text that follows the outline of the art window; or a
+// weakness enemy (see CardFace), whose subtype line takes the subtitle's
+// place.
 //
 // Module: returns EnemyFace.
 define([
@@ -20,6 +22,18 @@ define([
     EnemyFace.prototype.labelKey = 'AHLCG-Label-Enemy';
     EnemyFace.prototype.hasSubtitle = true;
     EnemyFace.prototype.fillReturnEncounterIcon = true;
+    EnemyFace.prototype.subtypes = [
+        'None',
+        'BasicWeakness',
+        'Weakness',
+        'InvestigatorWeakness',
+        'StoryWeakness',
+    ];
+    EnemyFace.prototype.weaknessOverlays = {
+        BasicWeakness: 'BasicWeaknessEnemy',
+        InvestigatorWeakness: 'PersonalWeaknessEnemy',
+        StoryWeakness: 'BasicWeaknessEnemy',
+    };
 
     EnemyFace.prototype.defaultValues = function (diy, faceIndex) {
         return {
@@ -62,6 +76,10 @@ define([
         var toggle = 'wmax 35, hmin 25, hmax 25';
 
         panel.place(
+            strings.string('AHLCG-Type'),
+            'align right',
+            this.createSubtypeList(bindings, faceIndex),
+            'wrap, pushx, growx, span 2',
             strings.string('AHLCG-Attack'),
             'align right',
             list('Attack', o.comboEnemyStat),
@@ -98,6 +116,8 @@ define([
     };
 
     EnemyFace.prototype.templateKey = function (diy, faceIndex) {
+        if (this.isWeakness())
+            return CardFace.prototype.templateKey.call(this, diy, faceIndex);
         var subtitle = String(
             diy.settings.get('Subtitle' + this.suffix(faceIndex), '')
         );
@@ -124,7 +144,8 @@ define([
 
         this.paintLabel(g, diy, boxes.label);
         this.paintName(g, diy, sheet, boxes.name);
-        if (subtitle.length > 0)
+        if (this.isWeakness()) this.paintWeakness(g, diy, sheet, boxes);
+        else if (subtitle.length > 0)
             this.paintSubtitle(g, diy, boxes.subtitle, subtitle);
 
         ['Attack', 'Evade'].forEach(function (stat) {
@@ -135,7 +156,16 @@ define([
         this.paintTokens(g, diy, sheet, 'Damage', suffix);
         this.paintTokens(g, diy, sheet, 'Horror', suffix);
 
-        this.paintCollector(g, diy, sheet, boxes, collector, true);
+        var encounter = this.showsEncounter();
+        this.paintCollector(
+            g,
+            diy,
+            sheet,
+            boxes,
+            collector,
+            encounter,
+            encounter
+        );
     };
 
     // a dash for '-'; a per investigator value is narrower, followed by the

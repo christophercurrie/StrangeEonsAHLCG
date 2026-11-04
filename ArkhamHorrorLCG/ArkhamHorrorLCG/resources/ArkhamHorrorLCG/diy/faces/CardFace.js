@@ -3,8 +3,16 @@
 // (Traits, Keywords, Rules, Flavor, Victory, keyed as legacy cards save them)
 // and the collector line with the artist.
 //
-// Subclasses set labelKey, and may set hasSubtitle, hasSubtype, hasUnique, parts and
-// override templateKey, bodyShape and paintContent.
+// A face with weaknesses lists them in subtypes, 'None' first:
+// $Subtype<suffix> picks one. A weakness uses the face's
+// <template>-Weakness-template, its <template>-Weakness-<name> settings
+// where they differ, a subtype line, and the overlay in weaknessOverlays for
+// its subtype; a basic weakness also has the basic weakness icon. Only a
+// card that isn't a weakness, or a story weakness, shows the encounter set.
+//
+// Subclasses set labelKey, and may set hasSubtitle, hasUnique, subtypes,
+// weaknessOverlays and parts, and override templateKey, bodyShape and
+// paintContent.
 //
 // Module: returns CardFace.
 define([
@@ -31,6 +39,8 @@ define([
 
     function CardFace() {
         Face.call(this);
+        // the side's subtype, while it is painted
+        this.subtype = 'None';
     }
 
     CardFace.prototype = Object.create(Face.prototype);
@@ -44,8 +54,10 @@ define([
     CardFace.prototype.labelKey = null;
     CardFace.prototype.hasUnique = true;
     CardFace.prototype.hasSubtitle = false;
-    // whether the face draws a subtype line
-    CardFace.prototype.hasSubtype = false;
+    // the weaknesses offered, 'None' first, or null
+    CardFace.prototype.subtypes = null;
+    // overlay image name by weakness subtype
+    CardFace.prototype.weaknessOverlays = {};
     CardFace.prototype.parts = [
         'Traits',
         'Keywords',
@@ -61,6 +73,7 @@ define([
 
     CardFace.prototype.setDefaults = function (diy, faceIndex, keep) {
         var values = this.defaultValues(diy, faceIndex);
+        if (this.subtypes != null) values.Subtype = 'None';
         if (this.hasUnique) values.Unique = '0';
         if (this.hasSubtitle) values.Subtitle = '';
         values.Artist = '';
@@ -80,9 +93,52 @@ define([
         this.setSettings(diy, keep, spacing);
     };
 
+    CardFace.prototype.clearType = function (diy, faceIndex) {
+        if (this.subtypes != null)
+            diy.settings.reset('Subtype' + this.suffix(faceIndex));
+    };
+
     // General panels after the title: [ { panel, title } ]
     CardFace.prototype.createPanels = function (diy, bindings, faceIndex) {
         return [];
+    };
+
+    // the weakness list, for a General panel
+    CardFace.prototype.createSubtypeList = function (bindings, faceIndex) {
+        var items = this.subtypes.map(function (id) {
+            return new arkham.diy.ListItem(
+                id,
+                strings.string('AHLCG-WknType-' + id)
+            );
+        });
+        var list = new ui.comboBox(items, null);
+        this.bind(bindings, faceIndex, 'Subtype', list);
+        return list;
+    };
+
+    CardFace.prototype.readSubtype = function (diy, faceIndex) {
+        var subtype = 'None';
+        if (this.subtypes != null) {
+            subtype = String(
+                diy.settings.get('Subtype' + this.suffix(faceIndex), 'None')
+            );
+            if (this.subtypes.indexOf(subtype) < 0) subtype = 'None';
+        }
+        this.subtype = subtype;
+        return subtype;
+    };
+
+    CardFace.prototype.isWeakness = function () {
+        return this.subtype !== 'None';
+    };
+
+    // a weakness's own settings, where it has them
+    CardFace.prototype.key = function (settings, name) {
+        if (this.isWeakness()) {
+            let key = this.template + '-Weakness-' + name;
+            if (settings.get(key) != null) return key;
+        }
+        return Face.prototype.key.call(this, settings, name);
     };
 
     CardFace.prototype.createInterface = function (diy, bindings, faceIndex) {
@@ -180,7 +236,8 @@ define([
             encounterNumber: this.createBox(diy, sheet, 'EncounterNumber'),
             copyright: this.createBox(diy, sheet, 'Copyright'),
         };
-        if (this.hasSubtype)
+        this.readSubtype(diy, faceIndex);
+        if (this.subtypes != null)
             boxes.subtype = this.createBox(diy, sheet, 'Subtype');
         FaceUtils.initBodyTags(diy, boxes.name);
         var shape = this.bodyShape(
@@ -194,11 +251,12 @@ define([
 
     // the template image setting for the side, or null for the face's own
     CardFace.prototype.templateKey = function (diy, faceIndex) {
-        return null;
+        return this.isWeakness() ? this.template + '-Weakness-template' : null;
     };
 
     CardFace.prototype.paint = function (g, diy, sheet, boxes, collector, art) {
         var faceIndex = sheet.getSheetIndex();
+        this.readSubtype(diy, faceIndex);
 
         // the art shows through the template
         this.clearSheet(g, sheet);
@@ -292,6 +350,42 @@ define([
         box.markupText = FaceUtils.partsMarkup(settings, this.parts, suffix);
         markup.updateNameTags(box, diy);
         box.draw(g, region);
+    };
+
+    // A weakness's overlay, icon and subtype line; the overlay and icon are
+    // part of a replacement template.
+    CardFace.prototype.paintWeakness = function (g, diy, sheet, boxes) {
+        if (!this.isWeakness()) return;
+        var overlay = this.weaknessOverlays[this.subtype];
+        if (!this.replaced && overlay != null)
+            this.paintImage(
+                g,
+                diy,
+                sheet,
+                'overlays/AHLCG-' + overlay + '.png',
+                overlay
+            );
+        if (!this.replaced && this.subtype === 'BasicWeakness')
+            this.paintImage(
+                g,
+                diy,
+                sheet,
+                'icons/AHLCG-BasicWeakness.png',
+                'BasicWeaknessIcon'
+            );
+        this.paintSubtype(
+            g,
+            diy,
+            boxes.subtype,
+            this.subtype === 'BasicWeakness'
+                ? 'AHLCG-Label-BasicWeakness'
+                : 'AHLCG-Label-Weakness'
+        );
+    };
+
+    // whether the side shows its encounter icon and number
+    CardFace.prototype.showsEncounter = function () {
+        return this.subtype === 'None' || this.subtype === 'StoryWeakness';
     };
 
     // a plug-in image, such as overlays/AHLCG-BasicWeakness.png, in the
