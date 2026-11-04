@@ -139,6 +139,99 @@ function readPortraits( diy, oos, typeList, readEncounter ) {
 			}
 		}
 	}
+
+	recoverHighResCard( diy );
+}
+
+// Cards saved by AHLCG 9.95b2 through 9.95, whose high resolution templates
+// multiplied portrait scales and <size> tags by 4 and raised the card version.
+// Per handler: the version before those releases (from); for each version
+// they saved, the portrait (p) and text (t, in fields f) factors to undo, and
+// a note (n) when the history is uncertain or a setting was lost. Where a
+// current card can have the same version, it always has the marker setting.
+// Cards these releases left at an unaffected version are not listed here.
+const HighResCards = {
+	Act: {from: 17, v: {'18': {p: {'Portrait': 4}}, '19': {p: {'Portrait': 4}, t: 4, f: ['AccentedStoryABack', 'AccentedStoryBBack', 'AccentedStoryCBack', 'ActStory', 'HeaderABack', 'HeaderBBack', 'HeaderCBack', 'Rules', 'RulesABack', 'RulesBBack', 'RulesCBack']}}},
+	ActAssetStory: {from: 17, v: {'18': {p: {'BackPortrait': 4, 'Portrait': 4}}, '19': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['ActStory', 'FlavorBack', 'KeywordsBack', 'Rules', 'RulesBack', 'TraitsBack', 'VictoryBack']}}},
+	ActEnemy: {from: 17, v: {'18': {p: {'BackPortrait': 4, 'Portrait': 4}}, '19': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['ActStory', 'FlavorBack', 'KeywordsBack', 'Rules', 'RulesBack', 'TraitsBack', 'VictoryBack']}}},
+	ActLocation: {from: 18, v: {'19': {p: {'BackPortrait': 4, 'Portrait': 4}}, '20': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['ActStory', 'FlavorBack', 'KeywordsBack', 'Rules', 'RulesBack', 'TraitsBack', 'VictoryBack']}}},
+	ActPortrait: {from: 17, v: {'18': {p: {'BackPortrait': 4, 'Portrait': 4}}, '19': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['ActStory', 'Rules', 'RulesBack', 'StoryBack']}}},
+	Agenda: {from: 17, v: {'18': {p: {'Portrait': 4}}, '19': {p: {'Encounter': 4, 'Portrait': 4}, t: 4, f: ['AccentedStoryABack', 'AccentedStoryBBack', 'AccentedStoryCBack', 'AgendaStory', 'HeaderABack', 'HeaderBBack', 'HeaderCBack', 'Rules', 'RulesABack', 'RulesBBack', 'RulesCBack'], n: 'Encounter reduced 4x, but may not have been enlarged'}}},
+	AgendaAssetStory: {from: 18, v: {'19': {p: {'BackPortrait': 4, 'Portrait': 4}}, '20': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['AgendaStory', 'FlavorBack', 'KeywordsBack', 'Rules', 'RulesBack', 'TraitsBack', 'VictoryBack']}}},
+	AgendaEnemy: {from: 17, v: {'18': {p: {'BackPortrait': 4, 'Portrait': 4}}, '19': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['AgendaStory', 'FlavorBack', 'KeywordsBack', 'Rules', 'RulesBack', 'TraitsBack', 'VictoryBack']}}},
+	AgendaFrontPortrait: {from: 15, v: {'16': {p: {'Portrait': 4}}, '17': {p: {'Portrait': 4}, t: 4, f: ['AccentedStoryABack', 'AccentedStoryBBack', 'AccentedStoryCBack', 'AgendaStory', 'HeaderABack', 'HeaderBBack', 'HeaderCBack', 'Rules', 'RulesABack', 'RulesBBack', 'RulesCBack']}}},
+	AgendaLocation: {from: 18, v: {'19': {p: {'BackPortrait': 4, 'Portrait': 4}}, '20': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['AgendaStory', 'FlavorBack', 'KeywordsBack', 'Rules', 'RulesBack', 'TraitsBack', 'VictoryBack']}}},
+	AgendaPortrait: {from: 17, v: {'18': {p: {'BackPortrait': 4, 'Portrait': 4}}, '19': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['AgendaStory', 'Rules', 'RulesBack', 'StoryBack']}}},
+	AgendaTreachery: {from: 17, v: {'18': {p: {'BackPortrait': 4, 'Portrait': 4}}, '19': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['AgendaStory', 'FlavorBack', 'KeywordsBack', 'Rules', 'RulesBack', 'TraitsBack', 'VictoryBack']}}},
+	Asset: {from: 18, v: {'19': {p: {'Portrait': 4}}, '20': {p: {'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}},
+	AssetAsset: {from: 18, v: {'19': {p: {'BackPortrait': 4, 'Portrait': 4}}, '20': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory', 'VictoryBack']}}},
+	AssetStory: {from: 18, v: {'19': {p: {'Encounter': 4, 'Portrait': 4}, n: 'Encounter reduced 4x, but may not have been enlarged; Portrait reduced 4x, but may have been enlarged 16x or 64x or 256x'}, '20': {p: {'Encounter': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}, '21': {p: {'Encounter': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory'], n: 'Encounter reduced 4x, but may have been enlarged 16x; Portrait reduced 4x, but may have been enlarged 16x or 64x or 256x; text sizes reduced 4x, but may have been enlarged 16x; 9.95 reset Level'}}},
+	AssetStoryAsset: {from: 18, v: {'19': {p: {'BackPortrait': 4, 'Portrait': 4}}, '20': {p: {'BackPortrait': 4, 'Encounter': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory', 'VictoryBack'], n: '9.95 reset Level, LevelBack'}}},
+	AssetStoryEnemy: {from: 18, v: {'19': {p: {'BackPortrait': 4, 'Portrait': 4}}, '20': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory', 'VictoryBack']}}},
+	AssetStoryPortrait: {from: 18, v: {'19': {p: {'BackPortrait': 4, 'Portrait': 4}}, '20': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}},
+	Chaos: {from: 18, v: {'19': {t: 4, f: ['Cultist', 'CultistBack', 'ElderThing', 'ElderThingBack', 'Skull', 'SkullBack', 'Tablet', 'TabletBack']}}},
+	Concealed: {from: 17, marker: 'Copyright', since: 18, v: {'18': {p: {'Portrait': 4}}}},
+	Enemy: {from: 16, v: {'18': {p: {'Portrait': 4}}, '19': {p: {'Encounter': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory'], n: 'Portrait reduced 4x, but may have been enlarged 16x'}, '20': {p: {'Encounter': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory'], n: 'Portrait reduced 4x, but may have been enlarged 16x'}}},
+	EnemyEnemy: {from: 16, v: {'17': {t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory', 'VictoryBack']}}},
+	EnemyLocation: {from: 18, v: {'19': {p: {'BackPortrait': 4, 'Portrait': 4}}, '20': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory', 'VictoryBack']}}},
+	EnemyPortrait: {from: 16, v: {'17': {p: {'BackPortrait': 4, 'Portrait': 4}}, '18': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}},
+	Event: {from: 19, v: {'20': {p: {'Portrait': 4}}, '21': {p: {'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}},
+	Investigator: {from: 15, v: {'16': {p: {'Portrait': 4}, n: 'TransparentPortrait left as is, but may have been enlarged 4x'}, '17': {p: {'Portrait': 4, 'TransparentPortrait': 4}, t: 4, f: ['Flavor', 'InvStoryBack', 'Keywords', 'Rules', 'Text1Back', 'Text2Back', 'Text3Back', 'Text4Back', 'Text5Back', 'Text6Back', 'Text7Back', 'Text8Back', 'Traits'], n: 'TransparentPortrait reduced 4x, but may not have been enlarged'}, '18': {p: {'Portrait': 4, 'TransparentPortrait': 4}, t: 4, f: ['Flavor', 'InvStoryBack', 'Keywords', 'Rules', 'Text1Back', 'Text2Back', 'Text3Back', 'Text4Back', 'Text5Back', 'Text6Back', 'Text7Back', 'Text8Back', 'Traits'], n: 'TransparentPortrait reduced 4x, but may not have been enlarged; text sizes reduced 4x, but may have been enlarged 16x or 64x or 256x; 9.95 reset KeywordsSpacing, RulesSpacing, TraitsSpacing'}}},
+	InvestigatorStory: {from: 16, v: {'17': {p: {'Portrait': 4}}, '18': {p: {'Portrait': 4}, t: 4, f: ['Flavor', 'InvStoryBack', 'Keywords', 'Rules', 'Text1Back', 'Text2Back', 'Text3Back', 'Text4Back', 'Text5Back', 'Text6Back', 'Text7Back', 'Text8Back', 'Traits']}}},
+	Key: {from: 2, v: {'3': {p: {'BackPortrait': 4, 'Portrait': 4}}, '4': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory', 'VictoryBack']}}},
+	Location: {from: 18, v: {'19': {p: {'BackPortrait': 4, 'Portrait': 4}}, '20': {p: {'BackPortrait': 4, 'Encounter': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory'], n: 'Encounter reduced 4x, but may not have been enlarged'}, '21': {p: {'BackPortrait': 4, 'Encounter': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory'], n: 'Encounter reduced 4x, but may not have been enlarged'}}},
+	LocationLocation: {from: 17, v: {'18': {p: {'BackPortrait': 4, 'Portrait': 4}}, '19': {p: {'BackPortrait': 4, 'Encounter': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory', 'VictoryBack'], n: 'Encounter reduced 4x, but may not have been enlarged'}}},
+	Scenario: {from: 17, v: {'18': {p: {'BackPortrait': 4, 'Portrait': 4}}, '19': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['Rules', 'RulesBack']}}},
+	Skill: {from: 17, v: {'19': {p: {'Portrait': 4}}, '20': {p: {'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}},
+	StoryAsset: {from: 18, marker: 'StoryClass', since: 19, v: {'19': {p: {'BackPortrait': 4}}, '20': {p: {'BackPortrait': 4}, t: 4, f: ['AccentedStoryA', 'AccentedStoryB', 'AccentedStoryC', 'FlavorBack', 'HeaderA', 'HeaderB', 'HeaderC', 'KeywordsBack', 'RulesA', 'RulesB', 'RulesBack', 'RulesC', 'TraitsA', 'TraitsBack', 'VictoryBack']}}},
+	StoryChaos: {from: 18, marker: 'StoryClass', since: 19, v: {'19': {t: 4, f: ['AccentedStoryA', 'AccentedStoryB', 'AccentedStoryC', 'HeaderA', 'HeaderB', 'HeaderC', 'RulesA', 'RulesB', 'RulesC', 'TraitsA']}}},
+	StoryEnemy: {from: 18, marker: 'StoryClass', since: 19, v: {'19': {p: {'BackPortrait': 4}}, '20': {p: {'BackPortrait': 4}, t: 4, f: ['AccentedStoryA', 'AccentedStoryB', 'AccentedStoryC', 'FlavorBack', 'HeaderA', 'HeaderB', 'HeaderC', 'KeywordsBack', 'RulesA', 'RulesB', 'RulesBack', 'RulesC', 'TraitsA', 'TraitsBack', 'VictoryBack']}}},
+	StoryLocation: {from: 18, marker: 'StoryClass', since: 19, v: {'19': {p: {'BackPortrait': 4}}, '20': {p: {'BackPortrait': 4}, t: 4, f: ['AccentedStoryA', 'AccentedStoryB', 'AccentedStoryC', 'FlavorBack', 'HeaderA', 'HeaderB', 'HeaderC', 'KeywordsBack', 'RulesA', 'RulesB', 'RulesBack', 'RulesC', 'TraitsA', 'TraitsBack', 'VictoryBack']}}},
+	StoryStory: {from: 18, marker: 'StoryClass', since: 20, v: {'20': {p: {'Encounter': 4}, t: 4, f: ['AccentedStoryA', 'AccentedStoryABack', 'AccentedStoryB', 'AccentedStoryBBack', 'AccentedStoryC', 'AccentedStoryCBack', 'HeaderA', 'HeaderABack', 'HeaderB', 'HeaderBBack', 'HeaderC', 'HeaderCBack', 'RulesA', 'RulesABack', 'RulesB', 'RulesBBack', 'RulesC', 'RulesCBack', 'Traits', 'TraitsA', 'TraitsABack', 'TraitsBack']}}},
+	StoryTreachery: {from: 18, marker: 'StoryClass', since: 19, v: {'19': {p: {'BackPortrait': 4}}, '20': {p: {'BackPortrait': 4}, t: 4, f: ['AccentedStoryA', 'AccentedStoryB', 'AccentedStoryC', 'FlavorBack', 'HeaderA', 'HeaderB', 'HeaderC', 'KeywordsBack', 'RulesA', 'RulesB', 'RulesBack', 'RulesC', 'TraitsA', 'TraitsBack', 'VictoryBack']}}},
+	Treachery: {from: 16, v: {'17': {p: {'Portrait': 4}}, '18': {p: {'Encounter': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory'], n: 'Encounter reduced 4x, but may not have been enlarged'}}},
+	TreacheryLocation: {from: 16, v: {'17': {t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}},
+	TreacheryPortrait: {from: 15, v: {'16': {p: {'BackPortrait': 4, 'Portrait': 4}}, '17': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}},
+	TreacheryStory: {from: 17, v: {'18': {p: {'Portrait': 4}}, '19': {p: {'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}},
+	WeaknessEnemy: {from: 16, v: {'17': {p: {'Portrait': 4}}, '18': {p: {'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}},
+	WeaknessTreachery: {from: 16, v: {'17': {p: {'Portrait': 4}}, '18': {p: {'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}}
+};
+
+// Undoes the 9.95 high resolution changes on a card being read, then sets
+// the version back so the handler's own upgrades run. Call after the
+// portraits are read.
+function recoverHighResCard( diy ) {
+	const handler = String( diy.handlerScript ).replace( /^.*\/(\w+)\.js$/, '$1' );
+	const card = HighResCards[handler];
+	if ( card == null ) return;
+
+	const change = card.v[diy.version];
+	if ( change == null ) return;
+	if ( card.marker != null && diy.version >= card.since && diy.settings.getKeySet().contains( card.marker ) ) return;
+
+	for ( let name in change.p ) {
+		let index = getPortraitIndex( name );
+		if ( index != null && PortraitList[index] != null ) {
+			PortraitList[index].setScale( PortraitList[index].getScale() / change.p[name] );
+		}
+	}
+	if ( change.t != null ) {
+		for ( let i = 0; i < change.f.length; i++ ) {
+			let value = diy.settings.get( change.f[i] );
+			if ( value != null && value.length() > 0 ) {
+				diy.settings.set( change.f[i], divideSizeTags( value, change.t ) );
+			}
+		}
+	}
+	if ( change.n != null ) diy.settings.set( 'HighResNote', change.n );
+
+	diy.version = card.from;
+}
+
+function divideSizeTags( text, factor ) {
+	return String( text ).replace( /(<size\s+)(\d+(?:\.\d+)?)(\s*>)/gi, function ( match, prefix, size, suffix ) {
+		return prefix + parseFloat( ( parseFloat( size ) / factor ).toFixed( 4 ) ) + suffix;
+	} );
 }
 
 function writePortraits( oos, typeList ) {

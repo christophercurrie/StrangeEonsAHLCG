@@ -359,6 +359,8 @@ function onRead(diy, oos) {
 	if ( $Template == 'Chaos' || $Template == 'ChaosFull' || $TemplateBack == 'Chaos' || $TemplateBack == 'ChaosFull' ) PortraitList[3] = oos.readObject();
 	else createPortrait( diy, PortraitTypeList[3] );
 
+	recoverHighResCard( diy );
+
 	diy.setCornerRadius(8);
 	clearBleedMargin( diy );
 	diy.version = 17;
