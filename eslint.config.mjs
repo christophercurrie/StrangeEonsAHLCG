@@ -18,6 +18,7 @@ export default defineConfig([
     `!${diy}/Event.js`,
     `!${diy}/Skill.js`,
     `!${diy}/Chaos.js`,
+    `!${diy}/Customizable.js`,
     `!${diy}/Enemy.js`,
     `!${diy}/StoryEnemy.js`,
     `!${diy}/StoryStory.js`,
