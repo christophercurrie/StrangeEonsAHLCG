@@ -7,12 +7,16 @@
 // ReturnEncounterIcon-region.
 //
 // Module: returns CollectorInfo.
-/* global ca */
-define(['faces/FaceUtils', 'se/imageutils', 'se/strings'], function (
+define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
     FaceUtils,
     imageutils,
-    strings
+    strings,
+    Java
 ) {
+    const AlphaComposite = Java.type('java.awt.AlphaComposite');
+    const InversionFilter = Java.type(
+        'ca.cgjennings.graphics.filters.InversionFilter'
+    );
     const Sides = ['Front', 'Back'];
     const ENCOUNTER_CLIP_KEY = 'AHLCG-Face-Encounter-portrait-clip-region';
 
@@ -21,10 +25,7 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings'], function (
     }
 
     function inverted(image) {
-        return new ca.cgjennings.graphics.filters.InversionFilter().filter(
-            image,
-            null
-        );
+        return new InversionFilter().filter(image, null);
     }
 
     // the region, moved left to end at x if it would otherwise pass it
@@ -129,7 +130,7 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings'], function (
                 0,
                 null
             );
-            g.setComposite(java.awt.AlphaComposite.DstOut);
+            g.setComposite(AlphaComposite.DstOut);
             g.drawImage(ImageUtils.resize(icon, 28, 28), 4, 4, null);
         } finally {
             g.dispose();

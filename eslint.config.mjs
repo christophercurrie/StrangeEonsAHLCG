@@ -39,15 +39,19 @@ export default defineConfig([
       sourceType: "script",
       globals: {
         define: "readonly",
-        java: "readonly",
-        javax: "readonly",
-        arkham: "readonly",
       }
     },
     rules: {
       eqeqeq: ["error", "always", { null: "ignore" }],
       "no-restricted-syntax": ["error", "ClassDeclaration", "ClassExpression"],
       "no-unused-vars": ["error", { args: "none", caughtErrors: "none" }]
+    },
+  },
+  // scripts run as they are, not as modules, still use the Rhino globals
+  {
+    files: [amd, `${renderTest}/**/*.js`],
+    languageOptions: {
+      globals: { java: "readonly", javax: "readonly", arkham: "readonly" },
     },
   },
 ]);

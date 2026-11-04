@@ -8,7 +8,10 @@ define([
     'se/markup',
     'se/strings',
     'se/ui',
-], function (Face, FaceUtils, markup, strings, ui) {
+    'se/java',
+], function (Face, FaceUtils, markup, strings, ui, Java) {
+    const BasicStroke = Java.type('java.awt.BasicStroke');
+    const Color = Java.type('java.awt.Color');
     function ScenarioRulesFace() {
         Face.call(this);
     }
@@ -145,8 +148,8 @@ define([
         var right = region.x + (region.width + width) / 2;
         var y = region.y + height;
 
-        g.setPaint(java.awt.Color.BLACK);
-        g.setStroke(new java.awt.BasicStroke(1.0));
+        g.setPaint(Color.BLACK);
+        g.setStroke(new BasicStroke(1.0));
         g.drawLine(left, y, right, y);
         g.drawLine(left, y + 4, right, y + 4);
     };

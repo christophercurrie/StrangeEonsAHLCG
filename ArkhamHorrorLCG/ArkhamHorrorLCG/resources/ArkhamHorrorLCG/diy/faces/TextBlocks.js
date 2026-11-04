@@ -12,14 +12,24 @@
 // themselves in what is left; see faces/TokenBlocks.js.
 //
 // Module: returns TextBlocks.
-/* global Packages */
 define([
     'faces/FaceUtils',
     'faces/TokenBlocks',
     'se/markup',
     'se/strings',
     'se/ui',
-], function (FaceUtils, TokenBlocks, markup, strings, ui) {
+    'se/java',
+], function (FaceUtils, TokenBlocks, markup, strings, ui, Java) {
+    const BasicStroke = Java.type('java.awt.BasicStroke');
+    const Color = Java.type('java.awt.Color');
+    const Component = Java.type('java.awt.Component');
+    const EventQueue = Java.type('java.awt.EventQueue');
+    const JCheckBox = Java.type('javax.swing.JCheckBox');
+    const JLabel = Java.type('javax.swing.JLabel');
+    const JPanel = Java.type('javax.swing.JPanel');
+    const ListItem = Java.type('ca.cgjennings.apps.arkham.diy.ListItem');
+    const MigLayout = Java.type('net.miginfocom.swing.MigLayout');
+    const Rectangle = Java.type('java.awt.Rectangle');
     const Styles = ['traits', 'header', 'story', 'rules', 'victory', 'rule'];
     const StyleLabels = {
         traits: 'AHLCG-Traits',
@@ -117,21 +127,16 @@ define([
         panel.setTitle(strings.string('AHLCG-Rules'));
         // a Swing panel, unlike Grid, can be emptied and refilled; the side
         // insets keep combo boxes, placed by their visible edge, in the panel
-        var rows = new javax.swing.JPanel(
-            new Packages.net.miginfocom.swing.MigLayout('insets 0 4 0 4')
-        );
+        var rows = new JPanel(new MigLayout('insets 0 4 0 4'));
         var bound = [];
 
         var items = face.blockStyles.map(function (style) {
-            return new arkham.diy.ListItem(
-                style,
-                strings.string(StyleLabels[style])
-            );
+            return new ListItem(style, strings.string(StyleLabels[style]));
         });
 
         function place(component, hint) {
-            if (!(component instanceof java.awt.Component))
-                component = new javax.swing.JLabel(String(component));
+            if (!(component instanceof Component))
+                component = new JLabel(String(component));
             rows['add(java.awt.Component,java.lang.Object)'](component, hint);
         }
 
@@ -151,12 +156,10 @@ define([
 
         // a check box per token; the tokens are written as they change
         function createTokenRow(n) {
-            var row = new javax.swing.JPanel(
-                new Packages.net.miginfocom.swing.MigLayout('insets 0')
-            );
+            var row = new JPanel(new MigLayout('insets 0'));
             var selected = readTokens(settings, n, suffix);
             TokenBlocks.Tokens.forEach(function (token) {
-                var box = new javax.swing.JCheckBox(
+                var box = new JCheckBox(
                     strings.string('AHLCG-' + token),
                     selected.indexOf(token) >= 0
                 );
@@ -259,14 +262,9 @@ define([
                 });
                 // show and focus the new block once laid out
                 var text = rows.getComponent(rows.getComponentCount() - 1);
-                java.awt.EventQueue.invokeLater(function () {
+                EventQueue.invokeLater(function () {
                     text.scrollRectToVisible(
-                        new java.awt.Rectangle(
-                            0,
-                            0,
-                            text.getWidth(),
-                            text.getHeight()
-                        )
+                        new Rectangle(0, 0, text.getWidth(), text.getHeight())
                     );
                     text.requestFocusInWindow();
                 });
@@ -608,8 +606,8 @@ define([
             if (block.style === 'rule') {
                 if (!nonEmpty[part]) return;
                 y += Math.ceil(ruleAbove * spacingScale);
-                g.setPaint(java.awt.Color.BLACK);
-                g.setStroke(new java.awt.BasicStroke(1.0));
+                g.setPaint(Color.BLACK);
+                g.setStroke(new BasicStroke(1.0));
                 g.drawLine(region.x, y, region.x + region.width, y);
                 y += Math.ceil(ruleBelow * spacingScale);
                 return;
@@ -652,7 +650,7 @@ define([
                 case 'traits':
                     b.box.draw(
                         g,
-                        new java.awt.Rectangle(
+                        new Rectangle(
                             region.x,
                             traitsY + (y - region.y),
                             region.width,
@@ -664,25 +662,20 @@ define([
                 case 'header':
                     b.box.draw(
                         g,
-                        new java.awt.Rectangle(
-                            region.x,
-                            y,
-                            region.width,
-                            height
-                        )
+                        new Rectangle(region.x, y, region.width, height)
                     );
                     y += height + Math.ceil((block.spacing + 4) * spacingScale);
                     break;
                 case 'story': {
-                    let r = new java.awt.Rectangle(
+                    let r = new Rectangle(
                         storyRegion.x,
                         y,
                         storyRegion.width,
                         height + 2
                     );
                     b.box.draw(g, r);
-                    g.setPaint(java.awt.Color.BLACK);
-                    g.setStroke(new java.awt.BasicStroke(1.0));
+                    g.setPaint(Color.BLACK);
+                    g.setStroke(new BasicStroke(1.0));
                     let top = r.y - storyLineTop * scale;
                     let bottom = r.y + r.height - storyLineBottom * scale;
                     g.drawLine(r.x - 15, top, r.x - 15, bottom);
@@ -702,12 +695,7 @@ define([
                 case 'rules':
                     b.box.draw(
                         g,
-                        new java.awt.Rectangle(
-                            region.x,
-                            y,
-                            region.width,
-                            height
-                        )
+                        new Rectangle(region.x, y, region.width, height)
                     );
                     y =
                         toInt(y + height + 2 * scale) +
@@ -717,12 +705,7 @@ define([
                     y += block.spacing;
                     b.box.draw(
                         g,
-                        new java.awt.Rectangle(
-                            region.x,
-                            y,
-                            region.width,
-                            height
-                        )
+                        new Rectangle(region.x, y, region.width, height)
                     );
                     y += height;
                     break;

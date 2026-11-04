@@ -9,7 +9,9 @@ define([
     'se/markup',
     'se/strings',
     'se/ui',
-], function (FaceUtils, common, markup, strings, ui) {
+    'se/java',
+], function (FaceUtils, common, markup, strings, ui, Java) {
+    const AlphaComposite = Java.type('java.awt.AlphaComposite');
     const Suffixes = ['', 'Back'];
 
     function Face() {
@@ -211,7 +213,7 @@ define([
         if (sheet.isPrototypeRenderingModeEnabled()) return;
 
         var composite = g.getComposite();
-        g.setComposite(java.awt.AlphaComposite.Clear);
+        g.setComposite(AlphaComposite.Clear);
         g.fillRect(0, 0, sheet.getTemplateWidth(), sheet.getTemplateHeight());
         g.setComposite(composite);
     };

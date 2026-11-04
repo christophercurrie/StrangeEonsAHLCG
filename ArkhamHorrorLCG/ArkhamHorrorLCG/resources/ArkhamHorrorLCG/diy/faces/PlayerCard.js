@@ -6,12 +6,14 @@
 // and for a dual or triple class card CardClass2<suffix>, CardClass3<suffix>.
 //
 // Module: returns PlayerCard.
-/* global ca */
-define(['faces/CardFace', 'faces/FaceUtils', 'se/imageutils'], function (
-    CardFace,
-    FaceUtils,
-    imageutils
-) {
+define([
+    'faces/CardFace',
+    'faces/FaceUtils',
+    'se/imageutils',
+    'se/java',
+], function (CardFace, FaceUtils, imageutils, Java) {
+    const Color = Java.type('java.awt.Color');
+    const TintFilter = Java.type('ca.cgjennings.graphics.filters.TintFilter');
     const Initials = {
         Guardian: 'G',
         ParallelGuardian: 'GP',
@@ -179,11 +181,7 @@ define(['faces/CardFace', 'faces/FaceUtils', 'se/imageutils'], function (
                 : 'ArkhamHorrorLCG/numbers/AHLCG-Cost--Inverted.png',
             true
         );
-        var filter = new ca.cgjennings.graphics.filters.TintFilter(
-            hsb[0],
-            hsb[1],
-            Math.abs(hsb[2])
-        );
+        var filter = new TintFilter(hsb[0], hsb[1], Math.abs(hsb[2]));
         sheet.paintImage(g, filter.filter(dash, null), r);
     }
 
@@ -253,17 +251,17 @@ define(['faces/CardFace', 'faces/FaceUtils', 'se/imageutils'], function (
         }
     }
 
-    const Light = new java.awt.Color(0.996, 0.945, 0.859);
+    const Light = new Color(0.996, 0.945, 0.859);
     const Stats = {
         Stamina: {
-            outline: new java.awt.Color(0.68, 0.12, 0.22),
+            outline: new Color(0.68, 0.12, 0.22),
             x: { '-': -1, X: -2, '': -1, '*': -2, 1: -1, 2: -2, 3: -2 },
             y: { '-': -5, '*': 14, X: -4, '': -1, 1: -3, 2: -3, 3: -3, 4: -3 },
             defaultX: -1,
             defaultY: -4,
         },
         Sanity: {
-            outline: new java.awt.Color(0.25, 0.33, 0.44),
+            outline: new Color(0.25, 0.33, 0.44),
             x: { '-': 0, X: -2, '': -1, '*': 0, 1: -1, 4: -1, 8: -1 },
             y: { '-': -7, X: -4, '': -1, '*': 12, 1: -5, 2: -5, 3: -5, 4: -5 },
             defaultX: 0,

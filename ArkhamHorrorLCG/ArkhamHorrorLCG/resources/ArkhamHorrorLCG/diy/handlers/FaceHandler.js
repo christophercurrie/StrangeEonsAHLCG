@@ -27,6 +27,7 @@ define([
     'se/strings',
     'se/ui',
     'ui/Bindings',
+    'se/java',
 ], function (
     CardVersion,
     Collector,
@@ -35,8 +36,12 @@ define([
     imageutils,
     strings,
     ui,
-    Bindings
+    Bindings,
+    Java
 ) {
+    const DefaultPortrait = Java.type(
+        'ca.cgjennings.apps.arkham.component.DefaultPortrait'
+    );
     const FACE_FRONT = 0;
     const FACE_BACK = 1;
     const GeneralHint = 'wrap, pushx, growx';
@@ -109,7 +114,7 @@ define([
     };
 
     FaceHandler.prototype.createArtPortrait = function (diy, key, faceIndex) {
-        var portrait = new arkham.component.DefaultPortrait(diy, key, true);
+        var portrait = new DefaultPortrait(diy, key, true);
         // the back's also updates the front, as the portrait panel needs
         portrait.facesToUpdate =
             faceIndex === FACE_FRONT ? [FACE_FRONT] : [FACE_FRONT, FACE_BACK];
@@ -147,11 +152,7 @@ define([
     };
 
     FaceHandler.prototype.createPortrait = function (diy, kind) {
-        var portrait = new arkham.component.DefaultPortrait(
-            diy,
-            'AHLCG-Face-' + kind,
-            true
-        );
+        var portrait = new DefaultPortrait(diy, 'AHLCG-Face-' + kind, true);
         portrait.facesToUpdate = [FACE_FRONT, FACE_BACK];
         portrait.backgroundFilled = false;
         portrait.installDefault();
@@ -564,7 +565,7 @@ define([
         var key = 'AHLCG-Face-' + kind;
         if (String(portrait.getBaseKey()) === key) return portrait;
 
-        var adopted = new arkham.component.DefaultPortrait(key, portrait);
+        var adopted = new DefaultPortrait(key, portrait);
         adopted.facesToUpdate = [FACE_FRONT, FACE_BACK];
         adopted.backgroundFilled = false;
         return adopted;
@@ -576,7 +577,7 @@ define([
         var key = String(created.getBaseKey());
         if (String(portrait.getBaseKey()) === key) return portrait;
 
-        var adopted = new arkham.component.DefaultPortrait(key, portrait);
+        var adopted = new DefaultPortrait(key, portrait);
         adopted.facesToUpdate = created.facesToUpdate;
         adopted.backgroundFilled = created.backgroundFilled;
         return adopted;

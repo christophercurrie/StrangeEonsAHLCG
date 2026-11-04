@@ -5,7 +5,8 @@
 // component's settings can rebuild themselves from a populate listener.
 //
 // Module: returns Bindings.
-define(['se/ui'], function (ui) {
+define(['se/ui', 'se/java'], function (ui, Java) {
+    const JScrollPane = Java.type('javax.swing.JScrollPane');
     function Bindings(editor, gameComponent) {
         ui.Bindings.call(this, editor, gameComponent);
         this.populateListeners = [];
@@ -17,7 +18,7 @@ define(['se/ui'], function (ui) {
     // Removes the bindings for control, a control passed to add.
     Bindings.prototype.remove = function (control) {
         // as add binds the view of a scroll pane
-        if (control instanceof javax.swing.JScrollPane)
+        if (control instanceof JScrollPane)
             control = control.getViewport().getView();
 
         [this.bindings, this.activeBindings].forEach(function (list) {

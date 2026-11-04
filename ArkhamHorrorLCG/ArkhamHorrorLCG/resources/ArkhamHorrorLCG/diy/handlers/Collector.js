@@ -10,7 +10,11 @@ define([
     'se/imageutils',
     'se/strings',
     'se/ui',
-], function (FaceUtils, common, imageutils, strings, ui) {
+    'se/java',
+], function (FaceUtils, common, imageutils, strings, ui, Java) {
+    const IIOException = Java.type('javax.imageio.IIOException');
+    const JTextField = Java.type('javax.swing.JTextField');
+    const ListItem = Java.type('ca.cgjennings.apps.arkham.diy.ListItem');
     const Kinds = {
         Collection: {
             combo: 'comboCollection',
@@ -43,7 +47,7 @@ define([
 
     function iconItem(item) {
         var ImageUtils = imageutils.ImageUtils;
-        return new arkham.diy.ListItem(
+        return new ListItem(
             item,
             strings.string('AHLCG-' + item),
             ImageUtils.createIcon(
@@ -82,7 +86,7 @@ define([
                     settings.get('AHLCG-User' + kindName + 'Icon' + n, '')
                 );
                 combo.push(
-                    new arkham.diy.ListItem(
+                    new ListItem(
                         userValue(name),
                         name,
                         imageutils.ImageUtils.createIcon(image, 24, 24)
@@ -91,8 +95,7 @@ define([
                 types.push(n);
             } catch (ex) {
                 // an icon that can't be read leaves the set out of the list
-                if (!(ex.javaException instanceof javax.imageio.IIOException))
-                    throw ex;
+                if (!(ex.javaException instanceof IIOException)) throw ex;
             }
         }
 
@@ -201,7 +204,7 @@ define([
 
     function numberField(columns) {
         var field = new ui.textField('', columns);
-        field.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        field.setHorizontalAlignment(JTextField.RIGHT);
         return field;
     }
 

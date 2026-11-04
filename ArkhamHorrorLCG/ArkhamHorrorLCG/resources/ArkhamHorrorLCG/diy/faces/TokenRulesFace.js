@@ -10,7 +10,11 @@ define([
     'se/markup',
     'se/strings',
     'se/ui',
-], function (FaceUtils, TextBlocks, TextBlocksFace, markup, strings, ui) {
+    'se/java',
+], function (FaceUtils, TextBlocks, TextBlocksFace, markup, strings, ui, Java) {
+    const BasicStroke = Java.type('java.awt.BasicStroke');
+    const Color = Java.type('java.awt.Color');
+    const ListItem = Java.type('ca.cgjennings.apps.arkham.diy.ListItem');
     const Difficulties = ['None', 'Front', 'Back', 'Unique'];
     // space a difficulty line and a second title line take from the text
     const DifficultyHeight = 29;
@@ -52,7 +56,7 @@ define([
                 id === 'None'
                     ? strings.string('AHLCG-Difficulty-None')
                     : strings.gstring('AHLCG-Difficulty-' + id);
-            return new arkham.diy.ListItem(id, label);
+            return new ListItem(id, label);
         });
         var difficultyList = new ui.comboBox(items, null);
         this.bind(bindings, faceIndex, 'Difficulty', difficultyList);
@@ -196,8 +200,8 @@ define([
             region.height -= lineHeight * 0.8;
         });
 
-        g.setPaint(java.awt.Color.BLACK);
-        g.setStroke(new java.awt.BasicStroke(1.0));
+        g.setPaint(Color.BLACK);
+        g.setStroke(new BasicStroke(1.0));
         g.drawLine(
             region.x + (region.width - width) / 2,
             region.y + 2,

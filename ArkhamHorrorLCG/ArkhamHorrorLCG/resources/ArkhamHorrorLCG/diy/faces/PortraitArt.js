@@ -3,11 +3,14 @@
 // extended to it by mirroring the image across them.
 //
 // Module: returns PortraitArt.
-define(['faces/FaceUtils', 'se/common', 'se/imageutils'], function (
+define(['faces/FaceUtils', 'se/common', 'se/imageutils', 'se/java'], function (
     FaceUtils,
     common,
-    imageutils
+    imageutils,
+    Java
 ) {
+    const AffineTransform = Java.type('java.awt.geom.AffineTransform');
+    const Color = Java.type('java.awt.Color');
     // Source pixels to add on each side of an image whose scaled bounds
     // (x, y, w, h) stop short of the clip region by no more than the bleed
     // margin (within a pixel), or null if no edge qualifies.
@@ -116,10 +119,10 @@ define(['faces/FaceUtils', 'se/common', 'se/imageutils'], function (
         var oldClip = g.getClip();
         if (portrait.getClipping()) g.clip(clip);
         if (portrait.isBackgroundFilled()) {
-            g.setPaint(java.awt.Color.WHITE);
+            g.setPaint(Color.WHITE);
             g.fillRect(clip.x, clip.y, clip.width, clip.height);
         }
-        var transform = java.awt.geom.AffineTransform.getTranslateInstance(
+        var transform = AffineTransform.getTranslateInstance(
             x - pad.left * sx,
             y - pad.top * sy
         );

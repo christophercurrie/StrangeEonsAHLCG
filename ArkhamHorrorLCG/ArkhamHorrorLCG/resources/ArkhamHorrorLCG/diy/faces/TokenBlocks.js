@@ -10,7 +10,10 @@ define([
     'se/common',
     'se/imageutils',
     'se/markup',
-], function (FaceUtils, common, imageutils, markup) {
+    'se/java',
+], function (FaceUtils, common, imageutils, markup, Java) {
+    const BasicStroke = Java.type('java.awt.BasicStroke');
+    const Color = Java.type('java.awt.Color');
     const Tokens = ['Skull', 'Cultist', 'Tablet', 'ElderThing'];
     // by icons in the group
     const MinHeights = [48, 100, 152, 204];
@@ -252,8 +255,8 @@ define([
         if (count > 1) {
             let end = even ? iconMax - 6 : iconMax - 1;
             let right = iconRegion.x + iconRegion.width;
-            g.setPaint(java.awt.Color.BLACK);
-            g.setStroke(new java.awt.BasicStroke(0.5));
+            g.setPaint(Color.BLACK);
+            g.setStroke(new BasicStroke(0.5));
             g.drawLine(right + 2, iconMin + 1, right + 2, end);
             g.drawLine(right + 4, iconMin + 1, right + 4, end);
         }

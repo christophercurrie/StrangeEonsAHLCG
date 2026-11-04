@@ -14,11 +14,13 @@
 //             in place of overriding it
 //
 // Module: returns FaceChoiceHandler.
-define(['handlers/FaceHandler', 'se/strings', 'se/ui'], function (
+define(['handlers/FaceHandler', 'se/strings', 'se/ui', 'se/java'], function (
     FaceHandler,
     strings,
-    ui
+    ui,
+    Java
 ) {
+    const ListItem = Java.type('ca.cgjennings.apps.arkham.diy.ListItem');
     function FaceChoiceHandler(config) {
         this.choices = config.choices;
         this.faceSettings = config.settings;
@@ -115,10 +117,7 @@ define(['handlers/FaceHandler', 'se/strings', 'se/ui'], function (
             offered++;
 
             let items = list.map(function (choice) {
-                return new arkham.diy.ListItem(
-                    choice.id,
-                    strings.string(choice.label)
-                );
+                return new ListItem(choice.id, strings.string(choice.label));
             });
             let combo = new ui.comboBox(items, null);
             combo.setSelectedIndex(

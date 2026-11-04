@@ -24,6 +24,7 @@ define([
     'se/markup',
     'se/strings',
     'se/ui',
+    'se/java',
 ], function (
     CollectorInfo,
     Face,
@@ -32,10 +33,13 @@ define([
     imageutils,
     markup,
     strings,
-    ui
+    ui,
+    Java
 ) {
-    const White = java.awt.Color.WHITE;
-    const Black = java.awt.Color.BLACK;
+    const Color = Java.type('java.awt.Color');
+    const ListItem = Java.type('ca.cgjennings.apps.arkham.diy.ListItem');
+    const White = Color.WHITE;
+    const Black = Color.BLACK;
 
     function CardFace() {
         Face.call(this);
@@ -106,10 +110,7 @@ define([
     // the weakness list, for a General panel
     CardFace.prototype.createSubtypeList = function (bindings, faceIndex) {
         var items = this.subtypes.map(function (id) {
-            return new arkham.diy.ListItem(
-                id,
-                strings.string('AHLCG-WknType-' + id)
-            );
+            return new ListItem(id, strings.string('AHLCG-WknType-' + id));
         });
         var list = new ui.comboBox(items, null);
         this.bind(bindings, faceIndex, 'Subtype', list);
