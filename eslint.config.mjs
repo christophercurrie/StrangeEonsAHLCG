@@ -20,6 +20,7 @@ export default defineConfig([
     `!${diy}/StoryStory.js`,
     `!${diy}/Treachery.js`,
     `!${diy}/TreacheryStory.js`,
+    `!${diy}/WeaknessEnemy.js`,
     `!${diy}/WeaknessTreachery.js`,
     `!${diy}/faces/**/*.js`,
     `!${diy}/handlers/**/*.js`,
