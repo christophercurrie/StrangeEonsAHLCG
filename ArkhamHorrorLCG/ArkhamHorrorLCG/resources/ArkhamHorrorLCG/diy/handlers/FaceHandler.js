@@ -11,6 +11,8 @@
 //   cardDefaults  settings a new card starts with, over the faces' own
 //   legacyPortraits, upgrade
 //                 for a legacy card type, in place of overriding them
+//   upgradeArt    function( diy, art ) run after an older save's portraits
+//                 are read; art[faceIndex] lists each face's art portraits
 //
 // Subclasses may override setCardDefaults( diy ) for extra card-level
 // defaults, upgrade( diy ) for version steps when reading older saves, before
@@ -702,6 +704,8 @@ define([
             diy.version < this.version ? this.legacyPortraits(diy) : null;
         if (legacy != null) this.readLegacyPortraits(diy, ois, legacy);
         else this.readPortraits(diy, ois);
+        if (diy.version < this.version && this.config.upgradeArt)
+            this.config.upgradeArt(diy, this.art);
 
         diy.setCornerRadius(8);
         diy.version = this.version;

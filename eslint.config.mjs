@@ -20,6 +20,7 @@ export default defineConfig([
     `!${diy}/Key.js`,
     `!${diy}/Investigator.js`,
     `!${diy}/InvestigatorStory.js`,
+    `!${diy}/Act.js`,
     `!${diy}/Location.js`,
     `!${diy}/LocationLocation.js`,
     `!${diy}/Chaos.js`,
