@@ -16,6 +16,7 @@ export default defineConfig([
     // legacy card types moved to faces
     `!${diy}/Asset.js`,
     `!${diy}/Event.js`,
+    `!${diy}/Skill.js`,
     `!${diy}/Chaos.js`,
     `!${diy}/Enemy.js`,
     `!${diy}/StoryEnemy.js`,
