@@ -22,6 +22,7 @@ export default defineConfig([
     `!${diy}/InvestigatorStory.js`,
     `!${diy}/Act.js`,
     `!${diy}/Agenda.js`,
+    `!${diy}/AgendaFrontPortrait.js`,
     `!${diy}/Location.js`,
     `!${diy}/LocationLocation.js`,
     `!${diy}/Chaos.js`,
