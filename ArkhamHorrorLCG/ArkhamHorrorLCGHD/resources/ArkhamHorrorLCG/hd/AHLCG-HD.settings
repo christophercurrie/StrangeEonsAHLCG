@@ -128,3 +128,5 @@ AHLCG-TokenRulesFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-StoryCh
 AHLCG-ScenarioRulesFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-Scenario.png
 AHLCG-PlayerBackFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-PlayerBack.png
 AHLCG-EncounterBackFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-EncounterBack.png
+AHLCG-EnemyFace-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-Enemy.png
+AHLCG-EnemyFace-Subtitled-template-hires = ArkhamHorrorLCG/hd/templates/AHLCG-EnemyST.png

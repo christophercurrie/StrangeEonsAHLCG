@@ -16,6 +16,7 @@ define([
     'se/ui',
     'faces/PlayerBackFace',
     'faces/EncounterBackFace',
+    'faces/EnemyFace',
     'faces/ScenarioRulesFace',
     'faces/StoryFace',
     'faces/TokenRulesFace',
@@ -26,6 +27,7 @@ define([
     ui,
     PlayerBackFace,
     EncounterBackFace,
+    EnemyFace,
     ScenarioRulesFace,
     StoryFace,
     TokenRulesFace
@@ -34,6 +36,7 @@ define([
     const FaceChoices = [
         'playerBack',
         'encounterBack',
+        'enemy',
         'scenarioRules',
         'story',
         'tokenRules',
@@ -41,6 +44,7 @@ define([
     const FaceConstructors = {
         playerBack: PlayerBackFace,
         encounterBack: EncounterBackFace,
+        enemy: EnemyFace,
         scenarioRules: ScenarioRulesFace,
         story: StoryFace,
         tokenRules: TokenRulesFace,

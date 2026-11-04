@@ -1,13 +1,18 @@
 // The collector line, drawn right to left: collection number and icon, then
-// encounter number; the copyright, in its own region; and the encounter icon,
-// in the face's own place.
+// encounter number; the copyright and artist, in their own regions; and the
+// encounter icon, in the face's own place.
 //
-// Face settings: CollectionNumber, EncounterNumber, Copyright (-region, boxes),
-// CollectionIcon-region, EncounterIcon-region and ReturnEncounterIcon-region.
+// Face settings: CollectionNumber, EncounterNumber, Copyright, Artist
+// (-region, boxes), CollectionIcon-region, EncounterIcon-region and
+// ReturnEncounterIcon-region.
 //
 // Module: returns CollectorInfo.
 /* global ca */
-define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
+define(['faces/FaceUtils', 'se/imageutils', 'se/strings'], function (
+    FaceUtils,
+    imageutils,
+    strings
+) {
     const Sides = ['Front', 'Back'];
     const ENCOUNTER_CLIP_KEY = 'AHLCG-Face-Encounter-portrait-clip-region';
 
@@ -110,9 +115,55 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
         box.drawAsSingleLine(g, region);
     }
 
+    // the icon cut out of the return-to disc
+    function returnToImage(icon) {
+        var ImageUtils = imageutils.ImageUtils;
+        var image = ImageUtils.create(36, 33, true);
+        var g = image.createGraphics();
+        try {
+            g.drawImage(
+                ImageUtils.get(
+                    'ArkhamHorrorLCG/overlays/AHLCG-ReturnToBase.png'
+                ),
+                0,
+                0,
+                null
+            );
+            g.setComposite(java.awt.AlphaComposite.DstOut);
+            g.drawImage(ImageUtils.resize(icon, 28, 28), 4, 4, null);
+        } finally {
+            g.dispose();
+        }
+        return image;
+    }
+
+    // the icon of the set a return-to set returns to
+    var ReturnedIcons = {
+        ExtracurricularActivities: 'ExtracurricularActivity',
+        TheRainforest: 'Rainforest',
+    };
+
     function paintEncounterIcon(g, diy, sheet, face, portrait) {
         var settings = diy.settings;
         var name = String(settings.get('Encounter', ''));
+        var custom = String(settings.get('EncounterType', '0')) !== '0';
+
+        if (name.substring(0, 6) === 'Return' && face.fillReturnEncounterIcon) {
+            let returned = name.substring(8);
+            let icon = custom
+                ? portrait.getImage()
+                : imageutils.ImageUtils.get(
+                      iconPath(ReturnedIcons[returned] || returned)
+                  );
+            sheet.paintImage(
+                g,
+                returnToImage(icon),
+                settings.getRegion(
+                    face.key(settings, 'ReturnEncounterIcon-region')
+                )
+            );
+            return;
+        }
 
         if (name.substring(0, 6) === 'Return') {
             sheet.paintImage(
@@ -128,7 +179,7 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
         var region = settings.getRegion(
             face.key(settings, 'EncounterIcon-region')
         );
-        if (String(settings.get('EncounterType', '0')) === '0') {
+        if (!custom) {
             sheet.paintImage(
                 g,
                 imageutils.ImageUtils.get(iconPath(name)),
@@ -139,6 +190,25 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
             settings.setRegion(ENCOUNTER_CLIP_KEY, region);
             portrait.paint(g, sheet.getRenderTarget());
         }
+    }
+
+    // the face's $Artist<suffix>, if any
+    function paintArtist(g, diy, sheet, face, box) {
+        var suffix = face.suffix(sheet.getSheetIndex());
+        var artist = String(diy.settings.get('Artist' + suffix, ''));
+        if (artist.length === 0) return;
+
+        var region = diy.settings.getRegion(
+            face.key(diy.settings, 'Artist-region')
+        );
+        region.y += parseInt(FaceUtils.plugin().collectionFontOffset);
+
+        setText(
+            box,
+            sheet,
+            strings.gstring('AHLCG-IllustratorShort') + ' ' + artist
+        );
+        box.drawAsSingleLine(g, region);
     }
 
     // collector: { collection, encounter, suffix }, the card's portraits and
@@ -186,5 +256,5 @@ define(['faces/FaceUtils', 'se/imageutils'], function (FaceUtils, imageutils) {
         }
     }
 
-    return { paint: paint };
+    return { paint: paint, paintArtist: paintArtist };
 });

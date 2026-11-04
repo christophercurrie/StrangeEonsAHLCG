@@ -35,11 +35,21 @@ define([
     Face.prototype.invertCollectionIcon = true;
     // the encounter total without space around the slash
     Face.prototype.compactEncounterTotal = false;
+    // a return-to set's icon is the set it returns to, cut out of a disc
+    Face.prototype.fillReturnEncounterIcon = false;
     // whether the editor offers an image to replace the template
     Face.prototype.usesTemplateReplacement = false;
+    // names of the art portraits the face draws (see portraitKey); a face
+    // with art also sets $Artist<suffix>
+    Face.prototype.portraits = [];
 
     Face.prototype.suffix = function (faceIndex) {
         return Suffixes[faceIndex];
+    };
+
+    // <template>-<name> on the front, <template>-Back<name> on the back
+    Face.prototype.portraitKey = function (faceIndex, name) {
+        return this.template + '-' + this.suffix(faceIndex) + name;
     };
 
     // with keep, only sets keys the component lacks
@@ -56,7 +66,17 @@ define([
 
     // binds control to the setting name + the face's suffix
     Face.prototype.bind = function (bindings, faceIndex, name, control) {
-        bindings.add(name + this.suffix(faceIndex), control, [faceIndex]);
+        this.bindKey(
+            bindings,
+            faceIndex,
+            name + this.suffix(faceIndex),
+            control
+        );
+    };
+
+    // binds control to the setting key as given
+    Face.prototype.bindKey = function (bindings, faceIndex, key, control) {
+        bindings.add(key, control, [faceIndex]);
         this.boundControls.push(control);
     };
 
@@ -96,8 +116,8 @@ define([
     };
 
     // paints the whole sheet, bleed margin included. collector: see
-    // faces/CollectorInfo.js
-    Face.prototype.paint = function (g, diy, sheet, boxes, collector) {};
+    // faces/CollectorInfo.js; art: the face's portraits by name
+    Face.prototype.paint = function (g, diy, sheet, boxes, collector, art) {};
 
     // <template>-<name> if set, else the shared AHLCG-Face-<name>
     Face.prototype.key = function (settings, name) {
@@ -185,28 +205,32 @@ define([
         }
     };
 
-    // Paints the template image over the whole sheet, cleared first since a
-    // sheet reuses its image and templates can be partly transparent; ink saver
-    // keeps the white background it provides. When
-    // rendering for export or printing, the image set by
-    // <template>-template-hires is used instead, if available; it is provided
-    // by a separate plug-in. Paints the replacement image instead if there is
-    // one and it can be read; returns whether it did.
-    Face.prototype.paintTemplate = function (g, sheet) {
-        if (!sheet.isPrototypeRenderingModeEnabled()) {
-            let composite = g.getComposite();
-            g.setComposite(java.awt.AlphaComposite.Clear);
-            g.fillRect(
-                0,
-                0,
-                sheet.getTemplateWidth(),
-                sheet.getTemplateHeight()
-            );
-            g.setComposite(composite);
-        }
+    // Clears the sheet, since a sheet reuses its image and templates can be
+    // partly transparent; ink saver keeps the white background it provides.
+    Face.prototype.clearSheet = function (g, sheet) {
+        if (sheet.isPrototypeRenderingModeEnabled()) return;
 
+        var composite = g.getComposite();
+        g.setComposite(java.awt.AlphaComposite.Clear);
+        g.fillRect(0, 0, sheet.getTemplateWidth(), sheet.getTemplateHeight());
+        g.setComposite(composite);
+    };
+
+    // Clears the sheet and paints the template over it; see
+    // paintTemplateImage.
+    Face.prototype.paintTemplate = function (g, sheet) {
+        this.clearSheet(g, sheet);
+        return this.paintTemplateImage(g, sheet);
+    };
+
+    // Paints the template image set by key (<template>-template by default)
+    // over the whole sheet. When rendering for export or printing, the image
+    // set by <key>-hires is used instead, if available; it is provided by a
+    // separate plug-in. Paints the replacement image instead if there is one
+    // and it can be read; returns whether it did.
+    Face.prototype.paintTemplateImage = function (g, sheet, key) {
         if (this.paintReplacement(g, sheet)) return true;
-        sheet.paintImage(g, this.template + '-template', 0, 0);
+        sheet.paintImage(g, key || this.template + '-template', 0, 0);
         return false;
     };
 

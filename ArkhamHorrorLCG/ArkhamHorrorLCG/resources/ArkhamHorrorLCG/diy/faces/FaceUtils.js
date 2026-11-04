@@ -133,15 +133,16 @@ define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
         });
     }
 
-    // Game text fields for parts (Traits, Header, Rules or another name),
-    // keyed <part><partSuffix> and bound by face, with spacing spinners between
-    // them.
     // A wrapped text area's preferred and minimum widths follow its current
     // width, so it would hold its tab open after widening. Call before layout.
     function textAreaWidth(area) {
         return 'w 0:' + area.getPreferredSize().width + ':';
     }
 
+    // Game text fields for parts (Traits, Keywords, Header, Rules, Victory or
+    // another name), keyed <part><partSuffix> and bound by face, with spacing
+    // spinners between them, keyed <part><partSuffix><face suffix>Spacing as
+    // legacy cards save them.
     function createTextPanel(
         face,
         bindings,
@@ -167,8 +168,16 @@ define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
                     tipCount = 4;
                     inlineTips = true;
                     break;
+                case 'Keywords':
+                    field = new ui.textArea('', 6, 30);
+                    tipCount = 1;
+                    break;
                 case 'Header':
                     field = new ui.textArea('', 2, 30);
+                    break;
+                case 'Victory':
+                    field = new ui.textArea('', 2, 30);
+                    tipCount = 1;
                     break;
                 case 'Rules':
                     field = new ui.textArea('', rulesRows, 30);
@@ -217,7 +226,12 @@ define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
 
             if (i + 1 < parts.length) {
                 let spacing = new ui.spinner(0, 50, 1, 1);
-                face.bind(bindings, faceIndex, key + 'Spacing', spacing);
+                face.bindKey(
+                    bindings,
+                    faceIndex,
+                    key + face.suffix(faceIndex) + 'Spacing',
+                    spacing
+                );
                 panel.place(
                     strings.string('AHLCG-Spacing'),
                     'align right',
@@ -230,8 +244,53 @@ define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
         return panel;
     }
 
+    // alignment, start and end markup of each part
+    const PartFormats = {
+        Traits: ['<center>', '<ts>', '</ts>'],
+        Keywords: ['<left>', '', ''],
+        Rules: ['<left>', '', ''],
+        Flavor: ['<center>', '<fs>', '</fs>'],
+        Victory: ['<center>', '<vic>', '</vic>'],
+    };
+
+    function spacer(points) {
+        return (
+            '<image res://ArkhamHorrorLCG/images/empty1x1.png 1pt ' +
+            points +
+            'pt>'
+        );
+    }
+
+    // Markup for the parts with text, keyed <part><suffix>, each on its own
+    // line and followed by its <part><suffix>Spacing in points, if it has
+    // one. An empty Traits part leaves a little space.
+    function partsMarkup(settings, parts, suffix) {
+        var text = '';
+        if (String(settings.get('Traits' + suffix, '')) === '')
+            text = spacer(6);
+
+        parts.forEach(function (part) {
+            let entry = String(settings.get(part + suffix, ''));
+            if (entry !== '') {
+                let format = PartFormats[part];
+                if (text !== '') text += '\n';
+                text += format[0] + format[1] + entry + format[2];
+            }
+
+            let spacing = settings.get(part + suffix + 'Spacing');
+            if (spacing == null) return;
+            spacing = Math.max(Number(spacing), 0);
+            if (entry !== '')
+                text +=
+                    '\n' + spacer((part === 'Traits' ? 0.5 : 1.5) + spacing);
+            else if (spacing > 0) text += spacer(spacing);
+        });
+        return text;
+    }
+
     return {
         createTextPanel: createTextPanel,
+        partsMarkup: partsMarkup,
         textAreaWidth: textAreaWidth,
         plugin: plugin,
         isUsed: isUsed,

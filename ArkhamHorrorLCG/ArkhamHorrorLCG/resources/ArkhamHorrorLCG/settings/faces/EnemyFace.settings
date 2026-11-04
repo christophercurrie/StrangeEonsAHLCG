@@ -1,0 +1,62 @@
+# Enemy face. The template shows the art through a window; a subtitled card
+# uses its own template.
+AHLCG-EnemyFace-template = ArkhamHorrorLCG/templates/AHLCG-Enemy.jp2
+AHLCG-EnemyFace-Subtitled-template = ArkhamHorrorLCG/templates/AHLCG-EnemyST.jp2
+
+AHLCG-EnemyFace-Portrait-portrait-template = ArkhamHorrorLCG/default-portraits/DefaultTexture.jp2
+AHLCG-EnemyFace-Portrait-portrait-pany = 0
+AHLCG-EnemyFace-Portrait-portrait-rotation = 0
+AHLCG-EnemyFace-Portrait-portrait-clip-region = -18,223,411,320
+AHLCG-EnemyFace-BackPortrait-portrait-template = ArkhamHorrorLCG/default-portraits/DefaultTexture.jp2
+AHLCG-EnemyFace-BackPortrait-portrait-pany = 0
+AHLCG-EnemyFace-BackPortrait-portrait-rotation = 0
+AHLCG-EnemyFace-BackPortrait-portrait-clip-region = -18,223,411,320
+
+AHLCG-EnemyFace-Name-region = 62,5,252,27
+# Bigger than standard, but don't want fractional sizes because Teutonic comes out weird
+AHLCG-EnemyFace-Name-style = FAMILY: {Eons.namedObjects.AHLCGObject.titleFamily}; SIZE: {Eons.namedObjects.AHLCGObject.titleFontSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.titleFontWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.titleFontWidth*1.05}; TRACKING: {Eons.namedObjects.AHLCGObject.titleFontTracking}; FOREGROUND: #000000
+AHLCG-EnemyFace-Subtitle-region = 40,32,293,20
+AHLCG-EnemyFace-Subtitle-style = FAMILY: {Eons.namedObjects.AHLCGObject.subtitleFamily}; SIZE: {Eons.namedObjects.AHLCGObject.subtitleSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.subtitleWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.subtitleWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.subtitleTracking}; FOREGROUND: #000000
+AHLCG-EnemyFace-Subtitle-alignment = center, middle
+
+AHLCG-EnemyFace-Label-region = 157,305,61,14
+AHLCG-EnemyFace-Label-style = FAMILY: {Eons.namedObjects.AHLCGObject.typeFamily}; SIZE: {Eons.namedObjects.AHLCGObject.largeLabelSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.largeLabelWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.largeLabelWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.largeLabelTracking}; FOREGROUND: #000000
+AHLCG-EnemyFace-Label-alignment = center, middle
+
+# the text follows the outline of the art window
+AHLCG-EnemyFace-Body-region = 20,104,338,165
+
+AHLCG-EnemyFace-Attack-region = 106,51,26,27
+AHLCG-EnemyFace-AttackPerInv-region = 102,51,24,27
+AHLCG-EnemyFace-AttackPerInvIcon-region = 121,56,14,14
+AHLCG-EnemyFace-Evade-region = 246,51,26,27
+AHLCG-EnemyFace-EvadePerInv-region = 242,51,24,27
+AHLCG-EnemyFace-EvadePerInvIcon-region = 261,56,14,14
+AHLCG-EnemyFace-Health-region = 168,45,40,35
+AHLCG-EnemyFace-HealthPerInv-region = 169,45,27,35
+AHLCG-EnemyFace-HealthPerInvIcon-region = 190,52,17,17
+
+AHLCG-EnemyFace-Damage1-region = 132,284,16,20
+AHLCG-EnemyFace-Damage2-region = 109,277,16,20
+AHLCG-EnemyFace-Damage3-region = 86,268,16,20
+AHLCG-EnemyFace-Damage4-region = 65,256,16,20
+AHLCG-EnemyFace-Damage5-region = 45,242,16,20
+AHLCG-EnemyFace-Horror1-region = 221,284,21,18
+AHLCG-EnemyFace-Horror2-region = 244,277,21,18
+AHLCG-EnemyFace-Horror3-region = 267,268,21,18
+AHLCG-EnemyFace-Horror4-region = 288,255,21,18
+AHLCG-EnemyFace-Horror5-region = 308,241,21,18
+
+AHLCG-EnemyFace-Artist-region = 14,512,121,10
+AHLCG-EnemyFace-Artist-style = FAMILY: {Eons.namedObjects.AHLCGObject.collectionFamily}; SIZE: {Eons.namedObjects.AHLCGObject.collectionSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.collectionWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.collectionWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.collectionTracking}; FOREGROUND: #FFFFFF
+AHLCG-EnemyFace-Artist-alignment = left, middle
+AHLCG-EnemyFace-Copyright-region = 137,512,101,10
+AHLCG-EnemyFace-Copyright-style = FAMILY: {Eons.namedObjects.AHLCGObject.collectionFamily}; SIZE: {Eons.namedObjects.AHLCGObject.collectionSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.collectionWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.collectionWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.collectionTracking}; FOREGROUND: #FFFFFF
+AHLCG-EnemyFace-Copyright-alignment = center, middle
+AHLCG-EnemyFace-CollectionIcon-region = 320,510,13,13
+AHLCG-EnemyFace-CollectionNumber-region = 318,512,37,10
+AHLCG-EnemyFace-CollectionNumber-style = FAMILY: {Eons.namedObjects.AHLCGObject.collectionFamily}; SIZE: {Eons.namedObjects.AHLCGObject.collectionSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.collectionWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.collectionWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.collectionTracking}; FOREGROUND: #FFFFFF
+AHLCG-EnemyFace-EncounterIcon-region = 175,274,26,26
+AHLCG-EnemyFace-ReturnEncounterIcon-region = 169,270,37,33
+AHLCG-EnemyFace-EncounterNumber-region = 247,512,55,10
+AHLCG-EnemyFace-EncounterNumber-style = FAMILY: {Eons.namedObjects.AHLCGObject.collectionFamily}; SIZE: {Eons.namedObjects.AHLCGObject.collectionSize}; WEIGHT: {Eons.namedObjects.AHLCGObject.collectionWeight}; WIDTH: {Eons.namedObjects.AHLCGObject.collectionWidth}; TRACKING: {Eons.namedObjects.AHLCGObject.collectionTracking}; FOREGROUND: #FFFFFF
