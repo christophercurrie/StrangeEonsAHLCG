@@ -62,6 +62,10 @@ define([
     CardFace.prototype.subtypes = null;
     // overlay image name by weakness subtype
     CardFace.prototype.weaknessOverlays = {};
+    // the subtitle's region, <name>-region
+    CardFace.prototype.subtitleRegion = 'Subtitle';
+    // the parts drawn in the body, if not all of them
+    CardFace.prototype.bodyParts = null;
     CardFace.prototype.parts = [
         'Traits',
         'Keywords',
@@ -319,7 +323,7 @@ define([
 
     CardFace.prototype.paintSubtitle = function (g, diy, box, subtitle) {
         var region = diy.settings.getRegion(
-            this.key(diy.settings, 'Subtitle-region')
+            this.key(diy.settings, this.subtitleRegion + '-region')
         );
         region.y += parseInt(FaceUtils.plugin().subtitleFontOffset);
         box.markupText = subtitle;
@@ -352,7 +356,11 @@ define([
                 o.bodyFontTightness
         );
         box.setTextFitting(markup.FIT_SCALE_TEXT);
-        box.markupText = FaceUtils.partsMarkup(settings, this.parts, suffix);
+        box.markupText = FaceUtils.partsMarkup(
+            settings,
+            this.bodyParts || this.parts,
+            suffix
+        );
         markup.updateNameTags(box, diy);
         box.draw(g, region);
     };

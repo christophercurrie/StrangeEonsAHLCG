@@ -1,7 +1,16 @@
 // Helpers shared by faces.
 //
 // Module: returns FaceUtils.
-define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
+define(['se/common', 'se/java', 'se/strings', 'se/ui'], function (
+    common,
+    Java,
+    strings,
+    ui
+) {
+    const Path = Java.type('java.awt.geom.Path2D$Double');
+    const GeometricShape = Java.type(
+        'ca.cgjennings.layout.PageShape$GeometricShape'
+    );
     const POINTS_PER_INCH = 72;
     const IconSizes = { s: '0.14in', m: '0.35in', l: '0.60in' };
 
@@ -288,7 +297,26 @@ define(['se/common', 'se/strings', 'se/ui'], function (common, strings, ui) {
         return text;
     }
 
+    // A page shape for text in region, the polygon through the points given
+    // as fractions of its width and height. The plug-in's own shapes keep the
+    // region of whichever card asks first.
+    function polygonShape(region, xs, ys) {
+        var path = new Path();
+        path.moveTo(
+            region.x + region.width * xs[0],
+            region.y + region.height * ys[0]
+        );
+        for (let i = 1; i < xs.length; i++)
+            path.lineTo(
+                region.x + region.width * xs[i],
+                region.y + region.height * ys[i]
+            );
+        path.closePath();
+        return new GeometricShape(path, region);
+    }
+
     return {
+        polygonShape: polygonShape,
         createTextPanel: createTextPanel,
         partsMarkup: partsMarkup,
         textAreaWidth: textAreaWidth,

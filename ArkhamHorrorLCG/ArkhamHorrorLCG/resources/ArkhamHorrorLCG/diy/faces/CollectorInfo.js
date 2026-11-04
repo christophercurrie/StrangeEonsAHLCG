@@ -282,8 +282,26 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
             paintCopyright(g, diy, sheet, face, box);
     }
 
+    // the collection icon alone, in its region
+    function paintCollectionIconOnly(g, diy, sheet, face, collector) {
+        paintCollectionIcon(
+            diy,
+            g,
+            sheet,
+            face,
+            collector.collection,
+            Number.MAX_VALUE
+        );
+    }
+
+    function paintEncounterIconOnly(g, diy, sheet, face, collector) {
+        paintEncounterIcon(g, diy, sheet, face, collector.encounter);
+    }
+
     return {
         paint: paint,
+        paintCollectionIcon: paintCollectionIconOnly,
+        paintEncounterIcon: paintEncounterIconOnly,
         paintArtist: paintArtist,
         paintCopyright: paintCopyrightOnly,
     };

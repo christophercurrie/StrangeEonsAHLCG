@@ -186,9 +186,9 @@ define([
     }
 
     // a dash image tinted by the face's Dash-tint
-    function paintDash(face, g, diy, sheet, r, offsetX) {
+    function paintDash(face, g, diy, sheet, r, offsetX, offsetY) {
         r.x = r.x + (r.width - 26) / 2 + offsetX;
-        r.y = r.y + (r.height - 10) / 2;
+        r.y = r.y + (r.height - 10) / 2 + (offsetY || 0);
         r.width = 26;
         r.height = 10;
         var hsb = diy.settings.getTint(face.key(diy.settings, 'Dash-tint'));
@@ -363,6 +363,7 @@ define([
         paintLevel: paintLevel,
         paintWeaknessLevel: paintWeaknessLevel,
         paintCost: paintCost,
+        paintDash: paintDash,
         paintSkillIcons: paintSkillIcons,
         paintSlots: paintSlots,
         paintStat: paintStat,
