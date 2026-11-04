@@ -35,6 +35,7 @@ define([
         'Flavor',
     ];
     LocationBackFace.prototype.bodyParts = null;
+    LocationBackFace.prototype.showsCollectionNumber = false;
     LocationBackFace.prototype.connectionChoices = 'comboConnectionsBack';
     LocationBackFace.prototype.noConnection = 'Copy front';
 

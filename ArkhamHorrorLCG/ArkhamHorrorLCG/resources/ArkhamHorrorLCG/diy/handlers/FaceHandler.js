@@ -117,6 +117,11 @@ define([
             : this.faces[faceIndex].usesEncounter;
     };
 
+    FaceHandler.prototype.showsCollectionNumber = function (faceIndex) {
+        var face = this.faces[faceIndex];
+        return face.usesCollection && face.showsCollectionNumber;
+    };
+
     FaceHandler.prototype.createArtPortrait = function (diy, key, faceIndex) {
         var portrait = new DefaultPortrait(diy, key, true);
         // the back's also updates the front, as the portrait panel needs
@@ -577,8 +582,8 @@ define([
                 encounter: this.findPortrait('Encounter'),
                 suffix:
                     bothShow &&
-                    this.usesKind(FACE_FRONT, 'Collection') &&
-                    this.usesKind(FACE_BACK, 'Collection'),
+                    this.showsCollectionNumber(FACE_FRONT) &&
+                    this.showsCollectionNumber(FACE_BACK),
             },
             art
         );

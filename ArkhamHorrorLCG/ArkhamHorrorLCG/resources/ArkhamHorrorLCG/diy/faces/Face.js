@@ -33,6 +33,9 @@ define([
     Face.prototype.usesCollection = false;
     Face.prototype.usesEncounter = false;
     Face.prototype.usesCopyright = false;
+    // whether a face that draws the collection shows its number; the number
+    // takes a side suffix when both faces show it
+    Face.prototype.showsCollectionNumber = true;
     // collection icons are dark on art that needs them light
     Face.prototype.invertCollectionIcon = true;
     // the encounter total without space around the slash
