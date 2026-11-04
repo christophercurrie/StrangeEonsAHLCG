@@ -27,6 +27,7 @@ define([
     'faces/LocationFace',
     'faces/LocationBackFace',
     'faces/KeyFace',
+    'faces/InvestigatorFace',
 ], function (
     exportHandler,
     FaceChoiceHandler,
@@ -44,7 +45,8 @@ define([
     CustomizableBackFace,
     LocationFace,
     LocationBackFace,
-    KeyFace
+    KeyFace,
+    InvestigatorFace
 ) {
     // face ids, in menu order, and their faces
     const Faces = {
@@ -63,6 +65,7 @@ define([
         location: LocationFace,
         locationBack: LocationBackFace,
         key: KeyFace,
+        investigator: InvestigatorFace,
     };
 
     const Choices = Object.keys(Faces).map(function (id) {

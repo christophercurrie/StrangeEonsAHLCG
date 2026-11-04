@@ -82,7 +82,7 @@ define([
     CardFace.prototype.setDefaults = function (diy, faceIndex, keep) {
         var values = this.defaultValues(diy, faceIndex);
         if (this.subtypes != null) values.Subtype = 'None';
-        if (this.hasUnique) values.Unique = '0';
+        if (this.hasUnique && !('Unique' in values)) values.Unique = '0';
         if (this.hasSubtitle) values.Subtitle = '';
         values.Artist = '';
         this.parts.forEach(function (part) {

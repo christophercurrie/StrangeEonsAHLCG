@@ -10,6 +10,7 @@ define(['faces/FaceUtils', 'se/common', 'se/imageutils', 'se/java'], function (
     Java
 ) {
     const AffineTransform = Java.type('java.awt.geom.AffineTransform');
+    const AlphaComposite = Java.type('java.awt.AlphaComposite');
     const Color = Java.type('java.awt.Color');
     // Source pixels to add on each side of an image whose scaled bounds
     // (x, y, w, h) stop short of the clip region by no more than the bleed
@@ -131,5 +132,45 @@ define(['faces/FaceUtils', 'se/common', 'se/imageutils', 'se/java'], function (
         g.setClip(oldClip);
     }
 
-    return { paint: paint };
+    // The art inside the clip region (the bleed region, with bleed) through
+    // the overlays/AHLCG-<mask>Mask.png stencil, as an investigator's faded
+    // art; the portrait's rotation is ignored.
+    function paintFaded(g, diy, sheet, portrait, mask) {
+        var ImageUtils = imageutils.ImageUtils;
+        var image = portrait.getImage();
+        var scale = portrait.getScale();
+        var base = portrait.getBaseKey();
+        var clip = diy.settings.getRegion(base + '-portrait-clip');
+        var area = clip;
+        if (FaceUtils.bleedPixels(sheet) > 0)
+            area = diy.settings.getRegion(base + '-portrait-bleed') || clip;
+
+        var cx = image.getWidth() / 2 - portrait.getPanX();
+        var cy = image.getHeight() / 2 - portrait.getPanY();
+        var cropped = ImageUtils.crop(
+            image,
+            cx - (clip.getCenterX() - area.x) / scale,
+            cy - (clip.getCenterY() - area.y) / scale,
+            area.width / scale,
+            area.height / scale
+        );
+
+        var stencil = ImageUtils.resize(
+            ImageUtils.get(
+                'ArkhamHorrorLCG/overlays/AHLCG-' + mask + 'Mask.png'
+            ),
+            cropped.width,
+            cropped.height
+        );
+        var faded = ImageUtils.create(cropped.width, cropped.height, true);
+        var fg = faded.createGraphics();
+        fg.drawImage(stencil, 0, 0, null);
+        fg.setComposite(AlphaComposite.SrcIn);
+        fg.drawImage(cropped, 0, 0, null);
+        fg.dispose();
+
+        sheet.paintImage(g, faded, area);
+    }
+
+    return { paint: paint, paintFaded: paintFaded };
 });

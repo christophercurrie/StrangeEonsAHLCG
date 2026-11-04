@@ -160,6 +160,7 @@ val flexibleSuffixMasks = mapOf(
     "skill" to java.awt.Rectangle(670, 1018, 50, 26),
     "location" to java.awt.Rectangle(670, 1018, 50, 26),
     "key" to java.awt.Rectangle(670, 1026, 50, 26),
+    "investigator" to java.awt.Rectangle(995, 715, 45, 22),
 )
 
 // A back has its own master when filled, or when its face draws backs
