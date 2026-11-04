@@ -18,6 +18,8 @@ export default defineConfig([
     `!${diy}/Event.js`,
     `!${diy}/Skill.js`,
     `!${diy}/Key.js`,
+    `!${diy}/Investigator.js`,
+    `!${diy}/InvestigatorStory.js`,
     `!${diy}/Location.js`,
     `!${diy}/LocationLocation.js`,
     `!${diy}/Chaos.js`,
