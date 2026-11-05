@@ -116,6 +116,8 @@ function reduce(gc, handler, factor) {
             var named = portrait(gc, name);
             if (named == null) throw new Error('no ' + name + ' portrait');
             named.setScale(named.getScale() / factor[name]);
+            named.setPanX(named.getPanX() / factor[name]);
+            named.setPanY(named.getPanY() / factor[name]);
         }
         return;
     }
@@ -124,6 +126,8 @@ function reduce(gc, handler, factor) {
     if (s.portrait) {
         var p = portrait(gc, s.portrait);
         p.setScale(p.getScale() / factor);
+        p.setPanX(p.getPanX() / factor);
+        p.setPanY(p.getPanY() / factor);
         return;
     }
     var settings = gc.getSettings();

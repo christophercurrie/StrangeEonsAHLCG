@@ -180,7 +180,7 @@ const HighResCards = {
 	EnemyLocation: {from: 18, v: {'19': {p: {'BackPortrait': 4, 'Portrait': 4}}, '20': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory', 'VictoryBack']}}},
 	EnemyPortrait: {from: 16, v: {'17': {p: {'BackPortrait': 4, 'Portrait': 4}}, '18': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}},
 	Event: {from: 19, v: {'20': {p: {'Portrait': 4}}, '21': {p: {'Portrait': 4}, t: 4, f: ['Flavor', 'Keywords', 'Rules', 'Traits', 'Victory']}}},
-	Investigator: {from: 15, v: {'16': {p: {'Portrait': 4}, n: 'TransparentPortrait left as is, but may have been enlarged 4x'}, '17': {p: {'Portrait': 4, 'TransparentPortrait': 4}, t: 4, f: ['Flavor', 'InvStoryBack', 'Keywords', 'Rules', 'Text1Back', 'Text2Back', 'Text3Back', 'Text4Back', 'Text5Back', 'Text6Back', 'Text7Back', 'Text8Back', 'Traits'], n: 'TransparentPortrait reduced 4x, but may not have been enlarged'}, '18': {p: {'Portrait': 4, 'TransparentPortrait': 4}, t: 4, f: ['Flavor', 'InvStoryBack', 'Keywords', 'Rules', 'Text1Back', 'Text2Back', 'Text3Back', 'Text4Back', 'Text5Back', 'Text6Back', 'Text7Back', 'Text8Back', 'Traits'], n: 'TransparentPortrait reduced 4x, but may not have been enlarged; text sizes reduced 4x, but may have been enlarged 16x or 64x or 256x; 9.95 reset KeywordsSpacing, RulesSpacing, TraitsSpacing'}}},
+	Investigator: {from: 15, v: {'16': {p: {'Portrait': 4}, n: 'TransparentPortrait left as is, but may have been enlarged 4x'}, '17': {p: {'Portrait': 4, 'TransparentPortrait': 4}, pan: {'TransparentPortrait': 1}, t: 4, f: ['Flavor', 'InvStoryBack', 'Keywords', 'Rules', 'Text1Back', 'Text2Back', 'Text3Back', 'Text4Back', 'Text5Back', 'Text6Back', 'Text7Back', 'Text8Back', 'Traits'], n: 'TransparentPortrait reduced 4x, but may not have been enlarged'}, '18': {p: {'Portrait': 4, 'TransparentPortrait': 4}, pan: {'TransparentPortrait': 1}, t: 4, f: ['Flavor', 'InvStoryBack', 'Keywords', 'Rules', 'Text1Back', 'Text2Back', 'Text3Back', 'Text4Back', 'Text5Back', 'Text6Back', 'Text7Back', 'Text8Back', 'Traits'], n: 'TransparentPortrait reduced 4x, but may not have been enlarged; text sizes reduced 4x, but may have been enlarged 16x or 64x or 256x; 9.95 reset KeywordsSpacing, RulesSpacing, TraitsSpacing'}}},
 	InvestigatorStory: {from: 16, v: {'17': {p: {'Portrait': 4}}, '18': {p: {'Portrait': 4}, t: 4, f: ['Flavor', 'InvStoryBack', 'Keywords', 'Rules', 'Text1Back', 'Text2Back', 'Text3Back', 'Text4Back', 'Text5Back', 'Text6Back', 'Text7Back', 'Text8Back', 'Traits']}}},
 	Key: {from: 2, v: {'3': {p: {'BackPortrait': 4, 'Portrait': 4}}, '4': {p: {'BackPortrait': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory', 'VictoryBack']}}},
 	Location: {from: 18, v: {'19': {p: {'BackPortrait': 4, 'Portrait': 4}}, '20': {p: {'BackPortrait': 4, 'Encounter': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory'], n: 'Encounter reduced 4x, but may not have been enlarged'}, '21': {p: {'BackPortrait': 4, 'Encounter': 4, 'Portrait': 4}, t: 4, f: ['Flavor', 'FlavorBack', 'Keywords', 'KeywordsBack', 'Rules', 'RulesBack', 'Traits', 'TraitsBack', 'Victory'], n: 'Encounter reduced 4x, but may not have been enlarged'}}},
@@ -216,7 +216,12 @@ function recoverHighResCard( diy ) {
 	for ( let name in change.p ) {
 		let index = getPortraitIndex( name );
 		if ( index != null && PortraitList[index] != null ) {
-			PortraitList[index].setScale( PortraitList[index].getScale() / change.p[name] );
+			let factor = change.p[name];
+			PortraitList[index].setScale( PortraitList[index].getScale() / factor );
+			// Pan offsets use sheet pixels too, so undo the same high-res factor.
+			let panFactor = change.pan != null && change.pan[name] != null ? change.pan[name] : factor;
+			PortraitList[index].setPanX( PortraitList[index].getPanX() / panFactor );
+			PortraitList[index].setPanY( PortraitList[index].getPanY() / panFactor );
 		}
 	}
 	if ( change.t != null ) {
