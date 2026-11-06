@@ -17,63 +17,20 @@ define([
     'handlers/CardVersion',
     'handlers/exportHandler',
     'handlers/FaceHandler',
+    'handlers/LegacyTokenText',
     'faces/TextBlocks',
     'faces/TokenRulesFace',
 ], function (
     CardVersion,
     exportHandler,
     FaceHandler,
+    LegacyTokenText,
     TextBlocks,
     TokenRulesFace
 ) {
-    const Tokens = ['Skull', 'Cultist', 'Tablet', 'ElderThing'];
     const Suffixes = ['', 'Back'];
     // the legacy template key, which saved cards keep
     const TemplateKey = 'AHLCG-Chaos-Default';
-
-    // Token blocks for a side of a legacy card, grouped as the legacy layout
-    // grouped them: a token without text is left out unless merged, and a
-    // group shows the text of its first token that has some.
-    function legacyBlocks(settings, suffix) {
-        var text = Tokens.map(function (token) {
-            return String(settings.get(token + suffix, ''));
-        });
-        var group = text.map(function (t, i) {
-            return t.length > 0 ? i : Tokens.length;
-        });
-        Tokens.forEach(function (token, i) {
-            var j = Tokens.indexOf(
-                String(settings.get('Merge' + token + suffix, 'None'))
-            );
-            if (j < 0) return;
-            group[i] = group[j] = Math.min(group[i], group[j]);
-        });
-
-        var blocks = [];
-        for (let g = 0; g < Tokens.length; g++) {
-            let members = Tokens.filter(function (token, i) {
-                return group[i] === g;
-            });
-            if (members.length === 0) continue;
-            blocks.push({
-                style: 'token',
-                text: text.filter(function (t, i) {
-                    return group[i] === g && t.length > 0;
-                })[0],
-                spacing: 0,
-                tokens: members,
-            });
-        }
-        return blocks;
-    }
-
-    function clearLegacyKeys(settings, suffix) {
-        Tokens.forEach(function (token) {
-            settings.reset(token + suffix);
-            settings.reset(token + suffix + 'Spacing');
-            settings.reset('Merge' + token + suffix);
-        });
-    }
 
     function ChaosHandler() {
         FaceHandler.call(
@@ -101,9 +58,9 @@ define([
         var settings = diy.settings;
 
         Suffixes.forEach(function (suffix) {
-            var blocks = legacyBlocks(settings, suffix);
+            var blocks = LegacyTokenText.toBlocks(settings, suffix);
             if (blocks.length > 0) TextBlocks.write(settings, suffix, blocks);
-            clearLegacyKeys(settings, suffix);
+            LegacyTokenText.clear(settings, suffix);
         });
 
         settings.set('Difficulty', 'Front');
