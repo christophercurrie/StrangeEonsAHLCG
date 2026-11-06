@@ -58,4 +58,5 @@
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/plugin/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/prefs/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/libraries/amd.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/ArkhamHorrorLCG.js
 !src/renderTest/**/*.js

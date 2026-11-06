@@ -5,6 +5,7 @@ import eslintConfigPrettier from "eslint-config-prettier/flat";
 const resources = "ArkhamHorrorLCG/ArkhamHorrorLCG/resources";
 const diy = `${resources}/ArkhamHorrorLCG/diy`;
 const amd = `${resources}/libraries/amd.js`;
+const plugin = `${resources}/ArkhamHorrorLCG/ArkhamHorrorLCG.js`;
 const renderTest = "src/renderTest";
 
 export default defineConfig([
@@ -69,11 +70,12 @@ export default defineConfig([
     `!${diy}/se/**/*.js`,
     `!${diy}/ui/**/*.js`,
     `!${amd}`,
+    `!${plugin}`,
     `!${renderTest}/**/*.js`,
   ]),
   {
     extends: ["js/recommended", eslintConfigPrettier],
-    files: [`${diy}/**/*.js`, amd, `${renderTest}/**/*.js`],
+    files: [`${diy}/**/*.js`, amd, plugin, `${renderTest}/**/*.js`],
     plugins: { js },
     languageOptions: {
       ecmaVersion: 2015,
