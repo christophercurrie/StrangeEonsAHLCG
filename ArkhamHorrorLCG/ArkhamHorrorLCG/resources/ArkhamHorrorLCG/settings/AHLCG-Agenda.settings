@@ -38,7 +38,7 @@ AHLCG-Agenda-EncounterNumber-region = 401,361,55,10
 AHLCG-Agenda-CollectionNumber-region = 472,361,37,10
 
 AHLCG-Agenda-ScenarioIndex-region = 314,14,134,21
-AHLCG-AgendaBack-BackScenarioIndex-region = 24,32,48,16
+AHLCG-AgendaBack-BackScenarioIndex-region = 28,32,41,16
 
 AHLCG-Agenda-Doom-region = 233,291,50,49
 AHLCG-Agenda-DoomPerInv-region = 228,291,50,49

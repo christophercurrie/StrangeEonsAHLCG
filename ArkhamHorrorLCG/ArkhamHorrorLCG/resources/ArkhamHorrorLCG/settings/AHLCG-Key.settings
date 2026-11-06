@@ -36,8 +36,8 @@ AHLCG-Key-Encounter-portrait-template = ArkhamHorrorLCG/images/empty1x1.png
 AHLCG-Key-Encounter-portrait-pany = 0
 AHLCG-Key-Encounter-portrait-clip-region = 321,11,30,30
 AHLCG-Key-DefaultEncounter-portrait-clip-region = 321,11,30,30
-AHLCG-Key-ReturnEncounter-portrait-clip-region = 328,9,32,32
-AHLCG-Key-DefaultReturnEncounter-portrait-clip-region = 328,9,32,32
+AHLCG-Key-ReturnEncounter-portrait-clip-region = 319,9,32,32
+AHLCG-Key-DefaultReturnEncounter-portrait-clip-region = 319,9,32,32
 
 AHLCG-Key-Artist-region = 14,516,121,10
 AHLCG-Key-Copyright-region = 124,516,86,10
