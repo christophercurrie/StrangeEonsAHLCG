@@ -47,9 +47,14 @@
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/TreacheryStory.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/WeaknessEnemy.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/WeaknessTreachery.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/core/**/*.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/data/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/faces/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/handlers/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/se/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/ui/**/*.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/legacy/**/*.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/plugin/**/*.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/prefs/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/libraries/amd.js
 !src/renderTest/**/*.js

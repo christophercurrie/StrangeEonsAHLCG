@@ -4,6 +4,14 @@ importClass( java.awt.geom.Point2D );
 importClass( java.awt.AlphaComposite );
 importClass( java.awt.Dimension );
 
+// the modules this library hands its work to
+useLibrary( 'amd' );
+const AHLCGModules = {};
+define( [ 'core/PluginInfo', 'core/SetCatalog' ], function ( PluginInfo, SetCatalog ) {
+	AHLCGModules.PluginInfo = PluginInfo;
+	AHLCGModules.SetCatalog = SetCatalog;
+} );
+
 const PortraitList = [];
 
 var IconSize = 24;
@@ -11,39 +19,24 @@ const FACE_FRONT = 0;
 const FACE_BACK = 1;
 
 function getName() {
-    return @AHLCG;
+	return AHLCGModules.PluginInfo.name();
 }
 
 function getDescription() {
-    return @AHLCG-Description;
+	return AHLCGModules.PluginInfo.description();
 }
 
 function getVersion() {
-    return 9.96;
+	return AHLCGModules.PluginInfo.version();
 }
 
 function getLocale() {
-	locale = String(Language.getGameLocale());
-
-	mainLocale = locale.split('_');
-	mainLocale = String(mainLocale[0]);
-
-	return mainLocale;
+	return AHLCGModules.PluginInfo.locale();
 }
 
 // This function is a convenient shortcut for getting this plug-in's images
 function image( resource, folder, ext ) {
-	if( ext == undefined ) {
-		ext = 'jp2';
-	}
-
-	var imageName = 'ArkhamHorrorLCG/';
-
-	if( folder != undefined && folder.length > 0 ) imageName += folder + '/';
-
-	imageName += resource + '.' + ext;
-
-	return ImageUtils.get( imageName );
+	return AHLCGModules.PluginInfo.image( resource, folder, ext );
 }
 
 // Bleed margins come from the <templateKey>-bleed-margin settings, so they are not
@@ -169,169 +162,23 @@ function setDefaultCollection() {
 }
 
 function updateUsedEncounterSets( o ) {
-	var settings = Settings.getUser();
-
-	o.comboEncounter = [];
-	o.encounterTypes = [];
-
-	o.comboEncounter = o.comboEncounter.concat( o.basicEncounterList );
-	for ( let index = 0; index < o.comboEncounter.length; index++ ) {
-		let item = o.comboEncounter[index];
-
-		o.comboEncounter[index] = ListItem(
-			item, @('AHLCG-' + item),
-			ImageUtils.createIcon(ImageUtils.get('ArkhamHorrorLCG/icons/AHLCG-' + item + '.png'), 24, 24)
-		);
-
-		// Custom (index == 0): -1
-		// All others: 0
-		if (index == 0) o.encounterTypes[index] = -1;
-		else o.encounterTypes[index] = 0;
-	}
-
-	// Standard: 0
-	for( let index = 0; index < o.standardEncounterList.length; index++ ) {
-		let entry = o.standardEncounterList[index];
-		let item = entry[0];
-
-		let used = loadUsedValue( 'Encounter', entry[3] );
-
-		if (used) {
-			o.comboEncounter[o.comboEncounter.length] = ListItem(
-				item, @('AHLCG-' + item),
-				ImageUtils.createIcon(ImageUtils.get('ArkhamHorrorLCG/icons/AHLCG-' + item + '.png'), 24, 24)
-			);
-
-			o.encounterTypes[o.encounterTypes.length] = 0;
-		}
-	}
-
-	var userCount = settings.getInt( 'AHLCG-UserEncounterCount', 0 );
-
-	// User: Settings index
-	for ( let index = 0; index < userCount; index++) {
-		let used = settings.getBoolean( 'AHLCG-UseUserEncounter' + (index+1) );
-
-		if (used) {
-			let name = settings.get( 'AHLCG-UserEncounterName' + (index+1), '' );
-			let item = createUserSettingValue( name );
-			let icon = settings.get( 'AHLCG-UserEncounterIcon' + (index+1), '' );
-
-			try {
-				let image = ImageUtils.createIcon( ImageUtils.read( icon ), 24, 24);
-
-				o.comboEncounter[o.comboEncounter.length] = ListItem(
-					item, name,
-					image
-				);
-
-				o.encounterTypes[o.encounterTypes.length] = index+1;
-			} catch (ex) {
-				if ( ex.javaException instanceof javax.imageio.IIOException ) {
-					// means image could not be read
-					// don't add it to list, we can safely ignore this
-				}
-				else {
-		 			Error.handleUncaught( ex );
-				}
-			}
-		}
-	}
+	return AHLCGModules.SetCatalog.updateUsedEncounterSets( o );
 }
 
 function updateUsedCollections( o ) {
-	var settings = Settings.getUser();
-
-	o.comboCollection = [];
-	o.collectionTypes = [];
-
-	o.comboCollection = o.comboCollection.concat( o.basicCollectionList );
-	for ( let index = 0; index < o.comboCollection.length; index++ ) {
-		let item = o.comboCollection[index];
-
-		o.comboCollection[index] = ListItem(
-			item, @('AHLCG-' + item),
-			ImageUtils.createIcon(ImageUtils.get('ArkhamHorrorLCG/icons/AHLCG-' + item + '.png'), 24, 24)
-		);
-
-		// Custom (index == 0): -1
-		// All others: 0
-		if (index == 0) o.collectionTypes[index] = -1;
-		else o.collectionTypes[index] = 0;
-	}
-
-	// Standard: 0
-	for( let index = 0; index < o.standardCollectionList.length; index++ ) {
-		let entry = o.standardCollectionList[index];
-		let item = entry[0];
-
-//		let used = loadUsedValue( 'Collection', index );
-		let used = loadUsedValue( 'Collection', entry[2] );
-
-		if (used) {
-			o.comboCollection[o.comboCollection.length] = ListItem(
-				item, @('AHLCG-' + item),
-				ImageUtils.createIcon(ImageUtils.get('ArkhamHorrorLCG/icons/AHLCG-' + item + '.png'), 24, 24)
-			);
-
-			o.collectionTypes[o.collectionTypes.length] = 0;
-		}
-	}
-
-	var userCount = settings.getInt( 'AHLCG-UserCollectionCount', 0 );
-
-	// User: Settings index
-	for ( let index = 0; index < userCount; index++) {
-		let used = settings.getBoolean( 'AHLCG-UseUserCollection' + (index+1) );
-
-		if (used) {
-			let name = settings.get( 'AHLCG-UserCollectionName' + (index+1), '' );
-			let item = createUserSettingValue( name );
-			let icon = settings.get( 'AHLCG-UserCollectionIcon' + (index+1), '' );
-
-			try {
-				let image = ImageUtils.createIcon( ImageUtils.read( icon ), 24, 24);
-
-				o.comboCollection[o.comboCollection.length] = ListItem(
-					item, name,
-					image
-				);
-
-				o.collectionTypes[o.collectionTypes.length] = index+1;
-			} catch (ex) {
-				if ( ex.javaException instanceof javax.imageio.IIOException ) {
-					// means image could not be read
-					// don't add it to list, we can safely ignore this
-				}
-				else {
-		 			Error.handleUncaught( ex );
-				}
-			}
-		}
-	}
+	return AHLCGModules.SetCatalog.updateUsedCollections( o );
 }
 
 function storeUsedValue( type, index, value ) {
-	var charToInsert = value ? '1' : '0';
-	var usedIndex = Math.floor( ( index / 40 ) + 1 );
-	var usedString = Settings.getUser().get( 'AHLCG-Use' + type + usedIndex, 0 );
-
-	usedString = usedString.substring( 0, index % 40 ) + charToInsert + usedString.substring( ( index % 40 ) + 1 );
-
-	Settings.getUser().set('AHLCG-Use' + type + usedIndex, usedString );
+	return AHLCGModules.SetCatalog.storeUsedValue( type, index, value );
 }
 
 function loadUsedValue( type, index ) {
-	var usedIndex = Math.floor( ( index / 40 ) + 1 );
-	var usedString = Settings.getUser().get( 'AHLCG-Use' + type + usedIndex, '' );
-
-	if ( usedString.length() < (index % 40) + 1 ) return true;	// set new ones to true
-	if ( usedString.charAt( index % 40 ) == 49 ) return true;	// == '1'?
-	return false;
+	return AHLCGModules.SetCatalog.loadUsedValue( type, index );
 }
 
 function createUserSettingValue( string ) {
-	return String(string).replace(/\W/g, '');
+	return AHLCGModules.SetCatalog.createUserSettingValue( string );
 }
 
 // changed Eons.namedObjects for Preferences encounter/collection update, 4/2/2017
@@ -1577,46 +1424,4 @@ function createReturnToImage( iconImage )
 	g.dispose();
 
 	return destImage;
-}
-
-function getPathPointArrays( className ) {
-	pointArray = [];
-
-	switch ( className )
-	{
-		case 'Guardian':
-		case 'ParallelGuardian':
-			pointArray[0] = new Array( 0.355, 0.337, 0.271, 0.267, 0.010, 0.010, 1.0, 1.0 );
-			pointArray[1] = new Array( 0.000, 0.566, 0.566, 0.600, 0.600, 1.000, 1.0, 0.0 );
-			break;
-		case 'Seeker':
-		case 'ParallelSeeker':
-			pointArray[0] = new Array( 0.355, 0.322, 0.296, 0.275, 0.010, 0.010, 1.0, 1.0 );
-			pointArray[1] = new Array( 0.000, 0.585, 0.578, 0.630, 0.622, 1.000, 1.0, 0.0 );
-			break;
-		case 'Rogue':
-		case 'ParallelRogue':
-			pointArray[0] = new Array( 0.355, 0.326, 0.272, 0.264, 0.000, 0.0, 1.0, 1.0 );
-//			pointArray[1] = new Array( 0.000, 0.511, 0.511, 0.593, 0.593, 1.0, 1.0, 0.0 );
-			pointArray[1] = new Array( 0.000, 0.511, 0.511, 0.583, 0.583, 1.0, 1.0, 0.0 );
-			break;
-		case 'Mystic':
-		case 'ParallelMystic':
-		case 'Survivor':
-		case 'ParallelSurvivor':
-			pointArray[0] = new Array( 0.355, 0.315, 0.276, 0.264, 0.010, 0.010, 1.0, 1.0 );
-//			pointArray[1] = new Array( 0.000, 0.544, 0.544, 0.631, 0.631, 1.000, 1.0, 0.0 );
-			pointArray[1] = new Array( 0.000, 0.544, 0.544, 0.611, 0.611, 1.000, 1.0, 0.0 );
-			break;
-		case 'ParallelNeutral':
-			pointArray[0] = new Array( 0.400, 0.357, 0.010, 0.010, 1.0, 1.0 );
-			pointArray[1] = new Array( 0.000, 0.468, 0.468, 1.000, 1.0, 0.0 );
-			break;
-		case 'Neutral':
-			pointArray[0] = new Array( 0.400, 0.357, 0.010, 0.010, 1.0, 1.0 );
-			pointArray[1] = new Array( 0.000, 0.468, 0.468, 1.000, 1.0, 0.0 );
-			break;
-	}
-
-	return pointArray;
 }
