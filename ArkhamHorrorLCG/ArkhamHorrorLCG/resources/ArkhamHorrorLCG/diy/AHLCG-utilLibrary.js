@@ -7,11 +7,12 @@ importClass( java.awt.Dimension );
 // the modules this library hands its work to
 useLibrary( 'amd' );
 const AHLCGModules = {};
-define( [ 'core/PluginInfo', 'faces/FaceUtils', 'legacy/Card', 'legacy/ImageFilters', 'legacy/Portraits', 'legacy/Sets', 'legacy/Templates', 'legacy/Text' ],
-	function ( PluginInfo, FaceUtils, Card, ImageFilters, Portraits, Sets, Templates, Text ) {
+define( [ 'core/PluginInfo', 'faces/FaceUtils', 'legacy/Card', 'legacy/CollectorLine', 'legacy/ImageFilters', 'legacy/Portraits', 'legacy/Sets', 'legacy/Templates', 'legacy/Text' ],
+	function ( PluginInfo, FaceUtils, Card, CollectorLine, ImageFilters, Portraits, Sets, Templates, Text ) {
 		AHLCGModules.PluginInfo = PluginInfo;
 		AHLCGModules.FaceUtils = FaceUtils;
 		AHLCGModules.Card = Card;
+		AHLCGModules.CollectorLine = CollectorLine;
 		AHLCGModules.ImageFilters = ImageFilters;
 		AHLCGModules.Portraits = Portraits;
 		AHLCGModules.Sets = Sets;
@@ -85,10 +86,6 @@ function updateEncounter( diy ) {
 
 function clearImage( g, sheet ) {
 	AHLCGModules.Templates.clear( g, sheet );
-}
-
-function getBleedPixels( sheet ) {
-	return AHLCGModules.FaceUtils.bleedPixels( sheet );
 }
 
 function paintPortrait( g, diy, sheet, name ) {
@@ -431,31 +428,6 @@ function createPortraitInvertButton( portraitName ) {
 	return AHLCGModules.Portraits.invertButton( legacyCard(), portraitName );
 }
 
-// orientation belongs to the act/agenda front; other faces never reverse
-function isReversed( faceIndex ) {
-	return faceIndex == FACE_FRONT && $Orientation == 'Reversed';
-}
-
-function reverseRegion( region ) {
-	region.x = 525 - ( region.x + region.width );
-
-	return region;
-}
-
-function shiftRegion( region, cardType ) {
-	// default shift right
-	var offset = 209;
-
-	if ( cardType == 'Agenda' ) {
-		// shift left
-		offset = -209;
-	}
-
-	region.x = region.x + offset;
-
-	return region;
-}
-
 function createGreyscaleImage( source ) {
 	return AHLCGModules.ImageFilters.greyscale( source );
 }
@@ -470,19 +442,4 @@ function createBlurredImage( source ) {
 
 function createAlphaInvertedImage( source ) {
 	return AHLCGModules.ImageFilters.alphaInverted( source );
-}
-
-function createReturnToImage( iconImage )
-{
-	var icon = ImageUtils.resize( iconImage, 28, 28 );
-	var base = ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-ReturnToBase.png');
-
-	var destImage = ImageUtils.create( 36, 33, true );
-	var g = destImage.createGraphics();
-	g.drawImage( base, 0, 0, null );
-	g.setComposite( java.awt.AlphaComposite.DstOut );
-	g.drawImage(icon, 4, 4, null);
-	g.dispose();
-
-	return destImage;
 }
