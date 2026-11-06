@@ -179,7 +179,7 @@ function onRead(diy, oos) {
 		diy.faceStyle = FaceStyle.TWO_FACES;	// change was in v15, but I forgot to add this
 	}
 
-	updateCollection();
+	updateCollection( diy );
 
 	diy.setCornerRadius(8);
 	diy.version = CARD_VERSION;

@@ -7,14 +7,28 @@ importClass( java.awt.Dimension );
 // the modules this library hands its work to
 useLibrary( 'amd' );
 const AHLCGModules = {};
-define( [ 'core/PluginInfo', 'core/SetCatalog' ], function ( PluginInfo, SetCatalog ) {
-	AHLCGModules.PluginInfo = PluginInfo;
-	AHLCGModules.SetCatalog = SetCatalog;
-} );
+define( [ 'core/PluginInfo', 'faces/FaceUtils', 'legacy/Card', 'legacy/ImageFilters', 'legacy/Portraits', 'legacy/Sets', 'legacy/Templates' ],
+	function ( PluginInfo, FaceUtils, Card, ImageFilters, Portraits, Sets, Templates ) {
+		AHLCGModules.PluginInfo = PluginInfo;
+		AHLCGModules.FaceUtils = FaceUtils;
+		AHLCGModules.Card = Card;
+		AHLCGModules.ImageFilters = ImageFilters;
+		AHLCGModules.Portraits = Portraits;
+		AHLCGModules.Sets = Sets;
+		AHLCGModules.Templates = Templates;
+	} );
 
 const PortraitList = [];
+var LegacyCard = null;
 
-var IconSize = 24;
+// the handler's card, from its CardTypes, BindingSuffixes and PortraitTypeList
+function legacyCard() {
+	if ( LegacyCard == null ) {
+		LegacyCard = new AHLCGModules.Card( useLibrary.__$.getSettingProvider(), CardTypes, BindingSuffixes, PortraitTypeList, PortraitList );
+	}
+	return LegacyCard;
+}
+
 const FACE_FRONT = 0;
 const FACE_BACK = 1;
 
@@ -39,99 +53,9 @@ function image( resource, folder, ext ) {
 	return AHLCGModules.PluginInfo.image( resource, folder, ext );
 }
 
-// Bleed margins come from the <templateKey>-bleed-margin settings, so they are not
-// saved with the component. Components saved by older versions have an explicit
-// margin of 0, which overrides the settings; there is no API to unset it.
-function clearBleedMargin( diy ) {
-	try {
-		var field = java.lang.Class.forName( 'ca.cgjennings.apps.arkham.diy.DIY', false, diy.getClass().getClassLoader() )
-			.getDeclaredField( 'hasExplicitBleedMargin' );
-		field.setAccessible( true );
-		field.setBoolean( diy, false );
-	}
-	catch ( ex ) {
-		Eons.log.warning( 'unable to clear bleed margin, using front face margin: ' + ex );
-		diy.bleedMargin = diy.settings.getDouble( diy.frontTemplateKey + '-bleed-margin', 0 );
-	}
-}
-
-// Older versions chose Player and Encounter backs by saving a template path over the
-// face's template setting; the back type alone now selects the template.
-function clearTemplateOverrides( diy ) {
-	for ( let it = diy.settings.getKeySet().iterator(); it.hasNext(); ) {
-		let key = String( it.next() );
-		if ( /^AHLCG-.*-Default-template$/.test( key ) ) diy.settings.reset( key );
-	}
-}
-
-// readEncounter is for older versions of WeaknessEnemy and WeaknessTreachery that do not include an encounter portrait
+// readEncounter is for older WeaknessEnemy and WeaknessTreachery saves, which have no encounter portrait
 function readPortraits( diy, oos, typeList, readEncounter ) {
-	clearBleedMargin( diy );
-	clearTemplateOverrides( diy );
-
-	for ( let index = 0; index < typeList.length; index++ ) {
-		// read portrait
-		var fullKey = typeList[index];
-		var partArray = fullKey.split('-');
-		var key = partArray[0];
-
-		if ( key == 'Encounter' && !readEncounter ) {
-			createPortrait( diy, fullKey );
-		}
-		else {
-			try {
-				PortraitList[index] = oos.readObject();
-			} catch ( ex ) {
-				createPortrait( diy, fullKey );
-			}
-
-			// update base keys for newer versions...
-			let key = PortraitList[index].getBaseKey();
-
-			let searchKey = '';
-			let replaceKey = '';
-
-			if ( key ) {
-				if ( key.indexOf( 'EncounterPortrait' ) >= 0 ) {
-					searchKey = 'EncounterPortrait';
-					replaceKey = 'Encounter';
-				}
-				else if ( key.indexOf( 'CollectionPortrait' ) >= 0 ) {
-					searchKey = 'CollectionPortrait';
-					replaceKey = 'Collection';
-				}
-				else if ( key.indexOf( '-Investigator-PortraitPortrait' ) >= 0 ) {
-					searchKey = '-Investigator-PortraitPortrait';
-					replaceKey = '-InvestigatorBack-Portrait';
-				}
-				else if ( key.indexOf( 'PortraitPortrait' ) >= 0 ) {
-					searchKey = 'PortraitPortrait';
-					replaceKey = 'Portrait';
-				}
-			}
-
-			if ( searchKey != '' ) {
-				let splitArr = key.split( searchKey );
-
-				let newKey = key.replace( searchKey, replaceKey );
-
-				diy.settings.set( splitArr[0] + replaceKey + '-portrait-template', $( splitArr[0] + searchKey + '-portrait-template' ) );
-				diy.settings.set( splitArr[0] + replaceKey + '-portrait-panx', $( splitArr[0] + searchKey + '-portrait-panx' ) );
-				diy.settings.set( splitArr[0] + replaceKey + '-portrait-pany', $( splitArr[0] + searchKey + '-portrait-pany' ) );
-				diy.settings.set( splitArr[0] + replaceKey + '-portrait-rotation', $( splitArr[0] + searchKey + '-portrait-rotation' ) );
-				diy.settings.set( splitArr[0] + replaceKey + '-portrait-scale', $( splitArr[0] + searchKey + '-portrait-scale' ) );
-
-				diy.settings.reset( splitArr[0] + searchKey + '-portrait-template' );
-				diy.settings.reset( splitArr[0] + searchKey + '-portrait-panx' );
-				diy.settings.reset( splitArr[0] + searchKey + '-portrait-pany' );
-				diy.settings.reset( splitArr[0] + searchKey + '-portrait-rotation' );
-				diy.settings.reset( splitArr[0] + searchKey + '-portrait-scale' );
-
-				let newPortrait = new DefaultPortrait( newKey, PortraitList[index] );
-				PortraitList[index] = newPortrait;
-			}
-		}
-	}
+	AHLCGModules.Portraits.read( legacyCard(), diy, oos, readEncounter );
 }
 
 // Version of every card handler; to add an upgrade, raise it and guard the
@@ -139,331 +63,35 @@ function readPortraits( diy, oos, typeList, readEncounter ) {
 const CARD_VERSION = 31;
 
 function writePortraits( oos, typeList ) {
-	for ( let index = 0; index < typeList.length; index++) {
-		let portrait = getPortrait( index );
-
-		oos.writeObject( portrait );
-	}
+	AHLCGModules.Portraits.write( legacyCard(), oos );
 }
 
-function setDefaultEncounter() {
-	$Encounter = Settings.getUser().get( 'AHLCG-DefaultEncounterSet' );
-	$EncounterNumber = '1';
-	$EncounterTotal = '1';
-
-	updateEncounter();
+function setDefaultEncounter( diy ) {
+	AHLCGModules.Sets.setDefaultEncounter( legacyCard(), diy );
 }
 
-function setDefaultCollection() {
-	$Collection = Settings.getUser().get( 'AHLCG-DefaultCollection' );
-	$CollectionNumber = '1';
-
-	updateCollection();
+function setDefaultCollection( diy ) {
+	AHLCGModules.Sets.setDefaultCollection( legacyCard(), diy );
 }
 
-function updateUsedEncounterSets( o ) {
-	return AHLCGModules.SetCatalog.updateUsedEncounterSets( o );
+function updateCollection( diy ) {
+	AHLCGModules.Sets.updateCollection( legacyCard(), diy );
 }
 
-function updateUsedCollections( o ) {
-	return AHLCGModules.SetCatalog.updateUsedCollections( o );
+function updateEncounter( diy ) {
+	AHLCGModules.Sets.updateEncounter( legacyCard(), diy );
 }
 
-function storeUsedValue( type, index, value ) {
-	return AHLCGModules.SetCatalog.storeUsedValue( type, index, value );
-}
-
-function loadUsedValue( type, index ) {
-	return AHLCGModules.SetCatalog.loadUsedValue( type, index );
-}
-
-function createUserSettingValue( string ) {
-	return AHLCGModules.SetCatalog.createUserSettingValue( string );
-}
-
-// changed Eons.namedObjects for Preferences encounter/collection update, 4/2/2017
-function updateCollection() {
-	if ( $Collection == 'StrangeEonsLight' ) $Collection = 'StrangeEons';
-
-	var settings = Settings.getUser();
-
-	if ( $Collection == 'CustomCollection' ) {
-		$CollectionType = '-1';
-		return;
-	}
-
-	var AHLCGObject = Eons.namedObjects.AHLCGObject;
-
-	for ( let index = 0; index < AHLCGObject.basicCollectionList.length; index++ ) {
-		if ( $Collection == AHLCGObject.basicCollectionList[ index ] ) {
-			$CollectionType = '0';
-			return;
-		}
-	}
-
-	for ( let index = 0; index < AHLCGObject.standardCollectionList.length; index++ ) {
-		let entry = AHLCGObject.standardCollectionList[index];
-
-		if ( $Collection == entry[0] ) {
-			// [2] is index of set in the used setting strings
-			let used = loadUsedValue( 'Collection', entry[2] );
-
-			if ( !used ) {
-				storeUsedValue( 'Collection', entry[2], true );
-				updateUsedCollections( AHLCGObject );
-			}
-
-			$CollectionType = '0';
-			return;
-		}
-	}
-
-	// user collections need a collection portrait; Concealed has none
-	var portraitIndex = getPortraitIndex( 'Collection' );
-	var userCount = portraitIndex == null ? 0 : settings.getInt( 'AHLCG-UserCollectionCount', 0 );
-
-	for ( let index = 0; index < userCount; index++) {
-		let name = settings.get( 'AHLCG-UserCollectionName' + (index+1), '' );
-		let icon = settings.get( 'AHLCG-UserCollectionIcon' + (index+1), '' );
-		let source = PortraitList[portraitIndex].getSource();
-
-		if ( $Collection == createUserSettingValue( name ) && ( source == '' || icon == source ) ) {
-			if ( source == '' ) {
-				PortraitList[portraitIndex].setSource( icon );
-			}
-
-			let used = settings.getBoolean( 'AHLCG-UseUserCollection' + (index+1) );
-
-			if ( !used ) {
-				settings.setBoolean( 'AHLCG-UseUserCollection' + (index+1), true );
-				updateUsedEncounterSets( AHLCGObject );
-			}
-
-			$CollectionType = index+1;
-			return;
-		}
-	}
-
-	// was a collection created elsewhere, or that no longer exists
-	$Collection = 'CustomCollection';
-	$CollectionType = '-1';
-}
-
-function updateEncounter() {
-	var settings = Settings.getUser();
-
-	if ( $Encounter == 'CustomEncounterSet' ) {
-		$EncounterType = '-1';
-		return;
-	}
-
-	var AHLCGObject = Eons.namedObjects.AHLCGObject;
-	var found = false;
-
-	for ( let index = 0; index < AHLCGObject.basicEncounterList.length; index++ ) {
-		if ( $Encounter == AHLCGObject.basicEncounterList[ index ] ) {
-			$EncounterType = '0';
-			return;
-		}
-	}
-
-	for ( let index = 0; index < AHLCGObject.standardEncounterList.length; index++ ) {
-		let entry = AHLCGObject.standardEncounterList[index];
-
-		if ( $Encounter == entry[0] ) {
-			// [3] is index of set in the used setting strings
-			let used = loadUsedValue( 'Encounter', entry[3] );
-
-			if ( !used ) {
-				storeUsedValue( 'Encounter', entry[3], true );
-				updateUsedEncounterSets( AHLCGObject );
-			}
-
-			$EncounterType = '0';
-			return;
-		}
-	}
-
-	var userCount = settings.getInt( 'AHLCG-UserEncounterCount', 0 );
-
-	for ( let index = 0; index < userCount; index++) {
-		let name = settings.get( 'AHLCG-UserEncounterName' + (index+1), '' );
-		let icon = settings.get( 'AHLCG-UserEncounterIcon' + (index+1), '' );
-		let source = PortraitList[getPortraitIndex( 'Encounter' )].getSource();
-
-		if ( $Encounter == createUserSettingValue( name ) && ( source == '' || icon == source ) ) {
-			// if no source exists (presumably because it's just been created), load it
-			if ( source == '' ) {
-				PortraitList[ getPortraitIndex( 'Encounter' ) ].setSource( icon );
-			}
-
-			let used = settings.getBoolean( 'AHLCG-UseUserEncounter' + (index+1) );
-
-			if ( !used ) {
-				settings.setBoolean( 'AHLCG-UseUserEncounter' + (index+1), true );
-				updateUsedEncounterSets( AHLCGObject );
-			}
-
-			$EncounterType = index+1;
-			return;
-		}
-	}
-
-	// was a set created elsewhere, or that no longer exists
-	$Encounter = 'CustomEncounterSet';
-	$EncounterType = '-1';
-}
-
-function clearImage ( g, sheet ) {
-	var w = sheet.getTemplateWidth();
-	var h = sheet.getTemplateHeight();
-
-	var image = ImageUtils.create(w, h);
-
-	sheet.paintImage( g, image, new Region(0, 0, w, h) );
-
-	// card coordinates are relative to the trim edge, not the bleed edge
-	// making this translation means existing saved cards don't need to
-	// be upgraded to support the bleed templates.
-	var bleed = getBleedPixels( sheet );
-	g.translate( bleed, bleed );
+function clearImage( g, sheet ) {
+	AHLCGModules.Templates.clear( g, sheet );
 }
 
 function getBleedPixels( sheet ) {
-	return Math.round( sheet.getBleedMargin() / 72 * sheet.getTemplateResolution() );
+	return AHLCGModules.FaceUtils.bleedPixels( sheet );
 }
 
-// key of the template image setting for a template name, e.g. EnemyST or Asset-G
-function getTemplateKey( name ) {
-	return 'AHLCG-' + name + '-template';
-}
-
-// key of the template image setting for the image path held by a face template setting
-function getTemplateKeyForSetting( setting ) {
-	return Eons.namedObjects.AHLCGObject.templateKeys[$( setting )] || setting;
-}
-
-// Paints the template image set by key, which covers the whole sheet, including any bleed margin.
-// When rendering for export or printing, a high resolution version of the image set by
-// <key>-hires is used instead, if available; it is provided by a separate plug-in.
-function paintFullBleed( g, sheet, key, mirror ) {
-	if ( $( key ) == null ) {
-		Eons.log.warning( 'missing template setting: ' + key );
-		return;
-	}
-
-	// The negative offsets are because clearImage has translated the origin of the graphics
-	// context so that existing cards don't need a edit pass to update positioning.
-	var bleed = getBleedPixels( sheet );
-
-	if ( !mirror ) {
-		sheet.paintImage( g, key, -bleed, -bleed );
-		return;
-	}
-
-	// mirrored templates need manual high resolution substitution
-	var image = ImageUtils.get( $( key ) );
-	var hiResPath = sheet.isHighResolutionRendering() ? $( key + '-hires' ) : null;
-	var source = ImageUtils.mirror( hiResPath ? ImageUtils.get( hiResPath ) : image, true, false );
-	sheet.paintImage( g, source, new Region( -bleed, -bleed, image.getWidth(), image.getHeight() ) );
-}
-
-// paints a portrait; with the Mirror edges portrait bleed preference, image edges that
-// stop just short of the clip region are extended to it by mirroring the image across them
 function paintPortrait( g, diy, sheet, name ) {
-	var portrait = PortraitList[getPortraitIndex( name )];
-	var image = portrait.getImage();
-	var bleed = getBleedPixels( sheet );
-
-	if ( Settings.getUser().get( 'AHLCG-PortraitBleed', 'None' ) != 'MirrorEdges' || bleed == 0
-			|| image == null || portrait.getRotation() != 0 ) {
-		portrait.paint( g, sheet.getRenderTarget() );
-		return;
-	}
-
-	var clip = diy.settings.getRegion( portrait.getBaseKey() + '-portrait-clip' );
-	var scale = portrait.getScale();
-
-	// image bounds as DefaultPortrait paints them
-	var w = Math.floor( image.getWidth() * scale + 0.5 );
-	var h = Math.floor( image.getHeight() * scale + 0.5 );
-	var x = Math.floor( clip.getCenterX() - image.getWidth() * scale / 2 + portrait.getPanX() );
-	var y = Math.floor( clip.getCenterY() - image.getHeight() * scale / 2 + portrait.getPanY() );
-
-	var pad = getPortraitBleedPadding( x, y, w, h, clip, bleed, w / image.getWidth(), h / image.getHeight() );
-	if ( pad == null ) {
-		portrait.paint( g, sheet.getRenderTarget() );
-		return;
-	}
-
-	var extended = mirrorImageEdges( image, pad );
-	var sx = w / image.getWidth();
-	var sy = h / image.getHeight();
-
-	var oldClip = g.getClip();
-	if ( portrait.getClipping() ) g.clip( clip );
-	if ( portrait.isBackgroundFilled() ) {
-		g.setPaint( Color.WHITE );
-		g.fillRect( clip.x, clip.y, clip.width, clip.height );
-	}
-	var xform = java.awt.geom.AffineTransform.getTranslateInstance( x - pad.left * sx, y - pad.top * sy );
-	xform.scale( sx, sy );
-	g.drawImage( extended, xform, null );
-	g.setClip( oldClip );
-}
-
-// source pixels to add on each side of a portrait image whose scaled bounds (x, y, w, h)
-// stop short of the clip region by no more than the bleed margin (within a pixel), or
-// null if no edge qualifies
-function getPortraitBleedPadding( x, y, w, h, clip, bleed, sx, sy ) {
-	const reach = bleed + 1;
-	var pad = { left: 0, top: 0, right: 0, bottom: 0 };
-	var left = x - clip.x;
-	var top = y - clip.y;
-	var right = clip.x + clip.width - ( x + w );
-	var bottom = clip.y + clip.height - ( y + h );
-
-	if ( left > 0 && left <= reach ) pad.left = Math.ceil( left / sx );
-	if ( top > 0 && top <= reach ) pad.top = Math.ceil( top / sy );
-	if ( right > 0 && right <= reach ) pad.right = Math.ceil( right / sx );
-	if ( bottom > 0 && bottom <= reach ) pad.bottom = Math.ceil( bottom / sy );
-
-	if ( pad.left + pad.top + pad.right + pad.bottom == 0 ) return null;
-	return pad;
-}
-
-// copy of image extended outward by pad pixels on each side by mirroring the image
-// across its edges
-function mirrorImageEdges( image, pad ) {
-	var w = image.getWidth();
-	var h = image.getHeight();
-	var result = ImageUtils.create( w + pad.left + pad.right, h + pad.top + pad.bottom, true );
-	var g = result.createGraphics();
-	try {
-		var l = pad.left, t = pad.top, r = l + w, b = t + h;
-		var R = result.getWidth(), B = result.getHeight();
-
-		// source span next to each edge: as much image as the mirror fills, up to all of it
-		var sl = Math.min( l, w );
-		var sr = Math.min( R - r, w );
-		var st = Math.min( t, h );
-		var sb = Math.min( B - b, h );
-
-		g.drawImage( image, l, t, null );
-		// edges; reversed source coordinates flip the image
-		g.drawImage( image, 0, t, l, b, sl, 0, 0, h, null );
-		g.drawImage( image, r, t, R, b, w, 0, w - sr, h, null );
-		g.drawImage( image, l, 0, r, t, 0, st, w, 0, null );
-		g.drawImage( image, l, b, r, B, 0, h, w, h - sb, null );
-		// corners
-		g.drawImage( image, 0, 0, l, t, sl, st, 0, 0, null );
-		g.drawImage( image, r, 0, R, t, w, st, w - sr, 0, null );
-		g.drawImage( image, 0, b, l, B, sl, h, 0, h - sb, null );
-		g.drawImage( image, r, b, R, B, w, h, w - sr, h - sb, null );
-	} finally {
-		g.dispose();
-	}
-	return result;
+	AHLCGModules.Portraits.paint( legacyCard(), g, diy, sheet, name );
 }
 
 function getForceDisplay( key ) {
@@ -621,128 +249,15 @@ function addTextPart( faceIndex, text, key, diy ) {
 }
 
 function getExpandedKey( faceIndex, key, appendix ) {
-	var fullKey = null;
-
-	var subtypes = {
-		'AgendaPortrait': 'Agenda',
-		'WeaknessEnemy': 'Enemy',
-		'WeaknessTreachery': 'Treachery',
-		'ChaosStory': 'Chaos',
-		'StoryChaos': 'Chaos',
-		'StoryChaosFull': 'Chaos',
-		'KeyBack': 'Key'
-	};
-
-	if ( appendix == null ) appendix = '';
-
-	if ( $( 'AHLCG-' + CardTypes[faceIndex] + '-' + key + appendix ) != null ) {
-		fullKey = 'AHLCG-' + CardTypes[faceIndex] + '-' + key;
-	}
-	else if ( subtypes[CardTypes[faceIndex]] && $( 'AHLCG-' + subtypes[CardTypes[faceIndex]] + '-' + key + appendix ) != null) {
-		fullKey = 'AHLCG-' + subtypes[CardTypes[faceIndex]] + '-' + key;
-	}
-	else {
-		fullKey = 'AHLCG-' + key;
-	}
-
-	return fullKey;
+	return legacyCard().key( faceIndex, key, appendix );
 }
 
 function initBodyTags( diy, textBox ) {
-	var AHLCGObject = Eons.namedObjects.AHLCGObject;
-
-	for( let index = 0; index < AHLCGObject.TagList.length; index++ ){
-		let item = AHLCGObject.TagList[index];
-		let repl = $(item+'-tag-replacement');
-
-		if (repl != null && repl.startsWith('#'))
-		{
-			textBox.setReplacementForTag($(item+'-tag'), #(repl.substr(1)));
-		}
-		else
-		{
-			textBox.setReplacementForTag($(item+'-tag'), repl);
-		}
-	}
-
-	for( let index = 0; index < AHLCGObject.StyleList.length; index++ ) {
-		let item = AHLCGObject.StyleList[index];
-		textBox.setStyleForTag($(item+'-tag'), diy.settings.getTextStyle(item+'-style',null));
-	}
-
-	textBox.setReplacementForTag( 'bultab', '     ' );
-
-	for ( let index = 0; index < AHLCGObject.standardEncounterList.length; index++ ) {
-		let entry = AHLCGObject.standardEncounterList[ index ];
-
-		let used = loadUsedValue( 'Encounter', entry[3] );
-
-		if ( used ) {
-			textBox.setReplacementForTag( entry[2] + 's', '<image res://ArkhamHorrorLCG/icons/AHLCG-' + entry[0] + '.png 0.14in baseline>' );
-			textBox.setReplacementForTag( entry[2] + 'm', '<image res://ArkhamHorrorLCG/icons/AHLCG-' + entry[0] + '.png 0.35in baseline>' );
-			textBox.setReplacementForTag( entry[2] + 'l', '<image res://ArkhamHorrorLCG/icons/AHLCG-' + entry[0] + '.png 0.60in baseline>' );
-		}
-	}
-
-	var settings = Settings.getUser();
-	var userCount = settings.getInt( 'AHLCG-UserEncounterCount', 0 );
-
-	for ( let index = 1; index <= userCount; index++ ) {
-		let tag = settings.get( 'AHLCG-UserEncounterTag' + index ).toLowerCase();;
-		let icon = settings.get( 'AHLCG-UserEncounterIcon' + index );
-		let used = settings.getBoolean( 'AHLCG-UseUserEncounter' + index, true );
-
-		if ( used ) {
-			textBox.setReplacementForTag( tag + 's', '<image "' + icon + '" 0.14in baseline>' );
-			textBox.setReplacementForTag( tag + 'm', '<image "' + icon + '" 0.35in baseline>' );
-			textBox.setReplacementForTag( tag + 'l', '<image "' + icon + '" 0.60in baseline>' );
-		}
-	}
-
-	for ( let index = 0; index < AHLCGObject.standardCollectionList.length; index++ ) {
-		let entry = AHLCGObject.standardCollectionList[ index ];
-
-		let used = loadUsedValue( 'Collection', entry[2] );
-
-		if (used) {
-			textBox.setReplacementForTag( entry[1] + 's', '<image res://ArkhamHorrorLCG/icons/AHLCG-' + entry[0] + '.png 0.14in baseline>' );
-			textBox.setReplacementForTag( entry[1] + 'm', '<image res://ArkhamHorrorLCG/icons/AHLCG-' + entry[0] + '.png 0.35in baseline>' );
-			textBox.setReplacementForTag( entry[1] + 'l', '<image res://ArkhamHorrorLCG/icons/AHLCG-' + entry[0] + '.png 0.60in baseline>' );
-		}
-	}
-
-	userCount = settings.getInt( 'AHLCG-UserCollectionCount', 0 );
-
-	for ( let index = 1; index <= userCount; index++ ) {
-		let tag = settings.get( 'AHLCG-UserCollectionTag' + index ).toLowerCase();;
-		let icon = settings.get( 'AHLCG-UserCollectionIcon' + index );
-		let used = settings.getBoolean( 'AHLCG-UseUserCollection' + index, true );
-
-		if ( used ) {
-			textBox.setReplacementForTag( tag + 's', '<image "' + icon + '" 0.14in baseline>' );
-			textBox.setReplacementForTag( tag + 'm', '<image "' + icon + '" 0.35in baseline>' );
-			textBox.setReplacementForTag( tag + 'l', '<image "' + icon + '" 0.60in baseline>' );
-		}
-	}
-
-	for( let index = 0; index < AHLCGObject.locationIcons.length; index++ ){
-		let item = AHLCGObject.locationIcons[index];
-
-		let tag = $('Loc'+item+'-tag');
-
-		if ( tag != null ) {
-			textBox.setReplacementForTag( tag, '<image res://ArkhamHorrorLCG/icons/AHLCG-Loc' + item + '.png 0.14in center>' );
-		}
-	}
+	AHLCGModules.FaceUtils.initBodyTags( diy, textBox );
 }
 
 function initCopyrightTags( diy, textBox ) {
-	var AHLCGObject = Eons.namedObjects.AHLCGObject;
-
-	for( let index = 0; index < AHLCGObject.CopyrightTagList.length; index++ ){
-		let item = AHLCGObject.CopyrightTagList[index];
-		textBox.setReplacementForTag($(item+'-tag'), $(item+'-tag-replacement'));
-	}
+	AHLCGModules.FaceUtils.initCopyrightTags( diy, textBox );
 }
 
 function initGuideTags( diy, textBox ) {
@@ -754,91 +269,8 @@ function initGuideTags( diy, textBox ) {
 	}
 }
 
-function setPortraitDefaults( diy, faceIndex, key, portraitKey ) {
-	if ( diy.settings.get( getExpandedKey( faceIndex, portraitKey + '-portrait-template' ), '' ) == '') {
-		diy.settings.set( 'AHLCG-' + CardTypes[faceIndex] + '-' + portraitKey + '-portrait-template', 'ArkhamHorrorLCG/images/empty1x1.png' );
-	}
-
-	if ( diy.settings.get( getExpandedKey( faceIndex, portraitKey + '-portrait-rotation' ), '' ) == '' ) {
-		diy.settings.set( 'AHLCG-' + CardTypes[faceIndex] + '-' + portraitKey + '-portrait-rotation', '0' );
-	}
-	if ( diy.settings.get( getExpandedKey( faceIndex, portraitKey + '-portrait-clip-region' ), '' ) == '' ) {
-		diy.settings.set( 'AHLCG-' + CardTypes[faceIndex] + '-' + portraitKey + '-portrait-clip-region', $( getExpandedKey( faceIndex, key + '-portrait-clip-region' ) ) );
-	}
-}
-
-function createPortrait( diy, fullKey ) {
-	var partArray = fullKey.split('-');
-
-	var key = partArray[0];
-	var portraitKey = key;
-	var settingsFace;
-	var fillBackground;
-	var allowRotation;
-	var scaleUsesMinimum = false;
-
-	var faces = partArray[1];
-	var facesArray;
-
-	switch ( faces ) {
-		case 'Back':
-			facesArray = [0, 1];	// making this [0, 1] seems to get rid of the masking in the portrait panel
-			settingsFace = FACE_BACK;
-			break;
-		case 'Both':
-			facesArray = [0, 1];
-			settingsFace = FACE_FRONT;
-			break;
-		default:
-			facesArray = [0];
-			settingsFace = FACE_FRONT;
-			break;
-	}
-
-	let portraitIndex = getPortraitIndex( key );
-
-	switch( key ) {
-		case 'Portrait':
-		case 'BackPortrait':
-			fillBackground = true;
-			allowRotation = true;
-			break;
-		case 'TransparentPortrait':
-			fillBackground = false;
-			allowRotation = false;
-			break;
-		case 'Portrait1':
-		case 'Portrait2':
-			fillBackground = false;
-			allowRotation = false;
-			scaleUsesMinimum = true;
-			break;
-		default:
-			fillBackground = false;
-			allowRotation = true;
-			break;
-	}
-
-	setPortraitDefaults( diy, settingsFace, key, portraitKey );
-	if ( faces == 'Both' ) 	setPortraitDefaults( diy, FACE_BACK, key, portraitKey );
-	PortraitList[portraitIndex] = new DefaultPortrait( diy, getExpandedKey( settingsFace, portraitKey, '-portrait-template' ), allowRotation );
-
-	PortraitList[portraitIndex].facesToUpdate = facesArray;
-	PortraitList[portraitIndex].backgroundFilled = fillBackground;
-	PortraitList[portraitIndex].setScaleUsesMinimum( scaleUsesMinimum );
-	PortraitList[portraitIndex].installDefault();
-}
-
 function createPortraits( diy, portraitKeys ) {
-    diy.customPortraitHandling = true;
-
-	var AHLCGObject = Eons.namedObjects.AHLCGObject;
-
-	for ( let index = 0; index < portraitKeys.length; index++ ) {
-		let fullKey = portraitKeys[index];
-
-		createPortrait( diy, fullKey );
-	}
+	AHLCGModules.Portraits.create( legacyCard(), diy );
 }
 
 function getGuidePortraitRegion( diy, position ) {
@@ -1137,19 +569,7 @@ function getPortrait( index ) {
 }
 
 function getPortraitIndex( portraitName ) {
-	var index = null;
-	for (let i = 0; i < PortraitTypeList.length; i++) {
-		let key = PortraitTypeList[i];
-
-		let partArray = key.split('-');
-
-		if (partArray[0] == portraitName ) {
-			index = i;
-			break;
-		}
-	}
-
-	return index;
+	return legacyCard().portraitIndex( portraitName );
 }
 
 function getClassInitial( className ) {
@@ -1273,71 +693,15 @@ function getClassCount( cardClass, cardClass2, cardClass3 ) {
 }
 
 function setPortraitPanelFileFieldEnabled( panel, enabled ) {
-	var components = panel.getComponents();
-
-	for ( var i = 0; i < components.length; i++ ) {
-		let component = components[i];
-
-		if ( /TextField/.test( component.getClass().getName() ) ) component.setEnabled( enabled );
-	}
+	AHLCGModules.Portraits.setFileFieldEnabled( panel, enabled );
 }
 
 function createPortraitMirrorButton( portraitName, portraitPanel ) {
-	var portraitIndex = getPortraitIndex( portraitName );
-
-	return new button(
-		@AHLCG-Mirror, null,
-		function(){
-			var scale = PortraitList[portraitIndex].getScale();
-			var rotation = PortraitList[portraitIndex].getRotation();
-			var panX = PortraitList[portraitIndex].getPanX();
-			var panY = PortraitList[portraitIndex].getPanY();
-			PortraitList[portraitIndex].setImage(
-				PortraitList[portraitIndex].getSource(),
-				ImageUtils.mirror(PortraitList[portraitIndex].getImage(),true,false)
-			);
-			PortraitList[portraitIndex].setScale(scale);
-			PortraitList[portraitIndex].setRotation(rotation);
-			PortraitList[portraitIndex].setPanX(panX);
-			PortraitList[portraitIndex].setPanY(panY);
-
-			portraitPanel.updatePanel();
-		}
-	);
+	return AHLCGModules.Portraits.mirrorButton( legacyCard(), portraitName, portraitPanel );
 }
 
 function createPortraitInvertButton( portraitName ) {
-	var portraitIndex = getPortraitIndex( portraitName );
-
-	return new button(
-		"Invert", null,
-		function(){
-			var scale = PortraitList[portraitIndex].getScale();
-			var rotation = PortraitList[portraitIndex].getRotation();
-			var panX = PortraitList[portraitIndex].getPanX();
-			var panY = PortraitList[portraitIndex].getPanY();
-			PortraitList[portraitIndex].setImage(
-				PortraitList[portraitIndex].getSource(),
-				ImageUtils.invert(PortraitList[portraitIndex].getImage())
-			);
-			PortraitList[portraitIndex].setScale(scale);
-			PortraitList[portraitIndex].setRotation(rotation);
-			PortraitList[portraitIndex].setPanX(panX);
-			PortraitList[portraitIndex].setPanY(panY);
-		}
-	);
-}
-
-// unused
-//function createPortraitShareButton( portraitPanel, artistPanel ) {
-function createPortraitShareButton( bindings ) {
-	var shareButton = new toggleButton(
-		@AHLCG-Share, null
-	);
-
-	bindings.add('PortraitShare', shareButton, [1]);
-
-	return shareButton;
+	return AHLCGModules.Portraits.invertButton( legacyCard(), portraitName );
 }
 
 // orientation belongs to the act/agenda front; other faces never reverse
@@ -1365,51 +729,21 @@ function shiftRegion( region, cardType ) {
 	return region;
 }
 
-function filterFunction(filter){
-	var f = function filter(source){
-		return filter.filter.filter(source,null);
-	};
-	f.filter = filter;
-	return f;
+function createGreyscaleImage( source ) {
+	return AHLCGModules.ImageFilters.greyscale( source );
 }
 
-const createGreyscaleImage = filterFunction(
-	new ca.cgjennings.graphics.filters.GreyscaleFilter()
-);
-
-const createInvertedImage = filterFunction(
-	new ca.cgjennings.graphics.filters.InversionFilter()
-);
-
-const createBlurredImage = filterFunction(
-	new ca.cgjennings.graphics.filters.GaussianBlurFilter( 40 )
-);
-
-const createAlphaInvertedImage = filterFunction(
-	new ca.cgjennings.graphics.filters.AlphaInversionFilter()
-);
-
-const createHSBImage = filterFunction(
-	new ca.cgjennings.graphics.filters.TintFilter( 0.4, 0.8, 0.6 )
-);
-
-function createStencilImage( source, mask )
-{
-	var stencilImage = ImageUtils.resize( ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-' + mask + 'Mask.png'), source.width, source.height );
-
-	var destImage = ImageUtils.create( source.width, source.height, true );
-	var g = destImage.createGraphics();
-	g.drawImage( stencilImage, 0, 0, null );
-	g.setComposite( java.awt.AlphaComposite.SrcIn );
-	g.drawImage( source, 0, 0, null );
-	g.dispose();
-
-	return destImage;
+function createInvertedImage( source ) {
+	return AHLCGModules.ImageFilters.inverted( source );
 }
 
-const createDarkenedImage = filterFunction(
-	new ca.cgjennings.graphics.filters.BrightnessContrastFilter(-0.5,0.0)
-);
+function createBlurredImage( source ) {
+	return AHLCGModules.ImageFilters.blurred( source );
+}
+
+function createAlphaInvertedImage( source ) {
+	return AHLCGModules.ImageFilters.alphaInverted( source );
+}
 
 function createReturnToImage( iconImage )
 {

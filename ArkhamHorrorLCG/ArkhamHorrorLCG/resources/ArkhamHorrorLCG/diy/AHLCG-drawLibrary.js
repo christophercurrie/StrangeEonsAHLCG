@@ -11,78 +11,18 @@ importClass( java.awt.Toolkit );
 importClass( java.lang.reflect.Field );
 
 function drawTemplate( g, sheet, className ) {
-	var faceIndex = sheet.getSheetIndex();
-	var name;
-	// the chaos template is the full page art with a frame for the encounter icon
-	var hasEncounterFrame = CardTypes[faceIndex] == 'Chaos' || CardTypes[faceIndex] == 'StoryChaos' || CardTypes[faceIndex] == 'ChaosStory';
-
-	if ( useReplacementTemplate( faceIndex )) {
-		drawReplacementTemplate( g, sheet, faceIndex );
-		return;
-	}
-
-	if ( className != null && className.length > 0 ) {
-		name = getSubtitledTemplateName( faceIndex, getClassTemplateName( faceIndex, className ) );
-	}
-	else if ( hasEncounterFrame ) {
-		name = 'StoryChaosFull';
-	}
-	else if ( CardTypes[faceIndex] == 'Story' ) {
-		name = getStoryTemplateName( faceIndex );
-	}
-	else if ( 'Concealed' ) {
-		if ( $Template == 'Decoy' ) name = CardTypes[faceIndex] + 'Decoy';
-		else if ( $Template == 'NamedDecoy' ) name = CardTypes[faceIndex] + 'NamedDecoy';
-		else name = CardTypes[faceIndex];
-	}
-	else
-	{
-		name = CardTypes[faceIndex];
-	}
-
-	var mirror = (CardTypes[faceIndex] == 'Act' || CardTypes[faceIndex] == 'Agenda') && isReversed( faceIndex );
-
-	paintFullBleed( g, sheet, getTemplateKey( name ), mirror );
-
-	if ( hasEncounterFrame ) {
-		let bleed = getBleedPixels( sheet );
-		let region = sheet.getGameComponent().getSettings().getRegion( 'AHLCG-Chaos-EncounterFrame' );
-		sheet.paintImage( g, 'AHLCG-Chaos-EncounterFrame', region.x - bleed, region.y - bleed, region.width, region.height );
-	}
-}
-
-// the story template for the face's StoryClass; older cards and Default use the original
-function getStoryTemplateName( faceIndex ) {
-	var storyClass = $( 'StoryClass' + BindingSuffixes[faceIndex] );
-
-	if ( storyClass == null || storyClass == '' || storyClass == 'Default' ) return 'Story';
-
-	return 'Story-' + storyClass;
+	AHLCGModules.Templates.paintFront( legacyCard(), g, sheet );
 }
 
 // backType is the selected back for cards that offer Player and Encounter backs
 function drawBackTemplate( g, sheet, backType ) {
-	var faceIndex = sheet.getSheetIndex();
-
-	if ( useReplacementTemplate( faceIndex )) {
-		drawReplacementTemplate( g, sheet, faceIndex );
-		return;
-	}
-
-	var key;
-	if ( backType == 'Player' ) key = getTemplateKey( 'PlayerBack' );
-	else if ( backType == 'Encounter' ) key = getTemplateKey( 'EncounterBack' );
-	else key = getTemplateKeyForSetting( getExpandedKey( faceIndex, 'Default-template' ) );
-
-	paintFullBleed( g, sheet, key );
+	AHLCGModules.Templates.paintBack( legacyCard(), g, sheet, backType );
 }
 
-function drawUltimatumTemplate( g, diy, sheet, ultimatum_type, subtitle) {
-	var faceIndex = sheet.getSheetIndex();
+function drawUltimatumTemplate( g, diy, sheet, ultimatum_type, subtitle ) {
+	var subtype = subtitle.length == 0 ? 'Common' : 'Refraction';
 
-	var ultimatum_subtype = subtitle.length == 0 ? 'Common' : 'Refraction';
-
-	paintFullBleed( g, sheet, getTemplateKey( ultimatum_type + '-' + ultimatum_subtype ) );
+	AHLCGModules.Templates.paintFullBleed( legacyCard(), g, sheet, AHLCGModules.Templates.templateKey( ultimatum_type + '-' + subtype ) );
 }
 
 function drawUltimatumSubtitle( g, diy, sheet, textBox, text ) {
@@ -113,56 +53,8 @@ function getArtClassInitial( faceIndex, className ) {
 	return classInitial;
 }
 
-// story assets use the asset art, with the level and encounter set circles drawn separately
-function getClassTemplateName( faceIndex, className ) {
-	var type = CardTypes[faceIndex] == 'AssetStory' ? 'Asset' : CardTypes[faceIndex];
-
-	return type + '-' + getArtClassInitial( faceIndex, className );
-}
-
-function hasTemplate( name ) {
-	return $( getTemplateKey( name ) ) != null;
-}
-
-// templates with the subtitle bar drawn in are named with an S suffix
-function getSubtitledTemplateName( faceIndex, name ) {
-	var subtitle = $( 'Subtitle' + BindingSuffixes[faceIndex] );
-
-	if ( subtitle == null || String( subtitle ).length == 0 ) return name;
-
-	return hasTemplate( name + 'S' ) ? name + 'S' : name;
-}
-
 function useReplacementTemplate( faceIndex ) {
-	var string = 'TemplateReplacement' + (faceIndex == FACE_FRONT ? '' : 'Back');
-	var templateReplacement = $( string );
-
-	if ( templateReplacement && templateReplacement.length() > 0 ) {
-		return true;
-	}
-
-	return false;
-}
-
-function drawReplacementTemplate(g, sheet, faceIndex ) {
-	var string = 'TemplateReplacement' + (faceIndex == FACE_FRONT ? '' : 'Back');
-	var templateReplacement = $( string );
-
-	try {
-		image = ImageUtils.read( templateReplacement );
-		if (image) {
-			// replacement images cover the trim area unless the user indicates they include bleed
-			var bleed = getBleedPixels( sheet );
-			var region = new Region(0, 0, sheet.getTemplateWidth() - 2 * bleed, sheet.getTemplateHeight() - 2 * bleed);
-			if ( $( 'TemplateReplacementBleed' ) == '1' ) {
-				region = new Region(-bleed, -bleed, sheet.getTemplateWidth(), sheet.getTemplateHeight());
-			}
-			sheet.paintImage( g, image, region );
-			return true;
-		}
-	} catch ( ex ) {
-		println('Error reading image file.');
-	}
+	return AHLCGModules.Templates.usesReplacement( legacyCard(), faceIndex );
 }
 
 function drawGuideTemplate( diy, g, sheet, labelBox  ) {

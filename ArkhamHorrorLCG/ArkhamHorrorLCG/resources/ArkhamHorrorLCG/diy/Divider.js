@@ -21,7 +21,7 @@ function create( diy ) {
 
 	setDefaults();
 	createPortraits( diy, PortraitTypeList );
-	setDefaultEncounter();
+	setDefaultEncounter( diy );
 
 	diy.version = CARD_VERSION;
 }
@@ -100,7 +100,7 @@ function onClear() {
 function onRead(diy, oos) {
 	readPortraits( diy, oos, PortraitTypeList, true );
 
-	updateEncounter();
+	updateEncounter( diy );
 
 	diy.version = CARD_VERSION;
 }

@@ -151,8 +151,12 @@ define([
             return;
         }
 
-        var userCount = user.getInt('AHLCG-User' + kindName + 'Count', 0);
-        var source = String(portrait.getSource());
+        // user sets need the kind's portrait
+        var userCount =
+            portrait == null
+                ? 0
+                : user.getInt('AHLCG-User' + kindName + 'Count', 0);
+        var source = portrait == null ? '' : String(portrait.getSource());
         for (let n = 1; n <= userCount; n++) {
             let icon = String(
                 user.get('AHLCG-User' + kindName + 'Icon' + n, '')

@@ -22,8 +22,8 @@ function create( diy ) {
 
 	setDefaults();
 	createPortraits( diy, PortraitTypeList );
-	setDefaultEncounter();
-	setDefaultCollection();
+	setDefaultEncounter( diy );
+	setDefaultCollection( diy );
 
 	diy.setCornerRadius(8);
 	diy.version = CARD_VERSION;
@@ -161,8 +161,8 @@ function onClear() {
 function onRead(diy, oos) {
 	readPortraits( diy, oos, PortraitTypeList, true );
 
-	updateCollection();
-	updateEncounter();
+	updateCollection( diy );
+	updateEncounter( diy );
 
 	diy.setCornerRadius(8);
 	diy.version = CARD_VERSION;
