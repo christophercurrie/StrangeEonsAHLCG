@@ -12,9 +12,16 @@ if (String(sourcefile) === 'Quickscript') {
 define([
     'handlers/exportHandler',
     'handlers/FaceChoiceHandler',
+    'handlers/LegacyStoryAsset',
     'handlers/PlayerBacks',
     'faces/AssetFace',
-], function (exportHandler, FaceChoiceHandler, PlayerBacks, AssetFace) {
+], function (
+    exportHandler,
+    FaceChoiceHandler,
+    LegacyStoryAsset,
+    PlayerBacks,
+    AssetFace
+) {
     exportHandler(
         globalThis,
         new FaceChoiceHandler({
@@ -33,9 +40,7 @@ define([
             cardDefaults: { CardClass: 'Story' },
             // legacy story assets were Neutral or Weakness
             upgrade: function (diy) {
-                var settings = diy.settings;
-                var weakness = String(settings.get('CardClass')) === 'Weakness';
-                settings.set('CardClass', weakness ? 'StoryWeakness' : 'Story');
+                LegacyStoryAsset.upgrade(diy.settings, '');
             },
             upgradeChoices: function (diy) {
                 PlayerBacks.upgrade(diy.settings);
