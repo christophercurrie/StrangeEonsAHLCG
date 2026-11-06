@@ -28,10 +28,16 @@ define([
     EnemyLocationFace.prototype.constructor = EnemyLocationFace;
     EnemyLocationFace.prototype.template = 'AHLCG-EnemyLocationFace';
     EnemyLocationFace.prototype.hasSubtitle = false;
+    EnemyLocationFace.prototype.fillReturnEncounterIcon = false;
     EnemyLocationFace.prototype.healthPerInvestigator = 'PerInvestigatorHealth';
     EnemyLocationFace.prototype.paintStat = EnemyFace.prototype.paintStat;
     EnemyLocationFace.prototype.paintHealth = EnemyFace.prototype.paintHealth;
     EnemyLocationFace.prototype.paintTokens = EnemyFace.prototype.paintTokens;
+
+    // one template, with or without a subtitle
+    EnemyLocationFace.prototype.templateKey = function (diy, faceIndex) {
+        return null;
+    };
 
     EnemyLocationFace.prototype.defaultValues = function (diy, faceIndex) {
         return {
