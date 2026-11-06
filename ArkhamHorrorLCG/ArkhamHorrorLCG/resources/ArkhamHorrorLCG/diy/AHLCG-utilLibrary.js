@@ -898,15 +898,6 @@ function initCopyrightTags( diy, textBox ) {
 	}
 }
 
-function initSuffixTags( diy, textBox ) {
-	var AHLCGObject = Eons.namedObjects.AHLCGObject;
-
-	for( let index = 0; index < AHLCGObject.SuffixTagList.length; index++ ){
-		let item = AHLCGObject.SuffixTagList[index];
-		textBox.setStyleForTag($(item+'-tag'), diy.settings.getTextStyle(item+'-style',null));
-	}
-}
-
 function initGuideTags( diy, textBox ) {
 	var AHLCGObject = Eons.namedObjects.AHLCGObject;
 
@@ -1314,22 +1305,6 @@ function getPortraitIndex( portraitName ) {
 	return index;
 }
 
-function getPortraitLocation( portraitName ) {
-	var location = '';
-	for (let i = 0; i < PortraitTypeList.length; i++) {
-		let key = PortraitTypeList[i];
-
-		let partArray = key.split('-');
-
-		if (partArray[0] == portraitName ) {
-			location == partArray[1];
-			break;
-		}
-	}
-
-	return location;
-}
-
 function getClassInitial( className ) {
 	var initial;
 
@@ -1460,17 +1435,6 @@ function setPortraitPanelFileFieldEnabled( panel, enabled ) {
 	}
 }
 
-function setPortraitPanelFileFieldListener( panel, f ) {
-	var components = panel.getComponents();
-
-	for ( var i = 0; i < components.length; i++ ) {
-		let component = components[i];
-		if ( /TextField/.test( component.getClass().getName() ) ) {
-			component.addActionListener( f );
-		}
-	}
-}
-
 function createPortraitMirrorButton( portraitName, portraitPanel ) {
 	var portraitIndex = getPortraitIndex( portraitName );
 
@@ -1554,34 +1518,6 @@ function shiftRegion( region, cardType ) {
 	return region;
 }
 
-function updateReversableTextBoxShape( diy, orientation ) {
-	var reverse = false;
-	var region = diy.settings.getRegion( getExpandedKey(FACE_FRONT, 'Body-region') );
-
-	if ( orientation == 'Reversed' ) {
-		region = reverseRegion( region );
-		reverse = true;
-	}
-
-//	if ( Body_box != null ) createTextShape( Body_box, region, reverse );
-	setTextShape( Body_box, region, reverse );
-}
-
-function updateCardType( diy, type, faceIndex, defaultType ) {
-	if ( type == 'Story' ) {
- 		CardTypes[faceIndex] = 'Story';
- 	}
-	else if ( type == 'Chaos' ) {
- 		CardTypes[faceIndex] = 'StoryChaos';
- 	}
-	else if ( type == 'ChaosFull' ) {
- 		CardTypes[faceIndex] = 'StoryChaosFull';
- 	}
- 	else {
- 		CardTypes[faceIndex] = defaultType;
- 	}
-}
-
 function filterFunction(filter){
 	var f = function filter(source){
 		return filter.filter.filter(source,null);
@@ -1609,11 +1545,6 @@ const createAlphaInvertedImage = filterFunction(
 const createHSBImage = filterFunction(
 	new ca.cgjennings.graphics.filters.TintFilter( 0.4, 0.8, 0.6 )
 );
-
-function tintImage(image, tint) {
-    var filter = new ca.cgjennings.graphics.filters.TintFilter(tint[0], tint[1], tint[2]);
-    return filter.filter(image,null);
-}
 
 function createStencilImage( source, mask )
 {
