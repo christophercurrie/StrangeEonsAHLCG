@@ -43,6 +43,7 @@ export default defineConfig([
     `!${diy}/ActAssetStory.js`,
     `!${diy}/AgendaAssetStory.js`,
     `!${diy}/StoryAsset.js`,
+    `!${diy}/TreacheryLocation.js`,
     `!${diy}/Location.js`,
     `!${diy}/LocationLocation.js`,
     `!${diy}/Chaos.js`,
