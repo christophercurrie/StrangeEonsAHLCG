@@ -16,13 +16,29 @@ importClass( java.util.Locale );
 useLibrary( 'amd' );
 define.config( { baseUrl: 'res://ArkhamHorrorLCG/diy' } );
 
-var GameObject, PreferenceCategory;
-define( [ 'plugin/GameObject', 'prefs/Category' ], function ( game, prefs ) {
+var GameObject, PluginInfo, PreferenceCategory;
+define( [ 'core/PluginInfo', 'plugin/GameObject', 'prefs/Category' ], function ( info, game, prefs ) {
+	PluginInfo = info;
 	GameObject = game;
 	PreferenceCategory = prefs;
 } );
 
-useLibrary( 'res://ArkhamHorrorLCG/diy/AHLCG-utilLibrary.js' );
+function getName() {
+	return PluginInfo.name();
+}
+
+function getDescription() {
+	return PluginInfo.description();
+}
+
+function getVersion() {
+	return PluginInfo.version();
+}
+
+// this plug-in's images
+function image( resource, folder, ext ) {
+	return PluginInfo.image( resource, folder, ext );
+}
 
 function initialize() {
 	var GameLanguage = Language.getGame();

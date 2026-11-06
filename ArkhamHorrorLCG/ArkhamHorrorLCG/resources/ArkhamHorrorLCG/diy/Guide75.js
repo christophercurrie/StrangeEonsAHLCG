@@ -188,14 +188,10 @@ function onWrite( diy, oos ) {
 // having to create a plug-in (except to make any required resources
 // available).
 if( sourcefile == 'Quickscript' ) {
-	useLibrary('project:ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/AHLCG-utilLibrary.js');
-	useLibrary('project:ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/AHLCG-layoutLibrary.js');
-	useLibrary('project:ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/AHLCG-drawLibrary.js');
+	useLibrary('project:ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/AHLCG-legacyLibrary.js');
 
 	testDIYScript();
 }
 else {
-	useLibrary('res://ArkhamHorrorLCG/diy/AHLCG-utilLibrary.js');
-	useLibrary('res://ArkhamHorrorLCG/diy/AHLCG-layoutLibrary.js');
-	useLibrary('res://ArkhamHorrorLCG/diy/AHLCG-drawLibrary.js');
+	useLibrary('res://ArkhamHorrorLCG/diy/AHLCG-legacyLibrary.js');
 }

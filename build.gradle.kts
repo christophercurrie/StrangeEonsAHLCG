@@ -102,14 +102,15 @@ val verifyCardVersions by tasks.registering {
     val diy = file("ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy")
     inputs.dir(diy)
     doLast {
-        val util = diy.resolve("AHLCG-utilLibrary.js").readText()
-        val current = Regex("""const CARD_VERSION = (\d+);""").find(util)?.groupValues?.get(1)?.toInt()
-            ?: throw GradleException("CARD_VERSION not found")
-        val problems = mutableListOf<String>()
-        // face handlers (AMD modules) take the version from handlers/CardVersion
+        // face handlers (AMD modules) and the legacy library take the version from handlers/CardVersion
         val module = diy.resolve("handlers/CardVersion.js").readText()
-        val moduleVersion = Regex("""return (\d+);""").find(module)?.groupValues?.get(1)?.toInt()
-        if (moduleVersion != current) problems += "handlers/CardVersion.js returns $moduleVersion, not CARD_VERSION $current"
+        val current = Regex("""return (\d+);""").find(module)?.groupValues?.get(1)?.toInt()
+            ?: throw GradleException("handlers/CardVersion.js returns no version")
+        val problems = mutableListOf<String>()
+        val legacy = diy.resolve("AHLCG-legacyLibrary.js").readText()
+        if (!legacy.contains("const CARD_VERSION = AHLCGModules.CardVersion;")) {
+            problems += "AHLCG-legacyLibrary.js does not take CARD_VERSION from handlers/CardVersion"
+        }
         diy.listFiles { f -> f.name.endsWith(".js") && !f.name.startsWith("AHLCG") }!!.sorted().forEach { f ->
             val text = f.readText()
             if (Regex("""diy\.version\s*=\s*\d""").containsMatchIn(text)) problems += "${f.name} sets a literal version"

@@ -1,5 +1,5 @@
-// Version of every card handler; the same as CARD_VERSION in
-// AHLCG-utilLibrary.js, which legacy handlers use.
+// Version of every card handler; legacy handlers take it as CARD_VERSION
+// from AHLCG-legacyLibrary.js.
 //
 // Module: returns the version.
 define(function () {
