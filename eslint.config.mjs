@@ -46,6 +46,7 @@ export default defineConfig([
     `!${diy}/TreacheryLocation.js`,
     `!${diy}/EnemyLocation.js`,
     `!${diy}/Scenario.js`,
+    `!${diy}/StoryChaos.js`,
     `!${diy}/Location.js`,
     `!${diy}/LocationLocation.js`,
     `!${diy}/Chaos.js`,
