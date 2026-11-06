@@ -441,6 +441,15 @@ define([
         );
     };
 
+    CardFace.prototype.showsEncounterTab = function (diy, faceIndex) {
+        if (!this.usesEncounter) return false;
+        if (this.subtypes == null) return true;
+        var subtype = String(
+            diy.settings.get('Subtype' + this.suffix(faceIndex), 'None')
+        );
+        return subtype === 'None' || subtype === 'StoryWeakness';
+    };
+
     // whether the side shows its encounter icon and number
     CardFace.prototype.showsEncounter = function () {
         return this.subtype === 'None' || this.subtype === 'StoryWeakness';

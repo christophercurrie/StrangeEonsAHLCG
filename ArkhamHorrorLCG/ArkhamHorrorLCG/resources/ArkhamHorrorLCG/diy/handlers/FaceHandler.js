@@ -42,6 +42,9 @@ define([
     Bindings,
     Java
 ) {
+    const PropertyChangeListener = Java.type(
+        'java.beans.PropertyChangeListener'
+    );
     const DefaultPortrait = Java.type(
         'ca.cgjennings.apps.arkham.component.DefaultPortrait'
     );
@@ -243,10 +246,13 @@ define([
                 index + i
             );
             this.collectorTabs.push({
+                kind: kind,
+                title: tab.title,
                 component: tabPane.getComponentAt(index + i),
                 controls: tab.controls,
             });
         }, this);
+        this.updateCollectorTabs(diy);
 
         var copyrightFaces = this.copyrightFaces();
         if (copyrightFaces.length > 0) {
@@ -278,6 +284,49 @@ define([
                 controls: template.controls,
             };
         }
+    };
+
+    // whether a side draws the encounter set as the card's settings stand
+    FaceHandler.prototype.showsEncounterTab = function (diy) {
+        return [FACE_FRONT, FACE_BACK].some(function (faceIndex) {
+            return this.faces[faceIndex].showsEncounterTab(diy, faceIndex);
+        }, this);
+    };
+
+    // Shows the encounter set tab only while a side draws the set; the tab
+    // stays at its place after the collection tab.
+    FaceHandler.prototype.updateCollectorTabs = function (diy) {
+        if (this.editor == null) return;
+        var tabPane = this.editor.getTabbedPane();
+        var previous = null;
+        this.collectorTabs.forEach(function (tab) {
+            var shown = tabPane.indexOfComponent(tab.component) >= 0;
+            var wanted =
+                tab.kind !== 'Encounter' || this.showsEncounterTab(diy);
+            if (shown && !wanted) {
+                if (tabPane.getSelectedComponent() === tab.component)
+                    tabPane.setSelectedIndex(0);
+                tabPane.remove(tab.component);
+            } else if (!shown && wanted) {
+                let index =
+                    previous != null
+                        ? tabPane.indexOfComponent(previous.component) + 1
+                        : this.collectorTabIndex();
+                tabPane.insertTab(tab.title, null, tab.component, null, index);
+            }
+            if (wanted) previous = tab;
+        }, this);
+    };
+
+    // where the first collector tab goes, after the sides' tabs
+    FaceHandler.prototype.collectorTabIndex = function () {
+        var tabPane = this.editor.getTabbedPane();
+        return (
+            tabPane.indexOfComponent(this.generalTab) +
+            1 +
+            this.sideInterfaces[FACE_FRONT].tabs.length +
+            this.sideInterfaces[FACE_BACK].tabs.length
+        );
     };
 
     FaceHandler.prototype.removeCollectorInterface = function () {
@@ -369,6 +418,21 @@ define([
         this.addCollectorInterface(diy);
 
         this.bindings.bind();
+
+        // a change of template or class can hide or show the encounter set
+        var handler = this;
+        if (this.settingsListener != null)
+            diy.settings.removePropertyChangeListener(this.settingsListener);
+        this.settingsListener = new PropertyChangeListener({
+            propertyChange: function () {
+                try {
+                    handler.updateCollectorTabs(diy);
+                } catch (ex) {
+                    Error.handleUncaught(ex);
+                }
+            },
+        });
+        diy.settings.addPropertyChangeListener(this.settingsListener);
     };
 
     // Adds a side's panels to the General tab and its tabs after the General

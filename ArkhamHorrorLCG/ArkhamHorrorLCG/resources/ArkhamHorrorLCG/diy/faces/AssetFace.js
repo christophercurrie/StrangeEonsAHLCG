@@ -391,5 +391,13 @@ define([
         this.paintCollector(g, diy, sheet, boxes, collector, story, story);
     };
 
+    // only a story card draws its encounter set
+    AssetFace.prototype.showsEncounterTab = function (diy, faceIndex) {
+        var cardClass = String(
+            diy.settings.get('CardClass' + this.suffix(faceIndex), '')
+        );
+        return cardClass === 'Story' || cardClass === 'StoryWeakness';
+    };
+
     return AssetFace;
 });

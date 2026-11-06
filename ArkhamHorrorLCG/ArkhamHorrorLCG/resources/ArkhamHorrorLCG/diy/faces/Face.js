@@ -124,6 +124,13 @@ define([
     // faces/CollectorInfo.js; art: the face's portraits by name
     Face.prototype.paint = function (g, diy, sheet, boxes, collector, art) {};
 
+    // whether the editor shows the encounter set for the side as its settings
+    // stand; a face that draws the set only for some templates or classes
+    // hides it for the others
+    Face.prototype.showsEncounterTab = function (diy, faceIndex) {
+        return this.usesEncounter;
+    };
+
     // the collector line's <name>-region, where a reversed face moves it
     Face.prototype.collectorRegion = function (diy, name) {
         return diy.settings.getRegion(this.key(diy.settings, name + '-region'));

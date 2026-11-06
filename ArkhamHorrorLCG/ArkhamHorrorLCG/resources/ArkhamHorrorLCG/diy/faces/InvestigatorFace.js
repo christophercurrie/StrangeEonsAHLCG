@@ -258,5 +258,10 @@ define([
         this.paintCollector(g, diy, sheet, boxes, collector, story, story);
     };
 
+    // only a Story class investigator draws its encounter set
+    InvestigatorFace.prototype.showsEncounterTab = function (diy, faceIndex) {
+        return this.cardClass(diy, faceIndex) === 'Story';
+    };
+
     return InvestigatorFace;
 });

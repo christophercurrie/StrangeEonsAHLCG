@@ -186,5 +186,13 @@ define([
         this.storyWeakness = false;
     };
 
+    // only a story card draws its encounter set
+    SkillFace.prototype.showsEncounterTab = function (diy, faceIndex) {
+        var cardClass = String(
+            diy.settings.get('CardClass' + this.suffix(faceIndex), '')
+        );
+        return cardClass === 'Story' || cardClass === 'StoryWeakness';
+    };
+
     return SkillFace;
 });
