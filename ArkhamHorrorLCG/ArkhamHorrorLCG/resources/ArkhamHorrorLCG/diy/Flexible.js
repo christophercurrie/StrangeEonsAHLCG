@@ -36,6 +36,7 @@ define([
     'faces/AgendaFrontPortraitFace',
     'faces/AgendaPortraitFace',
     'faces/PortraitFace',
+    'faces/TreacheryLocationFace',
 ], function (
     exportHandler,
     FaceChoiceHandler,
@@ -62,7 +63,8 @@ define([
     AgendaBackFace,
     AgendaFrontPortraitFace,
     AgendaPortraitFace,
-    PortraitFace
+    PortraitFace,
+    TreacheryLocationFace
 ) {
     // face ids, in menu order, and their faces
     const Faces = {
@@ -90,6 +92,7 @@ define([
         agendaFrontPortrait: AgendaFrontPortraitFace,
         agendaPortrait: AgendaPortraitFace,
         portrait: PortraitFace,
+        treacheryLocation: TreacheryLocationFace,
     };
 
     const Choices = Object.keys(Faces).map(function (id) {
