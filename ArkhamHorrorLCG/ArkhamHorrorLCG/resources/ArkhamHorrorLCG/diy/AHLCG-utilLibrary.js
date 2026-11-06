@@ -7,8 +7,8 @@ importClass( java.awt.Dimension );
 // the modules this library hands its work to
 useLibrary( 'amd' );
 const AHLCGModules = {};
-define( [ 'core/PluginInfo', 'faces/FaceUtils', 'legacy/Card', 'legacy/ImageFilters', 'legacy/Portraits', 'legacy/Sets', 'legacy/Templates' ],
-	function ( PluginInfo, FaceUtils, Card, ImageFilters, Portraits, Sets, Templates ) {
+define( [ 'core/PluginInfo', 'faces/FaceUtils', 'legacy/Card', 'legacy/ImageFilters', 'legacy/Portraits', 'legacy/Sets', 'legacy/Templates', 'legacy/Text' ],
+	function ( PluginInfo, FaceUtils, Card, ImageFilters, Portraits, Sets, Templates, Text ) {
 		AHLCGModules.PluginInfo = PluginInfo;
 		AHLCGModules.FaceUtils = FaceUtils;
 		AHLCGModules.Card = Card;
@@ -16,6 +16,7 @@ define( [ 'core/PluginInfo', 'faces/FaceUtils', 'legacy/Card', 'legacy/ImageFilt
 		AHLCGModules.Portraits = Portraits;
 		AHLCGModules.Sets = Sets;
 		AHLCGModules.Templates = Templates;
+		AHLCGModules.Text = Text;
 	} );
 
 const PortraitList = [];
@@ -92,160 +93,6 @@ function getBleedPixels( sheet ) {
 
 function paintPortrait( g, diy, sheet, name ) {
 	AHLCGModules.Portraits.paint( legacyCard(), g, diy, sheet, name );
-}
-
-function getForceDisplay( key ) {
-	var forceDisplay = false;
-
-	switch ( key ) {
-		case 'DeckOptions':
-		case 'DeckRequirements':
-			forceDisplay = true;
-			break;
-	}
-
-	return forceDisplay;
-}
-
-function addSpacing( faceIndex, text, key, diy ) {
-	var forceDisplay = getForceDisplay( key );
-
-	var sectionText = $( key + BindingSuffixes[faceIndex] );
-	var sectionSpacing = $( key + BindingSuffixes[faceIndex] + 'Spacing' );
-
-	if (sectionSpacing == null) return text;
-
-	var spacing = 0;
-
-	if ( forceDisplay || sectionText != '' ) {
-		if (key == 'Traits') spacing = 0.5;
-		else spacing = 1.5;
-
-		if (sectionSpacing != null && sectionSpacing > 0) spacing += parseInt(sectionSpacing);
-
-		text = text + '\n<image res://ArkhamHorrorLCG/images/empty1x1.png 1pt ' + spacing + 'pt>';
-	}
-	else if ( sectionSpacing != null && sectionSpacing > 0 ) {
-		spacing = sectionSpacing;
-
-		text = text + '<image res://ArkhamHorrorLCG/images/empty1x1.png 1pt ' + spacing + 'pt>';
-	}
-
-	return text;
-}
-
-function addTextPart( faceIndex, text, key, diy ) {
-	var forceDisplay = getForceDisplay( key );
-
-	if (forceDisplay == true || diy.settings.get( key + BindingSuffixes[faceIndex], '' ) != '') {
-		if ( text != '' ) {
-			text = text + '\n';
-		}
-
-		var format = '';
-		var formatEnd = '';
-		var alignment = '';
-		var entryText = $( key + BindingSuffixes[faceIndex] );
-
-		switch( key ) {
-			case 'Traits':
-				format = diy.settings.get( 'AHLCG-Traits-format', '<ts>' );
-				formatEnd = diy.settings.get( 'AHLCG-Traits-formatEnd', '</ts>' );
-				alignment = diy.settings.get( 'AHLCG-Traits-alignment', '<center>' );
-				break;
-			case 'Keywords':
-				format = diy.settings.get('AHLCG-Keywords-format','');
-				formatEnd = diy.settings.get('AHLCG-Keywords-formatEnd','');
-				alignment = diy.settings.get('AHLCG-Keywords-alignment','<left>');
-				break;
-			case 'Rules':
-				format = diy.settings.get('AHLCG-Rules-format','');
-				formatEnd = diy.settings.get('AHLCG-Rules-formatEnd','');
-				alignment = diy.settings.get('AHLCG-Rules-alignment','<left>');
-				break;
-			case 'Victory':
-				format = diy.settings.get('AHLCG-Victory-format','<vic>');
-				formatEnd = diy.settings.get('AHLCG-Victory-formatEnd','</vic>');
-				alignment = diy.settings.get('AHLCG-Victory-alignment','<center>');
-				break;
-			case 'Story':
-				format = diy.settings.get('AHLCG-Story-format','<i>');
-				formatEnd = diy.settings.get('AHLCG-Story-formatEnd','</i>');
-				alignment = '<' + diy.settings.get('AHLCG-Story-alignment','left') + '>';
-				break;
-			case 'ActStory':
-				format = diy.settings.get('AHLCG-Story-format','<css>');
-				formatEnd = diy.settings.get('AHLCG-Story-formatEnd','</css>');
-				alignment = '<' + diy.settings.get('AHLCG-Story-alignment','left') + '>';
-				break;
-			case 'AgendaStory':
-				format = diy.settings.get('AHLCG-Story-format','<gss>');
-				formatEnd = diy.settings.get('AHLCG-Story-formatEnd','</gss>');
-				alignment = '<' + diy.settings.get('AHLCG-Story-alignment','left') + '>';
-				break;
-			case 'Flavor':
-				format = diy.settings.get('AHLCG-Flavor-format','<fs>');
-				formatEnd = diy.settings.get('AHLCG-Flavor-formatEnd','</fs>');
-				alignment = '<' + diy.settings.get('AHLCG-Flavor-alignment','center') +'>';
-				break;
-			case 'InvStory':
-				format = diy.settings.get('AHLCG-SmallStory-format','<iss>');
-				formatEnd = diy.settings.get('AHLCG-SmallStory-formatEnd','</iss>');
-				alignment = '<' + diy.settings.get('AHLCG-SmallStory-alignment','left') + '>';
-				break;
-			case 'Text1':
-			case 'Text2':
-			case 'Text3':
-			case 'Text4':
-			case 'Text5':
-			case 'Text6':
-			case 'Text7':
-			case 'Text8':
-				format = '<hdr>' + $(key + 'NameBack') + '</hdr>: ';
-				formatEnd = '';
-				alignment = '<left>';
-				break;
-			case 'CustText1':
-			case 'CustText2':
-			case 'CustText3':
-			case 'CustText4':
-			case 'CustText5':
-			case 'CustText6':
-			case 'CustText7':
-			case 'CustText8':
-			case 'CustText9':
-			case 'CustText10':
-				var xpBox = '⧠';
-				// I do not know why this is necessary for Times New Roman
-				var xpStart = '<family>';
-				var xpEnd = '</family>';
-
-				if ( Eons.namedObjects.AHLCGObject.bodyFamily == 'Arno Pro' ) {
-					xpBox = '☐';
-					xpStart = '';
-					xpEnd = '';
-				}
-
-				format = xpStart;
-
-				let index = key.match(/\d+/);
-				let costStr = $( 'CustCost' + index[0] );
-				if ( costStr ) cost = parseInt(costStr);
-
-				for ( let i = 0; i < cost; i++ ) {
-					format = format + xpBox;
-				}
-				format = format + xpEnd + ' <hdr>' + $( 'CustName' + index[0] ) + '.</hdr> ';
-				formatEnd = '';
-				alignment = '<left>';
-				break;
-			}
-
-		return text + alignment + format + entryText + formatEnd;
-	}
-	else {
-		return text;
-	}
 }
 
 function getExpandedKey( faceIndex, key, appendix ) {
@@ -570,126 +417,6 @@ function getPortrait( index ) {
 
 function getPortraitIndex( portraitName ) {
 	return legacyCard().portraitIndex( portraitName );
-}
-
-function getClassInitial( className ) {
-	var initial;
-
-	switch ( className ) {
-		case 'Guardian':
-			initial = 'G';
-			break;
-		case 'ParallelGuardian':
-			initial = 'GP';
-			break;
-		case 'Seeker':
-			initial = 'K';
-			break;
-		case 'ParallelSeeker':
-			initial = 'KP';
-			break;
-		case 'Rogue':
-			initial = 'R';
-			break;
-		case 'ParallelRogue':
-			initial = 'RP';
-			break;
-		case 'Mystic':
-			initial = 'M';
-			break;
-		case 'ParallelMystic':
-			initial = 'MP';
-			break;
-		case 'Survivor':
-			initial = 'V';
-			break;
-		case 'ParallelSurvivor':
-			initial = 'VP';
-			break;
-		case 'Weakness':
-		case 'BasicWeakness':
-			initial = 'W';
-			break;
-		case 'Encounter':
-			initial = 'E';
-			break;
-		case 'Neutral':
-			initial = 'N';
-			break;
-		case 'Specialist':
-			initial = 'P';
-			break;
-		case 'ParallelNeutral':
-			initial = 'NP';
-			break;
-		case 'Story':
-			initial = 'S';
-			break;
-		case 'StoryWeakness':
-			initial = 'SW';
-			break;
-		case 'Dual':
-			initial = 'D';
-			break;
-		case 'Test':
-			initial = 'T';
-			break;
-		default:
-			initial = '';
-			break;
-	}
-
-	return initial;
-}
-
-function getSkillInitial( skillName )
-{
-	var initial;
-
-	switch (skillName) {
-		case 'Willpower':
-			initial = 'W';
-			break;
-		case 'Intellect':
-			initial = 'I';
-			break;
-		case 'Combat':
-			initial = 'C';
-			break;
-		case 'Agility':
-			initial = 'A';
-			break;
-		default:
-			initial = 'D';
-			break;
-	}
-
-	return initial;
-}
-
-function getClassArray( cardClass, cardClass2, cardClass3 ) {
-	// return an array of classes
-	var classes = [ cardClass ];
-
-	if ( cardClass2 == null ) cardClass2 = 'None';
-	if ( cardClass3 == null ) cardClass3 = 'None';
-
-	if ( cardClass2 == 'None' && cardClass3 == 'None' ) return classes;
-
-	let classInitial = getClassInitial( cardClass );
-
-	// if not basic class, only return the first class
-	if ( classInitial != 'G' && classInitial != 'K' && classInitial != 'R' && classInitial != 'M' && classInitial != 'V' ) return classes;
-
-	// not dual class if the first class isn't a valid one or if the classes match
-	if ( cardClass2 !== cardClass && cardClass2 !== 'None' ) classes.push( cardClass2 );
-	if ( cardClass3 !== cardClass && cardClass3 !== cardClass2 && cardClass3 !== 'None' ) classes.push( cardClass3 );
-
-	return classes;
-}
-
-function getClassCount( cardClass, cardClass2, cardClass3 ) {
-	return getClassArray( cardClass, cardClass2, cardClass3 ).length;
 }
 
 function setPortraitPanelFileFieldEnabled( panel, enabled ) {
