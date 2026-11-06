@@ -1,6 +1,9 @@
 // Player asset: class art, or dual and triple class art with class symbols,
 // title and subtitle, cost, level, skill icons, slots, health and sanity. A
-// Weakness or BasicWeakness class card is a weakness asset.
+// Weakness or BasicWeakness class card is a weakness asset. A Story or
+// StoryWeakness class card is a story asset: neutral or weakness art with an
+// empty level circle and the encounter set's circle, or a weakness's
+// overlay, and the encounter set.
 //
 // Module: returns AssetFace.
 define([
@@ -9,9 +12,20 @@ define([
     'faces/PlayerCard',
     'se/common',
     'se/imageutils',
+    'se/java',
     'se/strings',
     'se/ui',
-], function (CardFace, FaceUtils, PlayerCard, common, imageutils, strings, ui) {
+], function (
+    CardFace,
+    FaceUtils,
+    PlayerCard,
+    common,
+    imageutils,
+    Java,
+    strings,
+    ui
+) {
+    const ListItem = Java.type('ca.cgjennings.apps.arkham.diy.ListItem');
     const SkillCount = 5;
 
     function AssetFace() {
@@ -23,7 +37,29 @@ define([
     AssetFace.prototype.template = 'AHLCG-AssetFace';
     AssetFace.prototype.labelKey = 'AHLCG-Label-Asset';
     AssetFace.prototype.hasSubtitle = true;
-    AssetFace.prototype.usesEncounter = false;
+
+    function isStory(cardClass) {
+        return cardClass === 'Story' || cardClass === 'StoryWeakness';
+    }
+
+    // the class the art is drawn for; story art is neutral or weakness art
+    function artClass(diy, suffix) {
+        var cardClass = String(diy.settings.get('CardClass' + suffix, ''));
+        if (cardClass === 'Story') return 'Neutral';
+        if (cardClass === 'StoryWeakness') return 'Weakness';
+        return PlayerCard.artClass(diy, suffix);
+    }
+
+    // the player classes, then the story classes
+    function classList(o) {
+        return o.comboClassesBW.concat([
+            new ListItem('Story', strings.string('AHLCG-Class-Story')),
+            new ListItem(
+                'StoryWeakness',
+                strings.string('AHLCG-Class-StoryWeakness')
+            ),
+        ]);
+    }
 
     AssetFace.prototype.defaultValues = function (diy, faceIndex) {
         var values = {
@@ -61,7 +97,7 @@ define([
         panel.place(
             strings.string('AHLCG-Class1'),
             'align right',
-            list('CardClass', o.comboClassesBW),
+            list('CardClass', classList(o)),
             row,
             strings.string('AHLCG-Icon') + ' 1',
             'align right, gapx 10',
@@ -130,12 +166,12 @@ define([
     };
 
     AssetFace.prototype.templateKey = function (diy, faceIndex) {
-        var artClass = PlayerCard.artClass(diy, this.suffix(faceIndex));
+        var art = artClass(diy, this.suffix(faceIndex));
         return PlayerCard.templateKey(
             this,
             diy,
             faceIndex,
-            PlayerCard.initial(artClass)
+            PlayerCard.initial(art)
         );
     };
 
@@ -235,11 +271,32 @@ define([
         var suffix = this.suffix(sheet.getSheetIndex());
         var cardClass = String(diy.settings.get('CardClass' + suffix, ''));
         var classes = PlayerCard.classes(diy, suffix);
-        var artClass = PlayerCard.artClass(diy, suffix);
+        var art = artClass(diy, suffix);
+        var story = isStory(cardClass);
         var subtitle = String(diy.settings.get('Subtitle' + suffix, ''));
 
         if (!this.replaced && classes.length > 1)
             PlayerCard.paintClassSymbols(this, g, diy, sheet, classes);
+        if (story && !this.replaced) {
+            this.paintImage(
+                g,
+                diy,
+                sheet,
+                'overlays/AHLCG-LevelCircle-' +
+                    PlayerCard.initial(art) +
+                    '-None.png',
+                'LevelCircle'
+            );
+            this.paintImage(
+                g,
+                diy,
+                sheet,
+                cardClass === 'StoryWeakness'
+                    ? 'overlays/AHLCG-BasicWeaknessAsset.png'
+                    : 'overlays/AHLCG-Asset-EncounterSetOverlay.png',
+                'Encounter-overlay'
+            );
+        }
 
         var label = diy.settings.getRegion(
             this.key(diy.settings, 'Label-region')
@@ -251,25 +308,26 @@ define([
         ).toUpperCase();
         boxes.label.drawAsSingleLine(g, label);
 
-        this.paintClassName(
-            g,
-            diy,
-            sheet,
-            boxes.name,
-            artClass,
-            classes.length
-        );
+        this.paintClassName(g, diy, sheet, boxes.name, art, classes.length);
         if (subtitle.length > 0)
             this.paintClassSubtitle(
                 g,
                 diy,
                 sheet,
                 boxes.subtitle,
-                artClass,
+                art,
                 subtitle
             );
 
-        if (PlayerCard.isWeakness(cardClass)) {
+        if (story) {
+            if (cardClass === 'StoryWeakness')
+                this.paintSubtype(
+                    g,
+                    diy,
+                    boxes.subtype,
+                    'AHLCG-Label-Weakness'
+                );
+        } else if (PlayerCard.isWeakness(cardClass)) {
             PlayerCard.paintWeaknessLevel(this, g, diy, sheet);
             if (cardClass === 'BasicWeakness' && !this.replaced) {
                 this.paintImage(
@@ -301,13 +359,13 @@ define([
                 g,
                 diy,
                 sheet,
-                PlayerCard.initial(artClass),
+                PlayerCard.initial(art),
                 String(diy.settings.get('Level' + suffix, '0')),
                 false
             );
         }
 
-        var artInitial = PlayerCard.initial(artClass);
+        var artInitial = PlayerCard.initial(art);
         PlayerCard.paintCost(
             this,
             g,
@@ -322,7 +380,7 @@ define([
             diy,
             sheet,
             suffix,
-            artClass,
+            story ? 'Neutral' : art,
             SkillCount
         );
         PlayerCard.paintSlots(this, g, diy, sheet, suffix);
@@ -330,7 +388,7 @@ define([
         PlayerCard.paintStat(this, g, diy, sheet, suffix, 'Sanity');
 
         this.paintBody(g, diy, boxes.body, suffix);
-        this.paintCollector(g, diy, sheet, boxes, collector, false, false);
+        this.paintCollector(g, diy, sheet, boxes, collector, story, story);
     };
 
     return AssetFace;
