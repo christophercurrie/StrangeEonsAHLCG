@@ -61,6 +61,7 @@ export default defineConfig([
     `!${diy}/core/**/*.js`,
     `!${diy}/data/**/*.js`,
     `!${diy}/faces/**/*.js`,
+    `!${diy}/guide/**/*.js`,
     `!${diy}/legacy/**/*.js`,
     `!${diy}/plugin/**/*.js`,
     `!${diy}/prefs/**/*.js`,

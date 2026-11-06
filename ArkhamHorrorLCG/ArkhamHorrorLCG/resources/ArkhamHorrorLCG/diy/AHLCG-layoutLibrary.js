@@ -72,84 +72,11 @@ function layoutTitleUnique( diy, bindings, subtitle, updateFaces, bindingFaceInd
 }
 
 function layoutTitleGuide( diy, bindings, updateFaces, bindingFaceIndex, portraitPanels ) {
-	var TitlePanel = new Grid();
-	TitlePanel.setTitle( @AHLCG-Title );
-
-	var TypeList = new comboBox( Eons.namedObjects.AHLCGObject.comboGuide, null );
-	bindings.add( 'PageType' + BindingSuffixes[bindingFaceIndex], TypeList, updateFaces );
-
-	// update portrait pan/scale, stencil
-	TypeList.addActionListener( function updatePosition( actionEvent ) {
-		try {
-			// test is primarily to keep the region from resetting during loading
-			if ( (String)(TypeList.getSelectedItem()) != $( 'PageType' + BindingSuffixes[bindingFaceIndex] ) ) {
-				// have to do this now or the computes won't work
-				diy.settings.set( 'PageType' + BindingSuffixes[bindingFaceIndex], (String)(TypeList.getSelectedItem()) );
-
-				for ( let i = 0; i < portraitPanels.length; i++) {
-					let region = getGuidePortraitRegion( diy, (String)($( 'PositionPortrait'+ (i+1) )) );
-					let portrait = portraitPanels[i].portrait;
-					let image = portrait.getImage();
-
-					if ( region == null ) {
-						portrait.pan = Point2D.Float( 0, 0 );
-						portrait.scale = 1.0;
-					}
-					else {
-						let image = portrait.image;
-
-						let clipDimension = portrait.getClipDimensions();
-
-//						let coveringScale = ImageUtilities.idealCoveringScaleForImage( region.width, region.height, image.getWidth(), image.getHeight() );
-
-						portrait.pan = Point2D.Float( region.x + (region.width - clipDimension.width) / 2, region.y + (region.height - clipDimension.height) / 2 );
-						portrait.scale = ImageUtilities.idealCoveringScaleForImage( region.width, region.height, image.getWidth(), image.getHeight() );
-//						portrait.scale = coveringScale;
-
-						portraitPanels[i].portrait = portrait;
-					}
-
-					portraitPanels[i].portrait = portrait;
-				}
-			}
-
-//			createPortraitStencil( diy, PortraitList[0], portraitPanels[0], $PositionPortrait1, (String)(TypeList.getSelectedItem()) );
-//			createPortraitStencil( diy, PortraitList[1], portraitPanels[1],  $PositionPortrait2, (String)(TypeList.getSelectedItem()) );
-			createPortraitStencil( diy, PortraitList[0], $PositionPortrait1, (String)(TypeList.getSelectedItem()) );
-			createPortraitStencil( diy, PortraitList[1], $PositionPortrait2, (String)(TypeList.getSelectedItem()) );
-		} catch ( ex ) {
-			Error.handleUncaught( ex );
-		}
-	});
-
-	TitlePanel.place(
-		@AHLCG-Type, 'align right', TypeList, 'wrap, wmin 100'
-		);
-
-	var titleField = new textField( '', 30 );
-
-	if (bindingFaceIndex == FACE_FRONT) diy.setNameField( titleField );
-	else bindings.add( 'Title' + BindingSuffixes[bindingFaceIndex], titleField, updateFaces );
-
-	TitlePanel.place(
-		@AHLCG-Title, 'align right', titleField, 'wrap, pushx, growx'
-		);
-
-	return TitlePanel;
+	return AHLCGModules.GuidePanels.title( legacyCard(), diy, bindings, updateFaces, bindingFaceIndex, portraitPanels );
 }
 
 function layoutGuideStats( bindings, faceIndex ) {
-	var StatsPanel = new Grid();
-	StatsPanel.setTitle( @AHLCG-BasicData );
-
-	var pageSpinner = new spinner( 0, 100, 1, 1 );
-	bindings.add( 'Page' + BindingSuffixes[faceIndex], pageSpinner, [0] );
-
-	StatsPanel.place(
-		@AHLCG-Page, 'align right, gapx 10', pageSpinner, 'wrap'
-		);
-
-	return StatsPanel;
+	return AHLCGModules.GuidePanels.stats( legacyCard(), bindings, faceIndex );
 }
 
 function layoutConcealedStats( diy, bindings, faceIndex ) {
@@ -354,69 +281,8 @@ function layoutPortraitOptions( bindings, faces, bindingFaceIndex, artist, mirro
 	return OptionPanel;
 }
 
-function setupGuidePortrait( diy, portraitIndex, positionOption, settingUp )
-{
-	var portrait = PortraitList[portraitIndex];
-
-	// update portrait pan/scale, stencil
-	try {
-		// assume pan is 0 before this has run -> run this once when component is created
-		// update portrait positioning
-		let region = getGuidePortraitRegion( diy, positionOption );
-
-		if ( region == null ) {
-			portrait.pan = Point2D.Float( 0, 0 );
-			portrait.scale = 1.0;
-		}
-		else if (settingUp) {
-			let image = portrait.image;
-
-			let clipDimension = portrait.getClipDimensions();
-
-			let coveringScale = ImageUtilities.idealCoveringScaleForImage( region.width, region.height, image.getWidth(), image.getHeight() );
-
-			portrait.pan = Point2D.Float( region.x + (region.width - clipDimension.width) / 2, region.y + (region.height - clipDimension.height) / 2);
-			portrait.scale = coveringScale;
-		}
-
-		createPortraitStencil( diy, portrait, positionOption, $PageType );
-	} catch ( ex ) {
-		Error.handleUncaught( ex );
-	}
-
-//	return portrait;
-}
-
-function layoutGuidePortraitOptions( diy, bindings, faces, bindingFaceIndex, portraitName, panel, list, mirror ) {
-	var OptionPanel = new Grid();
-	OptionPanel.setTitle( @AHLCG-Options );
-
-	var PositionList = new comboBox( list, null );
-	bindings.add( 'Position' + portraitName + BindingSuffixes[bindingFaceIndex], PositionList, faces );
-
-	var portraitIndex = getPortraitIndex( portraitName );
-	var portrait = PortraitList[portraitIndex];
-
-	// update portrait pan/scale, stencil
-	PositionList.addActionListener( function updatePosition( actionEvent ) {
-
-		if ( ( portrait.getPanX() == 0.0 && portrait.getPanY() == 0.0 ) || (String)(PositionList.getSelectedItem()) != $( 'PositionPortrait'+ (portraitIndex+1) )) {
-			let iportrait = setupGuidePortrait( diy, portraitIndex, (String)(PositionList.getSelectedItem()), true );
-			panel.portrait = portrait;
-		}
-	});
-
-	OptionPanel.place(
-		@AHLCG-Position, 'align right', PositionList, 'pushx, growx, sizegroup sp'
-		);
-
-	if ( mirror != null) {
-		OptionPanel.place(
-			mirror, 'align right'
-			);
-	}
-
-	return OptionPanel;
+function setupGuidePortrait( diy, portraitIndex, positionOption, settingUp ) {
+	AHLCGModules.GuidePage.setupPortrait( legacyCard(), diy, portraitIndex, positionOption, settingUp );
 }
 
 function layoutPortraits( diy, bindings, frontPortrait, backPortrait, mirror, share, backArtist ) {
@@ -527,43 +393,7 @@ function layoutPortraitsWithPanels( diy, bindings, frontPortrait, backPortrait, 
 }
 
 function layoutGuidePortraits( diy, bindings, leftPortrait, rightPortrait, mirror ) {
-	var PortraitTab = new Grid();
-	PortraitTab.editorTabScrolling = true;
-
-	var leftNeeded = ( leftPortrait != null && leftPortrait.length > 0 );
-	var rightNeeded = ( rightPortrait != null && rightPortrait.length > 0 );
-
-	var leftPortraitImagePanel = null;
-	var rightPortraitImagePanel = null;
-
-	if ( leftNeeded ) {
-		if ( rightNeeded ) leftPortraitImagePanel = new portraitPanel( diy, getPortraitIndex( leftPortrait ), @AHLCG-Portrait + ' : '+ @AHLCG-LeftTop );
-		else leftPortraitImagePanel = new portraitPanel( diy, getPortraitIndex( leftPortrait ), @AHLCG-Portrait );
-
-		let leftMirrorButton = null;
-		if (mirror) leftMirrorButton = createPortraitMirrorButton( leftPortrait, leftPortraitImagePanel );
-
-		let leftOptionPanel = layoutGuidePortraitOptions( diy, bindings, [0], FACE_FRONT, leftPortrait, leftPortraitImagePanel, Eons.namedObjects.AHLCGObject.comboPortraitPosition1, leftMirrorButton );
-		if ( rightNeeded ) leftOptionPanel.setTitle( @AHLCG-Options + ': ' + @AHLCG-LeftTop );
-
-		PortraitTab.place( leftPortraitImagePanel, 'wrap, pushx, growx' );
-		PortraitTab.place( leftOptionPanel, 'wrap, pushx, growx' );
-	}
-	if ( rightPortrait != null && rightPortrait.length > 0 ) {
-		if ( leftNeeded ) rightPortraitImagePanel = new portraitPanel( diy, getPortraitIndex( rightPortrait ), @AHLCG-Portrait + " : " + @AHLCG-RightBottom );
-		rightPortraitImagePanel = new portraitPanel( diy, getPortraitIndex( rightPortrait ), @AHLCG-Portrait );
-
-		let rightMirrorButton = null;
-		if (mirror) rightMirrorButton = createPortraitMirrorButton( rightPortrait, rightPortraitImagePanel );
-
-		let rightOptionPanel = layoutGuidePortraitOptions( diy, bindings, [0], FACE_FRONT, rightPortrait, rightPortraitImagePanel ,Eons.namedObjects.AHLCGObject.comboPortraitPosition2, rightMirrorButton );
-		if ( leftNeeded ) rightOptionPanel.setTitle( @AHLCG-Options + ': ' + @AHLCG-RightBottom );
-
-		PortraitTab.place( rightPortraitImagePanel, 'wrap, pushx, growx' );
-		PortraitTab.place( rightOptionPanel, 'wrap, pushx, growx' );
-	}
-
-	return [ PortraitTab, leftPortraitImagePanel, rightPortraitImagePanel ];
+	return AHLCGModules.GuidePanels.portraits( legacyCard(), diy, bindings, leftPortrait, rightPortrait, mirror );
 }
 
 function layoutCollection( bindings, portraitPanel, useSpinner, selectFaces, faces, bindingFaceIndex ) {

@@ -53,6 +53,7 @@
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/handlers/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/se/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/ui/**/*.js
+!ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/guide/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/legacy/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/plugin/**/*.js
 !ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy/prefs/**/*.js
