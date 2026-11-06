@@ -35,6 +35,9 @@ define([
         StoryWeakness: 'BasicWeaknessEnemy',
     };
 
+    // the setting of health's per investigator toggle
+    EnemyFace.prototype.healthPerInvestigator = 'PerInvestigator';
+
     EnemyFace.prototype.defaultValues = function (diy, faceIndex) {
         return {
             Health: '2',
@@ -224,7 +227,9 @@ define([
             dash.x += 5;
             dash.y += 6;
             CardFace.outlined(sheet, g, '—', dash, o.costFont, 11.5);
-        } else if (String(settings.get('PerInvestigator' + suffix)) === '1') {
+        } else if (
+            String(settings.get(this.healthPerInvestigator + suffix)) === '1'
+        ) {
             let valueRegion = region('HealthPerInv');
             let iconRegion = region('HealthPerInvIcon');
             let size = 13.5;

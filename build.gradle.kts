@@ -171,6 +171,7 @@ val flexibleSuffixMasks = mapOf(
     "event" to java.awt.Rectangle(630, 1012, 90, 34),
     "skill" to java.awt.Rectangle(670, 1018, 50, 26),
     "location" to java.awt.Rectangle(670, 1018, 50, 26),
+    "enemyLocation" to java.awt.Rectangle(670, 1018, 50, 26),
     "key" to java.awt.Rectangle(670, 1026, 50, 26),
     "investigator" to java.awt.Rectangle(995, 715, 45, 22),
     "act" to java.awt.Rectangle(570, 718, 45, 22),
