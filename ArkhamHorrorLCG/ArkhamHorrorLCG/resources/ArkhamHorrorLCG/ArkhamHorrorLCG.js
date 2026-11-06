@@ -16,13 +16,13 @@ importClass( java.util.Locale );
 useLibrary( 'amd' );
 define.config( { baseUrl: 'res://ArkhamHorrorLCG/diy' } );
 
-var GameObject;
-define( [ 'plugin/GameObject' ], function ( module ) {
-	GameObject = module;
+var GameObject, PreferenceCategory;
+define( [ 'plugin/GameObject', 'prefs/Category' ], function ( game, prefs ) {
+	GameObject = game;
+	PreferenceCategory = prefs;
 } );
 
 useLibrary( 'res://ArkhamHorrorLCG/diy/AHLCG-utilLibrary.js' );
-useLibrary( 'res://ArkhamHorrorLCG/diy/AHLCG-preferences.js' );
 
 function initialize() {
 	var GameLanguage = Language.getGame();
@@ -99,7 +99,11 @@ function initialize() {
 
 	Eons.namedObjects.AHLCGObject = GameObject.create( ahlcgGame.masterSettings );
 
-	addPreferences();
+	try {
+		PreferenceCategory.register( Eons.namedObjects.AHLCGObject );
+	} catch ( ex ) {
+		Error.handleUncaught( ex );
+	}
 
 	ClassMap.add( 'ArkhamHorrorLCG/ArkhamHorrorLCG.classmap' );
 }
