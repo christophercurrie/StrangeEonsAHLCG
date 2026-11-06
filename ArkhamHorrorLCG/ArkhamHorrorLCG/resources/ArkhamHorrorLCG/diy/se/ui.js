@@ -1,10 +1,10 @@
 // Strange Eons ui library: layouts, controls and bindings.
 //
 // Module: returns { Bindings, Grid, button, checkBox, comboBox, portraitPanel, spinner,
-// textArea, textField, tipButton, toggleButton }.
+// textArea, textField, tintPanel, tipButton, toggleButton }.
 /* global
   useLibrary, Bindings, Grid, button, checkBox, comboBox, portraitPanel,
-  spinner, textArea, textField, tipButton, toggleButton
+  spinner, textArea, textField, tintPanel, tipButton, toggleButton
  */
 useLibrary('ui');
 
@@ -19,6 +19,7 @@ define(function () {
         spinner: spinner,
         textArea: textArea,
         textField: textField,
+        tintPanel: tintPanel,
         tipButton: tipButton,
         toggleButton: toggleButton,
     };

@@ -7,8 +7,8 @@ importClass( java.awt.Dimension );
 // the modules this library hands its work to
 useLibrary( 'amd' );
 const AHLCGModules = {};
-define( [ 'core/PluginInfo', 'faces/FaceUtils', 'guide/GuideBody', 'guide/GuidePage', 'guide/GuidePanels', 'legacy/Card', 'legacy/CollectorLine', 'legacy/ImageFilters', 'legacy/Portraits', 'legacy/Sets', 'legacy/Templates', 'legacy/Text' ],
-	function ( PluginInfo, FaceUtils, GuideBody, GuidePage, GuidePanels, Card, CollectorLine, ImageFilters, Portraits, Sets, Templates, Text ) {
+define( [ 'core/PluginInfo', 'faces/FaceUtils', 'guide/GuideBody', 'guide/GuidePage', 'guide/GuidePanels', 'legacy/Card', 'legacy/CollectorLine', 'legacy/ImageFilters', 'legacy/Panels', 'legacy/Portraits', 'legacy/Sets', 'legacy/Templates', 'legacy/Text' ],
+	function ( PluginInfo, FaceUtils, GuideBody, GuidePage, GuidePanels, Card, CollectorLine, ImageFilters, Panels, Portraits, Sets, Templates, Text ) {
 		AHLCGModules.PluginInfo = PluginInfo;
 		AHLCGModules.FaceUtils = FaceUtils;
 		AHLCGModules.GuideBody = GuideBody;
@@ -17,6 +17,7 @@ define( [ 'core/PluginInfo', 'faces/FaceUtils', 'guide/GuideBody', 'guide/GuideP
 		AHLCGModules.Card = Card;
 		AHLCGModules.CollectorLine = CollectorLine;
 		AHLCGModules.ImageFilters = ImageFilters;
+		AHLCGModules.Panels = Panels;
 		AHLCGModules.Portraits = Portraits;
 		AHLCGModules.Sets = Sets;
 		AHLCGModules.Templates = Templates;
