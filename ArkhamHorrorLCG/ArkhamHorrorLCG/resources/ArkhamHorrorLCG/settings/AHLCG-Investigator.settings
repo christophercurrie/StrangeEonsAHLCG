@@ -101,7 +101,7 @@ AHLCG-Investigator-Artist-region = 290,359,86,7
 AHLCG-Investigator-Copyright-region = 384,359,81,7
 
 AHLCG-Investigator-CollectionNumber-region = 490,359,25,7
-AHLCG-Investigator-EncounterNumber-region = 422,363,37,10
+AHLCG-Investigator-EncounterNumber-region = 430,359,37,7
 
 AHLCG-Investigator-Body-tightness = 0.66
 AHLCG-InvestigatorBack-Body-alignment = center, top
