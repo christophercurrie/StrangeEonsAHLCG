@@ -44,6 +44,7 @@ export default defineConfig([
     `!${diy}/AgendaAssetStory.js`,
     `!${diy}/StoryAsset.js`,
     `!${diy}/TreacheryLocation.js`,
+    `!${diy}/EnemyLocation.js`,
     `!${diy}/Location.js`,
     `!${diy}/LocationLocation.js`,
     `!${diy}/Chaos.js`,
