@@ -39,13 +39,13 @@ define([
     AssetFace.prototype.hasSubtitle = true;
 
     function isStory(cardClass) {
-        return cardClass === 'Story' || cardClass === 'StoryWeakness';
+        return ['Reward', 'Story', 'StoryWeakness'].includes(cardClass);
     }
 
     // the class the art is drawn for; story art is neutral or weakness art
     function artClass(diy, suffix) {
         var cardClass = String(diy.settings.get('CardClass' + suffix, ''));
-        if (cardClass === 'Story') return 'Neutral';
+        if (cardClass === 'Reward' || cardClass === 'Story') return 'Neutral';
         if (cardClass === 'StoryWeakness') return 'Weakness';
         return PlayerCard.artClass(diy, suffix);
     }
@@ -53,6 +53,7 @@ define([
     // the player classes, then the story classes
     function classList(o) {
         return o.comboClassesBW.concat([
+            new ListItem('Reward', strings.string('AHLCG-Class-Reward')),
             new ListItem('Story', strings.string('AHLCG-Class-Story')),
             new ListItem(
                 'StoryWeakness',
@@ -282,9 +283,11 @@ define([
                 g,
                 diy,
                 sheet,
-                'overlays/AHLCG-LevelCircle-' +
-                    PlayerCard.initial(art) +
-                    '-None.png',
+                cardClass === 'Reward'
+                    ? 'overlays/AHLCG-LevelCircle-RW-0.png'
+                    : 'overlays/AHLCG-LevelCircle-' +
+                          PlayerCard.initial(art) +
+                          '-None.png',
                 'LevelCircle'
             );
             this.paintImage(
@@ -396,7 +399,7 @@ define([
         var cardClass = String(
             diy.settings.get('CardClass' + this.suffix(faceIndex), '')
         );
-        return cardClass === 'Story' || cardClass === 'StoryWeakness';
+        return isStory(cardClass);
     };
 
     return AssetFace;

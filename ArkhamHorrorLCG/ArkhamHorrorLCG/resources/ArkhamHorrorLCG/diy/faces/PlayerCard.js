@@ -35,9 +35,10 @@ define([
         StoryWeakness: 'SW',
         Dual: 'D',
         Test: 'T',
+        Reward: 'RW',
     };
     // classes whose art has a level circle drawn over it
-    const LevelCircleClasses = ['D', 'G', 'K', 'M', 'N', 'P', 'R', 'V'];
+    const LevelCircleClasses = ['D', 'G', 'K', 'M', 'N', 'P', 'R', 'V', 'RW'];
     const WeaknessClasses = ['Weakness', 'BasicWeakness', 'StoryWeakness'];
     const SkillInitials = {
         Willpower: 'W',
@@ -55,7 +56,7 @@ define([
     function artInitial(className, storyArt) {
         var i = initial(className);
         if (storyArt) return i;
-        if (i === 'S') return 'N';
+        if (i === 'S' || i === 'RW') return 'N';
         if (i === 'SW') return 'W';
         return i;
     }
