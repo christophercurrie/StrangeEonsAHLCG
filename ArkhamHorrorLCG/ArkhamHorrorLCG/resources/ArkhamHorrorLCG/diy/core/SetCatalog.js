@@ -5,14 +5,14 @@
 // Module: returns { updateUsedEncounterSets, updateUsedCollections,
 // storeUsedValue, loadUsedValue, createUserSettingValue }; the update
 // functions set the lists and their types on the plug-in's shared object.
-define(['se/common', 'se/imageutils', 'se/java', 'se/strings'], function (
-    common,
-    imageutils,
-    Java,
-    strings
-) {
+define([
+    'core/UserImages',
+    'se/common',
+    'se/imageutils',
+    'se/java',
+    'se/strings',
+], function (UserImages, common, imageutils, Java, strings) {
     const ListItem = Java.type('ca.cgjennings.apps.arkham.diy.ListItem');
-    const IIOException = Java.type('javax.imageio.IIOException');
     const ImageUtils = imageutils.ImageUtils;
     const Settings = common.Settings;
 
@@ -87,28 +87,17 @@ define(['se/common', 'se/imageutils', 'se/java', 'se/strings'], function (
                     ''
                 );
 
-                try {
-                    let image = ImageUtils.createIcon(
-                        ImageUtils.read(icon),
-                        24,
-                        24
-                    );
+                // a set whose icon can't be read is left out of the list
+                let image = UserImages.read(icon);
+                if (image == null) continue;
 
-                    o.comboEncounter[o.comboEncounter.length] = new ListItem(
-                        item,
-                        name,
-                        image
-                    );
+                o.comboEncounter[o.comboEncounter.length] = new ListItem(
+                    item,
+                    name,
+                    ImageUtils.createIcon(image, 24, 24)
+                );
 
-                    o.encounterTypes[o.encounterTypes.length] = index + 1;
-                } catch (ex) {
-                    if (ex.javaException instanceof IIOException) {
-                        // means image could not be read
-                        // don't add it to list, we can safely ignore this
-                    } else {
-                        Error.handleUncaught(ex);
-                    }
-                }
+                o.encounterTypes[o.encounterTypes.length] = index + 1;
             }
         }
     }
@@ -185,28 +174,17 @@ define(['se/common', 'se/imageutils', 'se/java', 'se/strings'], function (
                     ''
                 );
 
-                try {
-                    let image = ImageUtils.createIcon(
-                        ImageUtils.read(icon),
-                        24,
-                        24
-                    );
+                // a set whose icon can't be read is left out of the list
+                let image = UserImages.read(icon);
+                if (image == null) continue;
 
-                    o.comboCollection[o.comboCollection.length] = new ListItem(
-                        item,
-                        name,
-                        image
-                    );
+                o.comboCollection[o.comboCollection.length] = new ListItem(
+                    item,
+                    name,
+                    ImageUtils.createIcon(image, 24, 24)
+                );
 
-                    o.collectionTypes[o.collectionTypes.length] = index + 1;
-                } catch (ex) {
-                    if (ex.javaException instanceof IIOException) {
-                        // means image could not be read
-                        // don't add it to list, we can safely ignore this
-                    } else {
-                        Error.handleUncaught(ex);
-                    }
-                }
+                o.collectionTypes[o.collectionTypes.length] = index + 1;
             }
         }
     }

@@ -5,14 +5,14 @@
 //
 // Module: returns Collector.
 define([
+    'core/UserImages',
     'faces/FaceUtils',
     'se/common',
     'se/imageutils',
     'se/strings',
     'se/ui',
     'se/java',
-], function (FaceUtils, common, imageutils, strings, ui, Java) {
-    const IIOException = Java.type('javax.imageio.IIOException');
+], function (UserImages, FaceUtils, common, imageutils, strings, ui, Java) {
     const JTextField = Java.type('javax.swing.JTextField');
     const ListItem = Java.type('ca.cgjennings.apps.arkham.diy.ListItem');
     const Kinds = {
@@ -81,22 +81,19 @@ define([
         for (let n = 1; n <= userCount; n++) {
             if (!settings.getBoolean('AHLCG-UseUser' + kindName + n)) continue;
             let name = settings.get('AHLCG-User' + kindName + 'Name' + n, '');
-            try {
-                let image = imageutils.ImageUtils.read(
-                    settings.get('AHLCG-User' + kindName + 'Icon' + n, '')
-                );
-                combo.push(
-                    new ListItem(
-                        userValue(name),
-                        name,
-                        imageutils.ImageUtils.createIcon(image, 24, 24)
-                    )
-                );
-                types.push(n);
-            } catch (ex) {
-                // an icon that can't be read leaves the set out of the list
-                if (!(ex.javaException instanceof IIOException)) throw ex;
-            }
+            // an icon that can't be read leaves the set out of the list
+            let image = UserImages.read(
+                settings.get('AHLCG-User' + kindName + 'Icon' + n, '')
+            );
+            if (image == null) continue;
+            combo.push(
+                new ListItem(
+                    userValue(name),
+                    name,
+                    imageutils.ImageUtils.createIcon(image, 24, 24)
+                )
+            );
+            types.push(n);
         }
 
         o[kind.combo] = combo;

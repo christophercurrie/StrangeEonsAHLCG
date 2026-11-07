@@ -7,11 +7,12 @@
 //
 // Module: returns { clear, templateKey, paintFullBleed, paintFront,
 // paintBack, usesReplacement }.
-define(['faces/FaceUtils', 'se/common', 'se/imageutils'], function (
-    FaceUtils,
-    common,
-    imageutils
-) {
+define([
+    'core/UserImages',
+    'faces/FaceUtils',
+    'se/common',
+    'se/imageutils',
+], function (UserImages, FaceUtils, common, imageutils) {
     const FACE_FRONT = 0;
 
     // clears the sheet, then translates g to the trim edge
@@ -59,9 +60,7 @@ define(['faces/FaceUtils', 'se/common', 'se/imageutils'], function (
     // the replacement image, over the trim unless it includes the bleed
     function paintReplacement(card, g, sheet, faceIndex) {
         try {
-            let image = imageutils.ImageUtils.read(
-                card.get(replacementKey(faceIndex))
-            );
+            let image = UserImages.read(card.get(replacementKey(faceIndex)));
             if (!image) return;
             let bleed = FaceUtils.bleedPixels(sheet);
             let region = new common.Region(

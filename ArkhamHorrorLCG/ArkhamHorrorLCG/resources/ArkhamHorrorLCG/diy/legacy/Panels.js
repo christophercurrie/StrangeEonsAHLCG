@@ -5,6 +5,7 @@
 // Module: returns { title, title2, titleUnique, concealedStats, copyright,
 // text, portraits, tint, collection, encounter, simpleEncounter }.
 define([
+    'core/UserImages',
     'faces/FaceUtils',
     'legacy/ImageFilters',
     'legacy/Portraits',
@@ -14,6 +15,7 @@ define([
     'se/strings',
     'se/ui',
 ], function (
+    UserImages,
     FaceUtils,
     ImageFilters,
     Portraits,
@@ -547,7 +549,8 @@ define([
             iconFaces,
             faceIndex,
             function (portrait, path) {
-                var icon = imageutils.ImageUtils.read(path);
+                var icon = UserImages.read(path);
+                if (icon == null) return;
                 if (card.type(0) === 'Ultimatum')
                     icon = ImageFilters.inverted(icon);
                 portrait.setImage(path, icon);

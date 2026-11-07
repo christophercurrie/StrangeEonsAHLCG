@@ -8,12 +8,13 @@
 //
 // Module: returns { Encounter, Collection, create, layout, load, store,
 // addChecked }.
-define(['core/SetCatalog', 'se/common', 'se/java', 'se/strings'], function (
-    SetCatalog,
-    common,
-    Java,
-    strings
-) {
+define([
+    'core/SetCatalog',
+    'core/UserImages',
+    'se/common',
+    'se/java',
+    'se/strings',
+], function (SetCatalog, UserImages, common, Java, strings) {
     const ListItem = Java.type('ca.cgjennings.apps.arkham.diy.ListItem');
     const JBoolean = Java.type('java.lang.Boolean');
     const JString = Java.type('java.lang.String');
@@ -29,7 +30,6 @@ define(['core/SetCatalog', 'se/common', 'se/java', 'se/strings'], function (
     const BorderFactory = Java.type('javax.swing.BorderFactory');
     const Dimension = Java.type('java.awt.Dimension');
     const Color = Java.type('java.awt.Color');
-    const File = Java.type('java.io.File');
 
     function string(key) {
         return strings.string(key);
@@ -247,9 +247,7 @@ define(['core/SetCatalog', 'se/common', 'se/java', 'se/strings'], function (
         if (icon.length === 0) return fail(messages.icon);
         if (tag.length === 0) return fail(messages.tag);
 
-        var f = new File(icon);
-        if (!f.exists() || f.isDirectory())
-            return fail('Could not open icon image');
+        if (!UserImages.exists(icon)) return fail('Could not open icon image');
 
         var key = SetCatalog.createUserSettingValue(name);
         var nameUsed = false;
