@@ -131,9 +131,13 @@ define([
         return this.usesEncounter;
     };
 
-    // the collector line's <name>-region, where a reversed face moves it
-    Face.prototype.collectorRegion = function (diy, name) {
-        return diy.settings.getRegion(this.key(diy.settings, name + '-region'));
+    // the collector line's <name>-region, where a reversed face moves it;
+    // fractional keeps a Region2D's fractions instead of rounding them
+    Face.prototype.collectorRegion = function (diy, name, fractional) {
+        var key = this.key(diy.settings, name + '-region');
+        return fractional
+            ? diy.settings.getRegion2D(key)
+            : diy.settings.getRegion(key);
     };
 
     // <template>-<name> if set, else the shared AHLCG-Face-<name>

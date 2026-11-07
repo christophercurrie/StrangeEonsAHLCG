@@ -14,6 +14,7 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
     Java
 ) {
     const AlphaComposite = Java.type('java.awt.AlphaComposite');
+    const AffineTransform = Java.type('java.awt.geom.AffineTransform');
     const InversionFilter = Java.type(
         'ca.cgjennings.graphics.filters.InversionFilter'
     );
@@ -130,6 +131,16 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
         TheRainforest: 'Rainforest',
     };
 
+    // the image scaled into a region that may have fractional bounds
+    function paintIcon(g, image, region) {
+        var t = AffineTransform.getTranslateInstance(region.x, region.y);
+        t.scale(
+            region.width / image.getWidth(),
+            region.height / image.getHeight()
+        );
+        g.drawImage(image, t, null);
+    }
+
     function paintEncounterIcon(g, diy, sheet, face, portrait) {
         var settings = diy.settings;
         var name = String(settings.get('Encounter', ''));
@@ -142,31 +153,32 @@ define(['faces/FaceUtils', 'se/imageutils', 'se/strings', 'se/java'], function (
                 : imageutils.ImageUtils.get(
                       iconPath(ReturnedIcons[returned] || returned)
                   );
-            sheet.paintImage(
+            paintIcon(
                 g,
                 returnToImage(icon),
-                face.collectorRegion(diy, 'ReturnEncounterIcon')
+                face.collectorRegion(diy, 'ReturnEncounterIcon', true)
             );
             return;
         }
 
         if (name.substring(0, 6) === 'Return') {
-            sheet.paintImage(
+            paintIcon(
                 g,
                 imageutils.ImageUtils.get(iconPath(name)),
-                face.collectorRegion(diy, 'ReturnEncounterIcon')
+                face.collectorRegion(diy, 'ReturnEncounterIcon', true)
             );
             return;
         }
 
-        var region = face.collectorRegion(diy, 'EncounterIcon');
         if (!custom) {
-            sheet.paintImage(
+            paintIcon(
                 g,
                 imageutils.ImageUtils.get(iconPath(name)),
-                region
+                face.collectorRegion(diy, 'EncounterIcon', true)
             );
         } else {
+            // portrait clips are whole pixels
+            let region = face.collectorRegion(diy, 'EncounterIcon');
             // the portrait applies its scale and pan within its clip region
             settings.setRegion(ENCOUNTER_CLIP_KEY, region);
             portrait.paint(g, sheet.getRenderTarget());

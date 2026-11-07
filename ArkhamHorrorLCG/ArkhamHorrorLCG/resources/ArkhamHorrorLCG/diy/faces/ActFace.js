@@ -183,8 +183,13 @@ define([
         return this.reversed ? ActAgenda.reverse(region) : region;
     };
 
-    ActFace.prototype.collectorRegion = function (diy, name) {
-        var region = CardFace.prototype.collectorRegion.call(this, diy, name);
+    ActFace.prototype.collectorRegion = function (diy, name, fractional) {
+        var region = CardFace.prototype.collectorRegion.call(
+            this,
+            diy,
+            name,
+            fractional
+        );
         if (!this.reversed) return region;
         if (Collector.indexOf(name) >= 0)
             region.x += this.reversedCollectorShift;

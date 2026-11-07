@@ -109,6 +109,7 @@ AHLCG-AssetFace-VS-template = ArkhamHorrorLCG/templates/AHLCG-Asset-VS.jp2
 AHLCG-AssetFace-W-template = ArkhamHorrorLCG/templates/AHLCG-Asset-W.jp2
 AHLCG-AssetFace-WS-template = ArkhamHorrorLCG/templates/AHLCG-Asset-WS.jp2
 # a story asset's encounter set
+# fractional values supported, but stick to quarter pixels to stay sharp at 600dpi
 AHLCG-AssetFace-Encounter-overlay-region = 316,1,55,55
 AHLCG-AssetFace-EncounterIcon-region = 330,13,27,27
-AHLCG-AssetFace-ReturnEncounterIcon-region = 327,8,32,32
+AHLCG-AssetFace-ReturnEncounterIcon-region = 327.5,10.25,32,32
