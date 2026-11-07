@@ -23,6 +23,17 @@ strangeEonsRenderTest {
 val fixtureScript = file("src/renderTest/generate-fixtures.js")
 val amdScript = file("src/renderTest/amd-loader.js")
 
+// Fixtures, masters and test scripts live in the src/renderTest submodule.
+val checkRenderTestSources by tasks.registering {
+    description = "Fails if the src/renderTest submodule is not checked out."
+    val script = fixtureScript
+    doLast {
+        if (!script.isFile) {
+            throw GradleException("src/renderTest is not checked out. Run: git submodule update --init src/renderTest")
+        }
+    }
+}
+
 // Copies output to the console and to a log.
 class TeeOutputStream(private val console: java.io.OutputStream, private val log: java.io.OutputStream) :
     java.io.OutputStream() {
@@ -387,3 +398,10 @@ val updateDefaults by tasks.registering(Copy::class) {
 }
 
 tasks.named("check") { dependsOn(verifyDefaults, "verifyFlexibleRenders", "verifyFlexibleInkSaver") }
+
+listOf(
+    RenderComponents::class, VerifyRenders::class, UpdateRenderMasters::class, StageFlexibleRenders::class,
+).forEach { type -> tasks.withType(type).configureEach { dependsOn(checkRenderTestSources) } }
+listOf(generateFixtures, dumpDefaults, verifyDefaults, updateDefaults).forEach {
+    it.configure { dependsOn(checkRenderTestSources) }
+}

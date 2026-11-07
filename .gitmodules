@@ -1,0 +1,4 @@
+[submodule "src/renderTest"]
+	path = src/renderTest
+	url = git@github.com:strange-eons/arkham-horror-lcg-plugin-render-tests.git
+	branch = main
