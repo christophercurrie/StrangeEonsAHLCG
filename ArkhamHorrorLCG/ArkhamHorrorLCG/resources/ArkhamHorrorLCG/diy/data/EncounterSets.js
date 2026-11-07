@@ -4,11 +4,11 @@
 // Module: returns { basic, standard }.
 define(function () {
     var o = {};
-    o.basicEncounterList = new Array('CustomEncounterSet', 'StrangeEons');
+    o.basicEncounterList = ['CustomEncounterSet', 'StrangeEons'];
 
     // Highest = 286 (Relics of the Past)
     // NameKey, CollectionID, Tag, Index into select keys
-    o.standardEncounterList = new Array(
+    o.standardEncounterList = [
         ['ALightInTheFog', 22, 'alitf', 199],
         ['APhantomOfTruth', 4, 'phntm', 50],
         ['AbyssalGifts', 8, 'abygfts', 87],
@@ -323,8 +323,8 @@ define(function () {
         ['the_twisted_hollow', 33, 'fhvtth', 185],
         ['the_vale', 33, 'fhvtv', 186],
         ['transfiguration', 33, 'fhvtra', 187],
-        ['written_in_rock', 33, 'fhvwir', 188]
-    );
+        ['written_in_rock', 33, 'fhvwir', 188],
+    ];
 
     return { basic: o.basicEncounterList, standard: o.standardEncounterList };
 });

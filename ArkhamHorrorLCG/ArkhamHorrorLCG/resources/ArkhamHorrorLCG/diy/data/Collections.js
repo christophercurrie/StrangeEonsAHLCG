@@ -4,10 +4,10 @@
 // Module: returns { basic, standard }.
 define(function () {
     var o = {};
-    o.basicCollectionList = new Array('CustomCollection', 'StrangeEons');
+    o.basicCollectionList = ['CustomCollection', 'StrangeEons'];
 
     // Highest: 33 (Hemlock vale)
-    o.standardCollectionList = new Array(
+    o.standardCollectionList = [
         ['CarnevaleOfHorrors', 'ccarhor', 3], //  3
         ['CoreSet', 'core', 0], //  0
         ['CurseOfTheRougarou', 'ccurrou', 2], //  2
@@ -41,8 +41,8 @@ define(function () {
         ['TheScarletKeysInv', 'scarkeyi', 29], // 29
         ['WarOfTheOuterGods', 'cwotog', 23], // 23
         ['WinifredHabbamock', 'winhab', 19], // 19
-        ['TheFeastOfHemlockVale', 'hemloc', 33] // 33
-    );
+        ['TheFeastOfHemlockVale', 'hemloc', 33], // 33
+    ];
 
     return { basic: o.basicCollectionList, standard: o.standardCollectionList };
 });

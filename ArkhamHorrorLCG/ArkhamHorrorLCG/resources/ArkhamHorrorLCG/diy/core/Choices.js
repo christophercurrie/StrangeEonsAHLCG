@@ -14,7 +14,7 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
 
     function apply(o) {
         // updated arrays for language support
-        o.comboClassesI = new Array(
+        o.comboClassesI = [
             new ListItem('Guardian', strings.string('AHLCG-Class-Guardian')),
             new ListItem('Seeker', strings.string('AHLCG-Class-Seeker')),
             new ListItem('Rogue', strings.string('AHLCG-Class-Rogue')),
@@ -44,10 +44,10 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             new ListItem(
                 'ParallelNeutral',
                 strings.string('AHLCG-Class-ParallelNeutral')
-            )
-        );
+            ),
+        ];
 
-        o.comboClassesBWS = new Array(
+        o.comboClassesBWS = [
             new ListItem('Guardian', strings.string('AHLCG-Class-Guardian')),
             new ListItem('Seeker', strings.string('AHLCG-Class-Seeker')),
             new ListItem('Rogue', strings.string('AHLCG-Class-Rogue')),
@@ -67,10 +67,10 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             new ListItem(
                 'BasicWeakness',
                 strings.string('AHLCG-Class-BasicWeakness')
-            )
-        );
+            ),
+        ];
 
-        o.comboClassesBW = new Array(
+        o.comboClassesBW = [
             new ListItem('Guardian', strings.string('AHLCG-Class-Guardian')),
             new ListItem('Seeker', strings.string('AHLCG-Class-Seeker')),
             new ListItem('Rogue', strings.string('AHLCG-Class-Rogue')),
@@ -85,43 +85,43 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             new ListItem(
                 'BasicWeakness',
                 strings.string('AHLCG-Class-BasicWeakness')
-            )
-        );
+            ),
+        ];
 
-        o.comboClassesW = new Array(
+        o.comboClassesW = [
             new ListItem('Guardian', strings.string('AHLCG-Class-Guardian')),
             new ListItem('Seeker', strings.string('AHLCG-Class-Seeker')),
             new ListItem('Rogue', strings.string('AHLCG-Class-Rogue')),
             new ListItem('Mystic', strings.string('AHLCG-Class-Mystic')),
             new ListItem('Survivor', strings.string('AHLCG-Class-Survivor')),
             new ListItem('Neutral', strings.string('AHLCG-Class-Neutral')),
-            new ListItem('Weakness', strings.string('AHLCG-Class-Weakness'))
-        );
+            new ListItem('Weakness', strings.string('AHLCG-Class-Weakness')),
+        ];
 
-        o.comboClassesD = new Array(
+        o.comboClassesD = [
             new ListItem('None', strings.string('AHLCG-Class-None')),
             new ListItem('Guardian', strings.string('AHLCG-Class-Guardian')),
             new ListItem('Seeker', strings.string('AHLCG-Class-Seeker')),
             new ListItem('Rogue', strings.string('AHLCG-Class-Rogue')),
             new ListItem('Mystic', strings.string('AHLCG-Class-Mystic')),
-            new ListItem('Survivor', strings.string('AHLCG-Class-Survivor'))
-        );
+            new ListItem('Survivor', strings.string('AHLCG-Class-Survivor')),
+        ];
 
-        o.comboStoryAssetClasses = new Array(
+        o.comboStoryAssetClasses = [
             new ListItem('Neutral', strings.string('AHLCG-Class-Neutral')),
-            new ListItem('Weakness', strings.string('AHLCG-Class-Weakness'))
-        );
+            new ListItem('Weakness', strings.string('AHLCG-Class-Weakness')),
+        ];
 
-        o.comboSkills = new Array(
+        o.comboSkills = [
             new ListItem('None', strings.string('AHLCG-Skill-None')),
             new ListItem('Willpower', strings.string('AHLCG-Skill-Willpower')),
             new ListItem('Intellect', strings.string('AHLCG-Skill-Intellect')),
             new ListItem('Combat', strings.string('AHLCG-Skill-Combat')),
             new ListItem('Agility', strings.string('AHLCG-Skill-Agility')),
-            new ListItem('Wild', strings.string('AHLCG-Skill-Wild'))
-        );
+            new ListItem('Wild', strings.string('AHLCG-Skill-Wild')),
+        ];
 
-        o.comboSlots = new Array(
+        o.comboSlots = [
             new ListItem('None', strings.string('AHLCG-Slot-None')),
             new ListItem('Ally', strings.string('AHLCG-Slot-Ally')),
             new ListItem('Accessory', strings.string('AHLCG-Slot-Accessory')),
@@ -134,10 +134,10 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             new ListItem('Foot', strings.string('AHLCG-Slot-Foot')),
             new ListItem('Mask', strings.string('AHLCG-Slot-Mask')),
             new ListItem('Education', strings.string('AHLCG-Slot-Education')),
-            new ListItem('Tarot', strings.string('AHLCG-Slot-Tarot'))
-        );
+            new ListItem('Tarot', strings.string('AHLCG-Slot-Tarot')),
+        ];
 
-        o.comboWeaknessTypes = new Array(
+        o.comboWeaknessTypes = [
             new ListItem(
                 'BasicWeakness',
                 strings.string('AHLCG-WknType-BasicWeakness')
@@ -146,10 +146,10 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             new ListItem(
                 'StoryWeakness',
                 strings.string('AHLCG-WknType-StoryWeakness')
-            )
-        );
+            ),
+        ];
 
-        o.comboWeaknessTypesI = new Array(
+        o.comboWeaknessTypesI = [
             new ListItem(
                 'BasicWeakness',
                 strings.string('AHLCG-WknType-BasicWeakness')
@@ -162,10 +162,10 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             new ListItem(
                 'StoryWeakness',
                 strings.string('AHLCG-WknType-StoryWeakness')
-            )
-        );
+            ),
+        ];
 
-        o.comboScenario = new Array(
+        o.comboScenario = [
             new ListItem('Title', strings.string('AHLCG-Scenario-Title')),
             new ListItem(
                 'Resolution',
@@ -176,26 +176,26 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
                 'ChaosFull',
                 strings.string('AHLCG-StoryTemplate-TokenFull')
             ),
-            new ListItem('Portrait', strings.string('AHLCG-Scenario-Portrait'))
-        );
+            new ListItem('Portrait', strings.string('AHLCG-Scenario-Portrait')),
+        ];
 
-        o.comboBacks = new Array(
+        o.comboBacks = [
             new ListItem('Player', strings.string('AHLCG-Back-Player')),
-            new ListItem('Encounter', strings.string('AHLCG-Back-Encounter'))
-        );
+            new ListItem('Encounter', strings.string('AHLCG-Back-Encounter')),
+        ];
 
-        o.comboLocationBacks = new Array(
+        o.comboLocationBacks = [
             new ListItem('Standard', strings.string('AHLCG-Back-Standard')),
             new ListItem('Player', strings.string('AHLCG-Back-Player')),
-            new ListItem('Encounter', strings.string('AHLCG-Back-Encounter'))
-        );
+            new ListItem('Encounter', strings.string('AHLCG-Back-Encounter')),
+        ];
 
-        o.comboGuide = new Array(
+        o.comboGuide = [
             new ListItem('Title', strings.string('AHLCG-Guide-Title')),
-            new ListItem('Empty', strings.string('AHLCG-Guide-Empty'))
-        );
+            new ListItem('Empty', strings.string('AHLCG-Guide-Empty')),
+        ];
 
-        o.comboTemplateOrientation = new Array(
+        o.comboTemplateOrientation = [
             new ListItem(
                 'Standard',
                 strings.string('AHLCG-Orientation-Standard')
@@ -203,8 +203,8 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             new ListItem(
                 'Reversed',
                 strings.string('AHLCG-Orientation-Reversed')
-            )
-        );
+            ),
+        ];
 
         o.comboLevelsN = new Array(
             new ListItem('None', strings.string('AHLCG-Level-None'))
@@ -215,7 +215,7 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
                 String(index)
             );
         }
-        o.comboPortraitPosition1 = new Array(
+        o.comboPortraitPosition1 = [
             new ListItem('None', strings.string('AHLCG-Guide-None')),
             new ListItem(
                 'TopLeftSmall',
@@ -252,10 +252,10 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
                 'BottomLeftCorner',
                 strings.string('AHLCG-Guide-BottomLeftCorner')
             ),
-            new ListItem('FullPage', strings.string('AHLCG-Guide-FullPage'))
-        );
+            new ListItem('FullPage', strings.string('AHLCG-Guide-FullPage')),
+        ];
 
-        o.comboPortraitPosition2 = new Array(
+        o.comboPortraitPosition2 = [
             new ListItem('None', strings.string('AHLCG-Guide-None')),
             new ListItem(
                 'TopRightSmall',
@@ -294,29 +294,29 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             new ListItem(
                 'BottomRightCorner',
                 strings.string('AHLCG-Guide-BottomRightCorner')
-            )
-        );
+            ),
+        ];
 
-        o.comboStoryTemplate = new Array(
+        o.comboStoryTemplate = [
             new ListItem('Story', strings.string('AHLCG-StoryTemplate-Story')),
             new ListItem('Chaos', strings.string('AHLCG-StoryTemplate-Token')),
             new ListItem(
                 'ChaosFull',
                 strings.string('AHLCG-StoryTemplate-TokenFull')
-            )
-        );
+            ),
+        ];
 
-        o.comboStoryClass = new Array(
+        o.comboStoryClass = [
             new ListItem('Default', strings.string('AHLCG-Class-Default')),
             new ListItem('Neutral', strings.string('AHLCG-Class-Neutral')),
             new ListItem('Guardian', strings.string('AHLCG-Class-Guardian')),
             new ListItem('Seeker', strings.string('AHLCG-Class-Seeker')),
             new ListItem('Rogue', strings.string('AHLCG-Class-Rogue')),
             new ListItem('Mystic', strings.string('AHLCG-Class-Mystic')),
-            new ListItem('Survivor', strings.string('AHLCG-Class-Survivor'))
-        );
+            new ListItem('Survivor', strings.string('AHLCG-Class-Survivor')),
+        ];
 
-        o.comboStoryBackTemplate = new Array(
+        o.comboStoryBackTemplate = [
             new ListItem('Story', strings.string('AHLCG-StoryTemplate-Story')),
             new ListItem('Chaos', strings.string('AHLCG-StoryTemplate-Token')),
             new ListItem(
@@ -324,10 +324,10 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
                 strings.string('AHLCG-StoryTemplate-TokenFull')
             ),
             new ListItem('Player', strings.string('AHLCG-Back-Player')),
-            new ListItem('Encounter', strings.string('AHLCG-Back-Encounter'))
-        );
+            new ListItem('Encounter', strings.string('AHLCG-Back-Encounter')),
+        ];
 
-        o.comboConcealedTemplate = new Array(
+        o.comboConcealedTemplate = [
             new ListItem(
                 'Standard',
                 strings.string('AHLCG-ConcealedTemplate-Standard')
@@ -339,10 +339,10 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             new ListItem(
                 'NamedDecoy',
                 strings.string('AHLCG-ConcealedTemplate-NamedDecoy')
-            )
-        );
+            ),
+        ];
 
-        o.comboStat = new Array();
+        o.comboStat = [];
         for (let index = 0; index <= 9; index++) {
             o.comboStat[o.comboStat.length] = new ListItem(
                 index,
@@ -352,7 +352,7 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
         o.comboStat[o.comboStat.length] = new ListItem('X', 'X');
         o.comboStat[o.comboStat.length] = new ListItem('', 'Blank');
 
-        o.comboInvestigatorHealth = new Array();
+        o.comboInvestigatorHealth = [];
         for (let index = 1; index <= 15; index++) {
             o.comboInvestigatorHealth[o.comboInvestigatorHealth.length] =
                 new ListItem(index, String(index));
@@ -362,12 +362,12 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
         o.comboInvestigatorHealth[o.comboInvestigatorHealth.length] =
             new ListItem('', 'Blank');
 
-        o.comboAssetStamina = new Array(
+        o.comboAssetStamina = [
             new ListItem('None', strings.string('AHLCG-Stamina-None')),
             new ListItem('-', '-'),
             new ListItem('', 'Blank'),
-            new ListItem('Star', '*')
-        );
+            new ListItem('Star', '*'),
+        ];
         for (let index = 1; index <= 15; index++) {
             o.comboAssetStamina[o.comboAssetStamina.length] = new ListItem(
                 index,
@@ -375,12 +375,12 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             );
         }
 
-        o.comboAssetSanity = new Array(
+        o.comboAssetSanity = [
             new ListItem('None', strings.string('AHLCG-Sanity-None')),
             new ListItem('-', '-'),
             new ListItem('', 'Blank'),
-            new ListItem('Star', '*')
-        );
+            new ListItem('Star', '*'),
+        ];
         for (let index = 1; index <= 15; index++) {
             o.comboAssetSanity[o.comboAssetSanity.length] = new ListItem(
                 index,
@@ -388,12 +388,12 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             );
         }
 
-        o.comboEnemyStat = new Array(
+        o.comboEnemyStat = [
             new ListItem('-', '-'),
             new ListItem('?', '?'),
             new ListItem('', 'Blank'),
-            new ListItem('X', 'X')
-        );
+            new ListItem('X', 'X'),
+        ];
         for (let index = 0; index <= 29; index++) {
             o.comboEnemyStat[o.comboEnemyStat.length] = new ListItem(
                 index,
@@ -401,12 +401,12 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             );
         }
 
-        o.comboEnemyHealth = new Array(
+        o.comboEnemyHealth = [
             new ListItem('-', '-'),
             new ListItem('?', '?'),
             new ListItem('', 'Blank'),
-            new ListItem('X', 'X')
-        );
+            new ListItem('X', 'X'),
+        ];
         for (let index = 0; index <= 29; index++) {
             o.comboEnemyHealth[o.comboEnemyHealth.length] = new ListItem(
                 index,
@@ -414,11 +414,11 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             );
         }
 
-        o.comboCost = new Array(
+        o.comboCost = [
             new ListItem('-', '-'),
             new ListItem('', 'Blank'),
-            new ListItem('X', 'X')
-        );
+            new ListItem('X', 'X'),
+        ];
         for (let index = 0; index <= 19; index++) {
             o.comboCost[o.comboCost.length] = new ListItem(
                 index,
@@ -426,12 +426,12 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             );
         }
 
-        o.comboClues = new Array(
+        o.comboClues = [
             new ListItem('-', '-'),
             new ListItem('?', '?'),
             new ListItem('', 'Blank'),
-            new ListItem('Star', '*')
-        );
+            new ListItem('Star', '*'),
+        ];
         for (let index = 0; index <= 19; index++) {
             o.comboClues[o.comboClues.length] = new ListItem(
                 index,
@@ -439,27 +439,27 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             );
         }
 
-        o.comboCustCost = new Array();
+        o.comboCustCost = [];
         for (let index = 1; index <= 5; index++) {
             o.comboCustCost[index - 1] = new ListItem(index, String(index));
         }
 
-        o.combo5 = new Array();
+        o.combo5 = [];
         for (let index = 0; index <= 5; index++) {
             o.combo5[index] = new ListItem(index, String(index));
         }
 
-        o.combo20 = new Array();
+        o.combo20 = [];
         for (let index = 0; index <= 20; index++) {
             o.combo20[index] = new ListItem(index, String(index));
         }
 
-        o.comboXD20 = new Array(
+        o.comboXD20 = [
             new ListItem('-', '-'),
             new ListItem('X', 'X'),
             new ListItem('', 'Blank'),
-            new ListItem('Star', '*')
-        );
+            new ListItem('Star', '*'),
+        ];
         for (let index = 0; index <= 20; index++) {
             o.comboXD20[o.comboXD20.length] = new ListItem(
                 index,
@@ -497,7 +497,7 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
             'StarAlt',
         ];
 
-        o.comboConnections = new Array(
+        o.comboConnections = [
             new ListItem(
                 'None',
                 strings.string('AHLCG-LocIcon-None'),
@@ -515,8 +515,8 @@ define(['se/imageutils', 'se/java', 'se/strings'], function (
                     12,
                     12
                 )
-            )
-        );
+            ),
+        ];
 
         o.comboConnectionsBack = [
             new ListItem(

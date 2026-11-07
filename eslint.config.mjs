@@ -87,7 +87,8 @@ export default defineConfig([
     rules: {
       eqeqeq: ["error", "always", { null: "ignore" }],
       "no-restricted-syntax": ["error", "ClassDeclaration", "ClassExpression"],
-      "no-unused-vars": ["error", { args: "none", caughtErrors: "none" }]
+      "no-unused-vars": ["error", { args: "none", caughtErrors: "none" }],
+      "no-array-constructor": ["error"],
     },
   },
   // scripts run as they are, not as modules, still use the Rhino globals

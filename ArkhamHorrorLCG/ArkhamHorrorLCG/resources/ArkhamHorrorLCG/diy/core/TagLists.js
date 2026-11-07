@@ -5,7 +5,7 @@
 // plug-in's shared object, after its fonts.
 define(function () {
     function apply(o) {
-        o.TagList = new Array(
+        o.TagList = [
             'Fast',
             'HorizontalSpacer',
             'LargeVerticalSpacer',
@@ -58,8 +58,8 @@ define(function () {
             'Damage',
             'Horror',
             'Resource',
-            'Codex'
-        );
+            'Codex',
+        ];
 
         if (o.bodyFamily === 'Arno Pro') {
             o.TagList.push(
@@ -81,7 +81,7 @@ define(function () {
             );
         }
 
-        o.StyleList = new Array(
+        o.StyleList = [
             'Trait',
             'Flavor',
             'Story',
@@ -93,20 +93,16 @@ define(function () {
             'InvStorySection',
             'ActStorySection',
             'AgendaStorySection',
-            'AHF'
-        );
+            'AHF',
+        ];
 
         o.SmallStyleTagList = new Array('AHFSmall');
 
-        o.GuideStyleList = new Array(
-            'GuideSection',
-            'GuideHeader',
-            'GuideBoxBullet'
-        );
+        o.GuideStyleList = ['GuideSection', 'GuideHeader', 'GuideBoxBullet'];
 
         o.CopyrightTagList = new Array('Copyright');
 
-        o.SuffixTagList = new Array('Suffix', 'SuffixBack');
+        o.SuffixTagList = ['Suffix', 'SuffixBack'];
     }
 
     return { apply: apply };
