@@ -1,6 +1,6 @@
 // Page shapes for card text, built from points given as fractions of a
-// region. Each kind is made once, from the region of the first card that asks
-// for it, and kept on the plug-in's shared object.
+// region. Each shape is kept per kind, region and variant, so cards with
+// different regions never share one.
 //
 // Module: returns { install, getPathPointArrays }, where install( o ) adds
 // the shape getters to the plug-in's shared object.
@@ -124,21 +124,24 @@ define(['se/java'], function (Java) {
         return pointArray;
     }
 
+    // the outline for a region, made once per kind, region and variant
+    function cached(build) {
+        var shapes = {};
+        return function (region, variant) {
+            var key = [
+                region.x,
+                region.y,
+                region.width,
+                region.height,
+                variant,
+            ].join(',');
+            if (!shapes[key]) shapes[key] = build(region, variant);
+            return shapes[key];
+        };
+    }
+
     function install(o) {
-        o.actTextShapes = new Array(null, null);
-        o.agendaTextShapes = new Array(null, null);
-        o.enemyPageShape = null;
-        o.eventTextShape = null;
-        o.locationTextShape = null;
-        o.locationBackTextShape = null;
-        o.skillTextShape = null;
-        o.investigatorBackTextShapes = [];
-
-        o.getActTextShape = function (region, reverse) {
-            let nReverse = Number(reverse);
-
-            if (o.actTextShapes[nReverse]) return o.actTextShapes[nReverse];
-
+        o.getActTextShape = cached(function (region, reverse) {
             var x = region.x;
             var y = region.y;
             var w = region.width;
@@ -173,16 +176,9 @@ define(['se/java'], function (Java) {
 
             path.lineTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
 
-            o.actTextShapes[nReverse] = new GeometricShape(path, region);
-
-            return o.actTextShapes[nReverse];
-        };
-        o.getAgendaTextShape = function (region, reverse) {
-            let nReverse = Number(reverse);
-
-            if (o.agendaTextShapes[nReverse])
-                return o.agendaTextShapes[nReverse];
-
+            return new GeometricShape(path, region);
+        });
+        o.getAgendaTextShape = cached(function (region, reverse) {
             var x = region.x;
             var y = region.y;
             var w = region.width;
@@ -217,13 +213,9 @@ define(['se/java'], function (Java) {
 
             path.lineTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
 
-            o.agendaTextShapes[nReverse] = new GeometricShape(path, region);
-
-            return o.agendaTextShapes[nReverse];
-        };
-        o.getEnemyTextShape = function (region) {
-            if (o.enemyTextShape) return o.enemyTextShape;
-
+            return new GeometricShape(path, region);
+        });
+        o.getEnemyTextShape = cached(function (region) {
             var x = region.x;
             var y = region.y;
             var w = region.width;
@@ -256,13 +248,9 @@ define(['se/java'], function (Java) {
 
             path.lineTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
 
-            o.enemyPageShape = new GeometricShape(path, region);
-
-            return o.enemyPageShape;
-        };
-        o.getEventTextShape = function (region) {
-            if (o.eventTextShape) return o.eventTextShape;
-
+            return new GeometricShape(path, region);
+        });
+        o.getEventTextShape = cached(function (region) {
             var x = region.x;
             var y = region.y;
             var w = region.width;
@@ -323,13 +311,9 @@ define(['se/java'], function (Java) {
 
             path.lineTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
 
-            o.eventTextShape = new GeometricShape(path, region);
-
-            return o.eventTextShape;
-        };
-        o.getLocationTextShape = function (region) {
-            if (o.locationTextShape) return o.locationTextShape;
-
+            return new GeometricShape(path, region);
+        });
+        o.getLocationTextShape = cached(function (region) {
             var x = region.x;
             var y = region.y;
             var w = region.width;
@@ -403,13 +387,9 @@ define(['se/java'], function (Java) {
 
             path.lineTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
 
-            o.locationTextShape = new GeometricShape(path, region);
-
-            return o.locationTextShape;
-        };
-        o.getLocationBackTextShape = function (region) {
-            if (o.locationBackTextShape) return o.locationBackTextShape;
-
+            return new GeometricShape(path, region);
+        });
+        o.getLocationBackTextShape = cached(function (region) {
             var x = region.x;
             var y = region.y;
             var w = region.width;
@@ -430,13 +410,9 @@ define(['se/java'], function (Java) {
 
             path.lineTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
 
-            o.locationBackTextShape = new GeometricShape(path, region);
-
-            return o.locationBackTextShape;
-        };
-        o.getSkillTextShape = function (region) {
-            if (o.skillTextShape) return o.skillTextShape;
-
+            return new GeometricShape(path, region);
+        });
+        o.getSkillTextShape = cached(function (region) {
             var x = region.x;
             var y = region.y;
             var w = region.width;
@@ -483,46 +459,37 @@ define(['se/java'], function (Java) {
 
             path.lineTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
 
-            o.skillTextShape = new GeometricShape(path, region);
+            return new GeometricShape(path, region);
+        });
+        o.getInvestigatorBackTextShape = cached(
+            'investigatorBack',
+            function (region, className) {
+                var x = region.x;
+                var y = region.y;
+                var w = region.width;
+                var h = region.height;
 
-            return o.skillTextShape;
-        };
-        o.getInvestigatorBackTextShape = function (region, className) {
-            if (o.investigatorBackTextShapes[className])
-                return o.investigatorBackTextShapes[className];
+                var pointArrays = getPathPointArrays(className);
 
-            var x = region.x;
-            var y = region.y;
-            var w = region.width;
-            var h = region.height;
+                var xPathPoints = pointArrays[0];
+                var yPathPoints = pointArrays[1];
 
-            var pointArrays = getPathPointArrays(className);
+                var path = new Path2D();
 
-            var xPathPoints = pointArrays[0];
-            var yPathPoints = pointArrays[1];
+                var numPoints = xPathPoints.length;
 
-            var path = new Path2D();
+                path.moveTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
 
-            var numPoints = xPathPoints.length;
+                for (let i = 0; i < numPoints; i++) {
+                    path.lineTo(x + w * xPathPoints[i], y + h * yPathPoints[i]);
+                }
 
-            path.moveTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
+                path.lineTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
 
-            for (let i = 0; i < numPoints; i++) {
-                path.lineTo(x + w * xPathPoints[i], y + h * yPathPoints[i]);
+                return new GeometricShape(path, region);
             }
-
-            path.lineTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
-
-            o.investigatorBackTextShapes[className] = new GeometricShape(
-                path,
-                region
-            );
-
-            return o.investigatorBackTextShapes[className];
-        };
-        o.getKeyTextShape = function (region) {
-            if (o.keyTextShape) return o.keyTextShape;
-
+        );
+        o.getKeyTextShape = cached(function (region) {
             var x = region.x;
             var y = region.y;
             var w = region.width;
@@ -543,10 +510,8 @@ define(['se/java'], function (Java) {
 
             path.lineTo(x + w * xPathPoints[0], y + h * yPathPoints[0]);
 
-            o.locationBackTextShape = new GeometricShape(path, region);
-
-            return o.locationBackTextShape;
-        };
+            return new GeometricShape(path, region);
+        });
     }
 
     return { install: install, getPathPointArrays: getPathPointArrays };
