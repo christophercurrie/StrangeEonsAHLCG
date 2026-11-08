@@ -10,6 +10,13 @@ plugins {
 
 val projects = "${System.getProperty("user.home")}/Projects"
 
+// The plug-in's scripts run on the ECMAScript language; -PlanguageBundle names its bundle.
+val languageBundle = file(
+    providers.gradleProperty("languageBundle")
+        .getOrElse("$projects/strange-eons-javascript-plugin/build/libs/ECMAScriptLanguage.selibrary"),
+)
+val languageJvmArgs = listOf("--sun-misc-unsafe-memory-access=allow", "-Dpolyglot.engine.WarnInterpreterOnly=false")
+
 strangeEonsRenderTest {
     strangeEonsDir = file(providers.gradleProperty("strangeEonsDir").getOrElse("$projects/strange-eons"))
     pluginFolder = file("ArkhamHorrorLCG/ArkhamHorrorLCG")
@@ -18,10 +25,11 @@ strangeEonsRenderTest {
     components = file(providers.gradleProperty("componentsDir").getOrElse("src/renderTest/components"))
     // high-res templates; catches sub-pixel layout shifts
     resolution = 300
+    bundles.from(languageBundle)
+    jvmArgs.addAll(languageJvmArgs)
 }
 
 val fixtureScript = file("src/renderTest/generate-fixtures.js")
-val amdScript = file("src/renderTest/amd-loader.js")
 
 // Fixtures, masters and test scripts live in the src/renderTest submodule.
 val checkRenderTestSources by tasks.registering {
@@ -77,17 +85,17 @@ fun Exec.runFixtureScript(mode: String, out: File, work: File, overwrite: Boolea
             launcher.get().executablePath.asFile.absolutePath,
             "--add-opens=java.desktop/javax.swing.table=ALL-UNNAMED",
             "--enable-native-access=ALL-UNNAMED",
+            *languageJvmArgs.toTypedArray(),
             "-Dfx.mode=$mode",
             "-Dfx.out=${out.absolutePath}",
             "-Dfx.flexibleOut=${flexibleOut.absolutePath}",
             "-Dfx.results=${work.resolve("results.txt").absolutePath}",
             "-Dfx.overwrite=$overwrite",
-            "-Dfx.amdScript=${amdScript.absolutePath}",
             "-cp", cp,
             "ca.cgjennings.apps.arkham.StrangeEons",
             "--xDisableJreCheck", "--xDisablePluginLoading",
             "--glang", "en", "--ulang", "en",
-            "--plugintest", pack.get().bundle.get().asFile.absolutePath,
+            "--plugintest", listOf(pack.get().bundle.get().asFile, languageBundle).joinToString(File.pathSeparator),
             "--run", fixtureScript.absolutePath,
         )
     }
@@ -113,22 +121,25 @@ val verifyCardVersions by tasks.registering {
     val diy = file("ArkhamHorrorLCG/ArkhamHorrorLCG/resources/ArkhamHorrorLCG/diy")
     inputs.dir(diy)
     doLast {
-        // face handlers (AMD modules) and the legacy library take the version from handlers/CardVersion
-        val module = diy.resolve("handlers/CardVersion.js").readText()
-        val current = Regex("""return (\d+);""").find(module)?.groupValues?.get(1)?.toInt()
-            ?: throw GradleException("handlers/CardVersion.js returns no version")
+        // face handlers and the legacy adapter take the version from handlers/CardVersion
+        val module = diy.resolve("handlers/CardVersion.mjs").readText()
+        val current = Regex("""export default (\d+);""").find(module)?.groupValues?.get(1)?.toInt()
+            ?: throw GradleException("handlers/CardVersion.mjs exports no version")
         val problems = mutableListOf<String>()
-        val legacy = diy.resolve("AHLCG-legacyLibrary.js").readText()
-        if (!legacy.contains("const CARD_VERSION = AHLCGModules.CardVersion;")) {
-            problems += "AHLCG-legacyLibrary.js does not take CARD_VERSION from handlers/CardVersion"
+        val adapter = diy.resolve("legacy/Adapter.mjs").readText()
+        if (!adapter.contains("export const CARD_VERSION = CardVersion;")) {
+            problems += "legacy/Adapter.mjs does not take CARD_VERSION from handlers/CardVersion"
         }
-        diy.listFiles { f -> f.name.endsWith(".js") && !f.name.startsWith("AHLCG") }!!.sorted().forEach { f ->
+        // card handlers: the modules the class map names, and their shared handlers
+        (diy.listFiles()!!.toList() + diy.resolve("handlers").listFiles()!!.toList())
+            .filter { it.isFile && it.name.endsWith(".mjs") }.sorted().forEach { f ->
             val text = f.readText()
-            if (Regex("""diy\.version\s*=\s*\d""").containsMatchIn(text)) problems += "${f.name} sets a literal version"
-            if (text.contains("useLibrary('amd')")) {
-                if (Regex("""\bversion\s*[:=]""").containsMatchIn(text)) problems += "${f.name} sets its own version"
+            val name = f.relativeTo(diy).invariantSeparatorsPath
+            if (Regex("""diy\.version\s*=\s*\d""").containsMatchIn(text)) problems += "$name sets a literal version"
+            if (!text.contains("extends LegacyHandler")) {
+                if (Regex("""\bversion\s*:""").containsMatchIn(text)) problems += "$name sets its own version"
             } else if (Regex("""diy\.version\s*=\s*CARD_VERSION""").findAll(text).count() != 2) {
-                problems += "${f.name} does not set CARD_VERSION in create and onRead"
+                problems += "$name does not set CARD_VERSION in create and onRead"
             }
         }
         if (problems.isNotEmpty()) throw GradleException(problems.joinToString("\n"))
@@ -348,8 +359,6 @@ val dumpDefaults by tasks.registering(Exec::class) {
     description = "Lists the state of a newly created component for each card handler."
     inputs.dir(strangeEonsRenderTest.pluginFolder)
     inputs.file(fixtureScript)
-    inputs.file(amdScript)
-    inputs.dir("src/renderTest/amd")
     outputs.dir(defaultsDump)
     // stale files would show up as handlers with no expected file
     doFirst { defaultsDump.get().asFile.deleteRecursively() }

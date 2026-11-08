@@ -4,6 +4,7 @@
 id = CATALOGUEID{0b899f3c-78ae-40b8-bcfc-b06479b1f136:2026-9-19-16-23-30-154}
 
 priority = GAME
+script-language = ecmascript
 ui-languages = en,it,es,fr,de,uk,zh,zh_CN
 game-languages = en,it,es,pl,fr,de,uk,zh,zh_CN
 
@@ -88,4 +89,4 @@ catalog-description_pt = <p>Este plug-in permite a criação de componentes para
 
 catalog-tags = game
 
-res://ArkhamHorrorLCG/ArkhamHorrorLCG.js
+res://ArkhamHorrorLCG/ArkhamHorrorLCG.mjs

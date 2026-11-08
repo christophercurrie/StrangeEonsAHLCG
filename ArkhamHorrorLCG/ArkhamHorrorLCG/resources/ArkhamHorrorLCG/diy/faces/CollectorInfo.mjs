@@ -1,0 +1,283 @@
+// The collector line, drawn right to left: collection number and icon, then
+// encounter number; the copyright and artist, in their own regions; and the
+// encounter icon, in the face's own place.
+//
+// Face settings: CollectionNumber, EncounterNumber, Copyright, Artist
+// (-region, boxes), CollectionIcon-region, EncounterIcon-region and
+// ReturnEncounterIcon-region.
+//
+// Module: returns CollectorInfo.
+import FaceUtils from './FaceUtils.mjs';
+import imageutils from '../se/imageutils.mjs';
+import strings from '../se/strings.mjs';
+import Java from '../se/java.mjs';
+
+const AlphaComposite = Java.type('java.awt.AlphaComposite');
+const AffineTransform = Java.type('java.awt.geom.AffineTransform');
+const InversionFilter = Java.type(
+    'ca.cgjennings.graphics.filters.InversionFilter'
+);
+const Sides = ['Front', 'Back'];
+const ENCOUNTER_CLIP_KEY = 'AHLCG-Face-Encounter-portrait-clip-region';
+
+function iconPath(name) {
+    return 'ArkhamHorrorLCG/icons/AHLCG-' + name + '.png';
+}
+
+function inverted(image) {
+    return new InversionFilter().filter(image, null);
+}
+
+// the region, moved left to end at x if it would otherwise pass it
+function endAt(region, x) {
+    if (x - region.width < region.x) region.x = x - region.width;
+    return region;
+}
+
+// Light collector text would vanish on ink saver's white sheet. The sheet
+// can switch modes after its boxes are made, so this is set for each paint.
+function setText(box, sheet, text) {
+    box.markupText = sheet.isPrototypeRenderingModeEnabled()
+        ? '<color #000000>' + text + '</color>'
+        : text;
+}
+
+// returns the left edge of the number
+function paintCollectionNumber(g, diy, sheet, face, box, suffix, x) {
+    var faceIndex = sheet.getSheetIndex();
+    var number = String(diy.settings.get('CollectionNumber', ''));
+    if (number === '') return x;
+
+    var region = face.collectorRegion(diy, 'CollectionNumber');
+    region.y += parseInt(FaceUtils.plugin().collectionFontOffset);
+
+    if (suffix) {
+        let flip = String(diy.settings.get('flipSuffix', '0')) === '1';
+        number += (faceIndex === 0) !== flip ? 'a' : 'b';
+    }
+    setText(box, sheet, number);
+
+    return region.x + region.width - box.drawAsSingleLine(g, region);
+}
+
+// returns the left edge of the icon
+function paintCollectionIcon(diy, g, sheet, face, portrait, x) {
+    var region = endAt(face.collectorRegion(diy, 'CollectionIcon'), x);
+    var icon =
+        String(diy.settings.get('CollectionType', '0')) === '0'
+            ? imageutils.ImageUtils.get(
+                  iconPath(diy.settings.get('Collection'))
+              )
+            : portrait.getImage();
+    sheet.paintImage(
+        g,
+        face.invertCollectionIcon ? inverted(icon) : icon,
+        region
+    );
+    return region.x;
+}
+
+function paintEncounterNumber(g, diy, sheet, face, box, x) {
+    var number = String(diy.settings.get('EncounterNumber', ''));
+    var total = String(diy.settings.get('EncounterTotal', ''));
+    if (number === '' && total === '') return;
+
+    var region = endAt(face.collectorRegion(diy, 'EncounterNumber'), x);
+    region.y += parseInt(FaceUtils.plugin().collectionFontOffset);
+
+    var separator = ' / ';
+    if (face.compactEncounterTotal) separator = '/';
+    else if (FaceUtils.plugin().OS === 'Mac') separator = '\u200a/\u200a';
+    setText(box, sheet, number + separator + total);
+    box.drawAsSingleLine(g, region);
+}
+
+function paintCopyright(g, diy, sheet, face, box) {
+    var region = face.collectorRegion(diy, 'Copyright');
+    var o = FaceUtils.plugin();
+    region.y += parseInt(o.collectionFontOffset);
+    if (String(o.bodyFamily) === 'Times New Roman') region.y -= 1;
+
+    setText(box, sheet, String(diy.settings.get('Copyright', '')));
+    box.drawAsSingleLine(g, region);
+}
+
+// the icon cut out of the return-to disc
+function returnToImage(icon) {
+    var ImageUtils = imageutils.ImageUtils;
+    var image = ImageUtils.create(36, 33, true);
+    var g = image.createGraphics();
+    try {
+        g.drawImage(
+            ImageUtils.get('ArkhamHorrorLCG/overlays/AHLCG-ReturnToBase.png'),
+            0,
+            0,
+            null
+        );
+        g.setComposite(AlphaComposite.DstOut);
+        g.drawImage(ImageUtils.resize(icon, 28, 28), 4, 4, null);
+    } finally {
+        g.dispose();
+    }
+    return image;
+}
+
+// the icon of the set a return-to set returns to
+var ReturnedIcons = {
+    ExtracurricularActivities: 'ExtracurricularActivity',
+    TheRainforest: 'Rainforest',
+};
+
+// the image scaled into a region that may have fractional bounds
+function paintIcon(g, image, region) {
+    var t = AffineTransform.getTranslateInstance(region.x, region.y);
+    t.scale(region.width / image.getWidth(), region.height / image.getHeight());
+    g.drawImage(image, t, null);
+}
+
+function paintEncounterIcon(g, diy, sheet, face, portrait) {
+    var settings = diy.settings;
+    var name = String(settings.get('Encounter', ''));
+    var custom = String(settings.get('EncounterType', '0')) !== '0';
+
+    if (name.substring(0, 6) === 'Return' && face.fillReturnEncounterIcon) {
+        let returned = name.substring(8);
+        let icon = custom
+            ? portrait.getImage()
+            : imageutils.ImageUtils.get(
+                  iconPath(ReturnedIcons[returned] || returned)
+              );
+        paintIcon(
+            g,
+            returnToImage(icon),
+            face.collectorRegion(diy, 'ReturnEncounterIcon', true)
+        );
+        return;
+    }
+
+    if (name.substring(0, 6) === 'Return') {
+        paintIcon(
+            g,
+            imageutils.ImageUtils.get(iconPath(name)),
+            face.collectorRegion(diy, 'ReturnEncounterIcon', true)
+        );
+        return;
+    }
+
+    if (!custom) {
+        paintIcon(
+            g,
+            imageutils.ImageUtils.get(iconPath(name)),
+            face.collectorRegion(diy, 'EncounterIcon', true)
+        );
+    } else {
+        // portrait clips are whole pixels
+        let region = face.collectorRegion(diy, 'EncounterIcon');
+        // the portrait applies its scale and pan within its clip region
+        settings.setRegion(ENCOUNTER_CLIP_KEY, region);
+        portrait.paint(g, sheet.getRenderTarget());
+    }
+}
+
+// the face's $Artist<suffix>, if any
+function paintArtist(g, diy, sheet, face, box) {
+    var suffix = face.suffix(sheet.getSheetIndex());
+    var artist = String(diy.settings.get('Artist' + suffix, ''));
+    // a back showing the front's art credits the front's artist
+    if (
+        artist.length === 0 &&
+        suffix !== '' &&
+        String(diy.settings.get('PortraitShare', '0')) === '1'
+    )
+        artist = String(diy.settings.get('Artist', ''));
+    if (artist.length === 0) return;
+
+    var region = face.collectorRegion(diy, 'Artist');
+    region.y += parseInt(FaceUtils.plugin().collectionFontOffset);
+
+    setText(
+        box,
+        sheet,
+        strings.gstring('AHLCG-IllustratorShort') + ' ' + artist
+    );
+    box.drawAsSingleLine(g, region);
+}
+
+// collector: { collection, encounter, suffix }, the card's portraits and
+// whether the collection number takes a side suffix; encounterNumber is
+// false for a face that leaves out the encounter number
+function paint(
+    g,
+    diy,
+    sheet,
+    face,
+    boxes,
+    collector,
+    encounterIcon,
+    encounterNumber
+) {
+    var faceIndex = sheet.getSheetIndex();
+    var side = Sides[faceIndex];
+    var x = sheet.getTemplateWidth() - 2 * FaceUtils.bleedPixels(sheet);
+
+    if (String(diy.settings.get('ShowCollectionNumber' + side, '1')) === '1') {
+        x =
+            paintCollectionNumber(
+                g,
+                diy,
+                sheet,
+                face,
+                boxes.collectionNumber,
+                collector.suffix,
+                x
+            ) - 3;
+        x =
+            paintCollectionIcon(diy, g, sheet, face, collector.collection, x) -
+            11;
+    } else x -= 21;
+
+    if (encounterIcon)
+        paintEncounterIcon(g, diy, sheet, face, collector.encounter);
+
+    if (
+        encounterNumber !== false &&
+        String(diy.settings.get('ShowEncounterNumber' + side, '1')) === '1'
+    ) {
+        paintEncounterNumber(g, diy, sheet, face, boxes.encounterNumber, x);
+    }
+
+    if (String(diy.settings.get('ShowCopyright' + side, '1')) === '1') {
+        paintCopyright(g, diy, sheet, face, boxes.copyright);
+    }
+}
+
+// the copyright alone, for a face without the rest of the collector line
+function paintCopyrightOnly(g, diy, sheet, face, box) {
+    var side = Sides[sheet.getSheetIndex()];
+    if (String(diy.settings.get('ShowCopyright' + side, '1')) === '1')
+        paintCopyright(g, diy, sheet, face, box);
+}
+
+// the collection icon alone, in its region
+function paintCollectionIconOnly(g, diy, sheet, face, collector) {
+    paintCollectionIcon(
+        diy,
+        g,
+        sheet,
+        face,
+        collector.collection,
+        Number.MAX_VALUE
+    );
+}
+
+function paintEncounterIconOnly(g, diy, sheet, face, collector) {
+    paintEncounterIcon(g, diy, sheet, face, collector.encounter);
+}
+
+export default {
+    paint: paint,
+    paintCollectionIcon: paintCollectionIconOnly,
+    paintEncounterIcon: paintEncounterIconOnly,
+    paintArtist: paintArtist,
+    paintCopyright: paintCopyrightOnly,
+};
